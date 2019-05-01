@@ -140,6 +140,7 @@ public class Home extends JApplet {
 
 	private JPanel filePanel;
 	private JPanel mapPanel;
+	private JPanel mapVisualPanel;
 	private JPanel controlPanel;
 	private JPanel dbiPanel;
 	private JPanel uclPanel;
@@ -282,17 +283,17 @@ public class Home extends JApplet {
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Create the frame.
 	 */
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("Trajectory Generator");
-		frmTrajectoryGenerator.setBounds(100, 100, 730, 710);
+		frmTrajectoryGenerator.setBounds(100, 100, 790, 710);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
 		
 		JPanel filePanel = new JPanel();
-		filePanel.setBounds(0, 0, 714, 45);
+		filePanel.setBounds(0, 0, 774, 45);
 		frmTrajectoryGenerator.getContentPane().add(filePanel);
 		filePanel.setLayout(null);
 		
@@ -312,8 +313,12 @@ public class Home extends JApplet {
 		btnView.setBounds(467, 10, 97, 23);
 		filePanel.add(btnView);
 		
+		btnDecompAll = new JButton("Decompose");
+		btnDecompAll.setBounds(576, 10, 110, 23);
+		filePanel.add(btnDecompAll);
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 43, 714, 628);
+		tabbedPane.setBounds(0, 43, 774, 628);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
@@ -325,7 +330,7 @@ public class Home extends JApplet {
 		lblMachineConfiguration.setBounds(357, 10, 186, 23);
 		panel.add(lblMachineConfiguration);
 		
-		JButton btnAdd = new JButton("Add");
+		JButton btnAdd = new JButton("Clear");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MachinesWindow panel = new MachinesWindow();
@@ -357,10 +362,11 @@ public class Home extends JApplet {
 		btnTrain.setBounds(575, 333, 97, 23);
 		panel.add(btnTrain);
 		
-		JPanel panel_7 = new JPanel();
-		panel_7.setBackground(Color.WHITE);
-		panel_7.setBounds(12, 10, 333, 540);
-		panel.add(panel_7);
+		txtConsoleArea = new JTextArea();
+		txtConsoleArea.setEditable(false);
+		txtConsoleArea.setBackground(Color.WHITE);
+		txtConsoleArea.setBounds(12, 10, 333, 540);
+		panel.add(txtConsoleArea);
 		
 		JLabel lblNeuralNetwork = new JLabel("Neural Network");
 		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -391,14 +397,18 @@ public class Home extends JApplet {
 		textField.setBounds(482, 240, 190, 21);
 		panel.add(textField);
 		
+		JButton btnUpload = new JButton("Upload");
+		btnUpload.setBounds(466, 45, 97, 23);
+		panel.add(btnUpload);
+		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Generator", null, panel_1, null);
 		panel_1.setLayout(null);
 		
-		JPanel panel_4 = new JPanel();
-		panel_4.setBackground(Color.WHITE);
-		panel_4.setBounds(12, 10, 333, 540);
-		panel_1.add(panel_4);
+		mapPanel = new JPanel();
+		mapPanel.setBackground(Color.WHITE);
+		mapPanel.setBounds(12, 10, 333, 540);
+		panel_1.add(mapPanel);
 		
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
@@ -500,49 +510,53 @@ public class Home extends JApplet {
 		textField_6.setBounds(460, 313, 237, 21);
 		panel_1.add(textField_6);
 		
-		JButton btnGenerate = new JButton("Generate");
-		btnGenerate.setBounds(600, 344, 97, 23);
-		panel_1.add(btnGenerate);
+		btnStationGenerate = new JButton("Generate");
+		btnStationGenerate.setBounds(600, 344, 97, 23);
+		panel_1.add(btnStationGenerate);
 		
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblMovingObjectConfiguration.setBounds(357, 377, 237, 23);
 		panel_1.add(lblMovingObjectConfiguration);
 		
-		JButton button_1 = new JButton("Add");
-		button_1.addActionListener(new ActionListener() {
+		JButton btnClear_1 = new JButton("Clear");
+		btnClear_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new MovingObjectsWindow().main(null);
 			}
 		});
-		button_1.setBounds(600, 412, 97, 23);
-		panel_1.add(button_1);
+		btnClear_1.setBounds(600, 412, 97, 23);
+		panel_1.add(btnClear_1);
 		
 		JPanel panel_6 = new JPanel();
 		panel_6.setBackground(Color.LIGHT_GRAY);
 		panel_6.setBounds(357, 445, 340, 105);
 		panel_1.add(panel_6);
 		
-		JButton btnInit = new JButton("Init");
-		btnInit.setBounds(377, 560, 97, 23);
-		panel_1.add(btnInit);
+		btnObjectInit = new JButton("Init");
+		btnObjectInit.setBounds(377, 560, 97, 23);
+		panel_1.add(btnObjectInit);
 		
-		JButton btnStart = new JButton("Start");
-		btnStart.setBounds(480, 560, 97, 23);
-		panel_1.add(btnStart);
+		btnObjectStart = new JButton("Start");
+		btnObjectStart.setBounds(480, 560, 97, 23);
+		panel_1.add(btnObjectStart);
 		
-		JButton btnStop = new JButton("Stop");
-		btnStop.setBounds(589, 560, 97, 23);
-		panel_1.add(btnStop);
+		btnObjectStop = new JButton("Stop");
+		btnObjectStop.setBounds(589, 560, 97, 23);
+		panel_1.add(btnObjectStop);
+		
+		JButton btnUpload_1 = new JButton("Upload");
+		btnUpload_1.setBounds(497, 412, 97, 23);
+		panel_1.add(btnUpload_1);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
 		panel_2.setLayout(null);
 		
-		JPanel panel_5 = new JPanel();
-		panel_5.setBackground(Color.WHITE);
-		panel_5.setBounds(12, 10, 333, 540);
-		panel_2.add(panel_5);
+		mapVisualPanel = new JPanel();
+		mapVisualPanel.setBackground(Color.WHITE);
+		mapVisualPanel.setBounds(12, 10, 333, 540);
+		panel_2.add(mapVisualPanel);
 		
 		JLabel lblBuildingDetails = new JLabel("Building Details");
 		lblBuildingDetails.setFont(new Font("Dialog", Font.PLAIN, 18));
@@ -588,41 +602,49 @@ public class Home extends JApplet {
 		lblStartDate.setBounds(357, 268, 95, 23);
 		panel_2.add(lblStartDate);
 		
-		textField_9 = new JTextField();
-		textField_9.setColumns(10);
-		textField_9.setBounds(482, 268, 190, 21);
-		panel_2.add(textField_9);
+		txtStartTime = new JTextField();
+		txtStartTime.setColumns(10);
+		txtStartTime.setBounds(482, 268, 190, 21);
+		panel_2.add(txtStartTime);
 		
 		JLabel lblEndDate = new JLabel("End Date:");
 		lblEndDate.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblEndDate.setBounds(357, 301, 95, 23);
 		panel_2.add(lblEndDate);
 		
-		textField_10 = new JTextField();
-		textField_10.setColumns(10);
-		textField_10.setBounds(482, 301, 190, 21);
-		panel_2.add(textField_10);
+		txtEndTime = new JTextField();
+		txtEndTime.setColumns(10);
+		txtEndTime.setBounds(482, 301, 190, 21);
+		panel_2.add(txtEndTime);
 		
 		JButton btnShow = new JButton("Show");
 		btnShow.setBounds(575, 332, 97, 23);
 		panel_2.add(btnShow);
 		
+		btnDeleteFloor = new JButton("Clear");
+		btnDeleteFloor.setBounds(684, 45, 73, 23);
+		panel_2.add(btnDeleteFloor);
+		
+		btnDeleteEntity = new JButton("Clear");
+		btnDeleteEntity.setBounds(684, 79, 73, 23);
+		panel_2.add(btnDeleteEntity);
+		
 		addActionListeners();
-//		addFocusListeners();
-//
-//		switchStateForButtons(InteractionState.BEFORE_IMPORT);
-//
-//		updateFileChooser();
-//
-//		Timer timer = new Timer();
-//		timer.schedule(new TimerTask() {
-//
-//			@Override
-//			public void run() {
-//				repaint();
-//			}
-//
-//		}, 0, 100);
+		addFocusListeners();
+
+		switchStateForButtons(InteractionState.BEFORE_IMPORT);
+
+		updateFileChooser();
+
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				repaint();
+			}
+
+		}, 0, 100);
 	}
 	
 	private void toggleBtnObjectStart() {
@@ -685,7 +707,7 @@ public class Home extends JApplet {
 				try {
 					Date selectedStartTime = IdrObjsUtility.sdf.parse(txtStartTime.getText());
 					if (endCalendar.getTime().before(selectedStartTime)) {
-						JOptionPane.showMessageDialog(this, "The end time should be later than start time!",
+						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "The end time should be later than start time!",
 								"Error", JOptionPane.ERROR_MESSAGE);
 						txtEndTime.setText("");
 					} else {
@@ -721,44 +743,44 @@ public class Home extends JApplet {
 
 		});
 
-		txtRssiInputPath.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String previousPath = txtRssiInputPath.getText();
-				String inputPath = decideOutputPath();
-				if (inputPath != null) {
-					txtRssiInputPath.setText(inputPath);
-				} else {
-					txtRssiInputPath.setText(previousPath);
-				}
-
-				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
-					btnPositionGenerate.setEnabled(true);
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-
-			}
-
-		});
+//		txtRssiInputPath.addMouseListener(new MouseListener() {
+//
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				String previousPath = txtRssiInputPath.getText();
+//				String inputPath = decideOutputPath();
+//				if (inputPath != null) {
+//					txtRssiInputPath.setText(inputPath);
+//				} else {
+//					txtRssiInputPath.setText(previousPath);
+//				}
+//
+//				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
+//					btnPositionGenerate.setEnabled(true);
+//				}
+//			}
+//
+//			@Override
+//			public void mousePressed(MouseEvent e) {
+//
+//			}
+//
+//			@Override
+//			public void mouseReleased(MouseEvent e) {
+//
+//			}
+//
+//			@Override
+//			public void mouseEntered(MouseEvent e) {
+//
+//			}
+//
+//			@Override
+//			public void mouseExited(MouseEvent e) {
+//
+//			}
+//
+//		});
 
 	}
 
@@ -768,13 +790,13 @@ public class Home extends JApplet {
 		btnStationGenerate.setEnabled(state);
 		btnObjectInit.setEnabled(state);
 		toggleMovingObjectGenerationBtns(false);
-		btnPositionGenerate.setEnabled(state);
+//		btnPositionGenerate.setEnabled(state);
 	}
 
 	private void toggleMovingObjectGenerationBtns(boolean state) {
 		btnObjectStart.setEnabled(state);
 		btnObjectStop.setEnabled(state);
-		btnSnapShot.setEnabled(state);
+//		btnSnapShot.setEnabled(state);
 	}
 
 	private void switchStateForButtons(int state) {
@@ -1093,7 +1115,7 @@ public class Home extends JApplet {
 
 			btnObjectStart.setEnabled(false);
 			btnObjectStop.setEnabled(false);
-			btnSnapShot.setEnabled(false);
+//			btnSnapShot.setEnabled(false);
 
 			loadFloorChooser();
 
@@ -1145,7 +1167,7 @@ public class Home extends JApplet {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					int n = JOptionPane.showConfirmDialog(this,
+					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
 							"Are you sure you want to decompose the selected file?", "Confirmation",
 							JOptionPane.YES_NO_OPTION);
 					if (n == JOptionPane.YES_OPTION) {
@@ -1181,7 +1203,7 @@ public class Home extends JApplet {
 						}
 
 						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
-						JOptionPane.showMessageDialog(this, "Decomposing File is done!", "Information",
+						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Decomposing File is done!", "Information",
 								JOptionPane.INFORMATION_MESSAGE);
 						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
 						selectedAP = null;
@@ -1202,7 +1224,7 @@ public class Home extends JApplet {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					int n = JOptionPane.showConfirmDialog(this,
+					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
 							"Are you sure you want to delete the selected entity?", "Confirmation",
 							JOptionPane.YES_NO_OPTION);
 					if (n == JOptionPane.YES_OPTION) {
@@ -1218,7 +1240,7 @@ public class Home extends JApplet {
 						} catch (SQLException e1) {
 							e1.printStackTrace();
 						}
-						JOptionPane.showMessageDialog(this, "Deleting Entity is done!", "Information",
+						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Deleting Entity is done!", "Information",
 								JOptionPane.INFORMATION_MESSAGE);
 						loadFloorChooser();
 						repaint();
@@ -1260,7 +1282,7 @@ public class Home extends JApplet {
 								String stationDir = createStationOutputDir(outputPath);
 								exportStations(stationDir);
 							}
-							JOptionPane.showMessageDialog(this, "Generating Infrastrcture Data is done!",
+							JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Generating Infrastrcture Data is done!",
 									"Information", JOptionPane.INFORMATION_MESSAGE);
 						}
 						String selected_station_type = stationTypeComboBox.getSelectedItem().toString();
@@ -1324,17 +1346,17 @@ public class Home extends JApplet {
 								btnObjectInit.setEnabled(false);
 								btnObjectStart.setText("Pause");
 								btnObjectStop.setEnabled(true);
-								btnSnapShot.setEnabled(false);
+//								btnSnapShot.setEnabled(false);
 								setStartEndTimer();
 								updateAlgProps();
 							}
 						}
 					} else if (btnObjectStart.getText().equals("Pause")) {
-						btnSnapShot.setEnabled(true);
+//						btnSnapShot.setEnabled(true);
 						pauseIndoorObj();
 						btnObjectStart.setText("Resume");
 					} else if (btnObjectStart.getText().equals("Resume")) {
-						btnSnapShot.setEnabled(false);
+//						btnSnapShot.setEnabled(false);
 						pauseIndoorObj();
 						btnObjectStart.setText("Pause");
 					}
@@ -1352,22 +1374,22 @@ public class Home extends JApplet {
 					btnObjectStart.setEnabled(false);
 					btnObjectStop.setEnabled(false);
 					btnObjectStart.setText("Start");
-					btnSnapShot.setEnabled(false);
+//					btnSnapShot.setEnabled(false);
 					// System.out.println(IdrObjsUtility.trajDir);
 				}
 
 			});
 
-			btnSnapShot.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					String outputPath = decideOutputPath();
-					if (outputPath != null) {
-						createSnapshotOutputDir(outputPath);
-						snapShot(movingObjs);
-					}
-
-				}
-			});
+//			btnSnapShot.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					String outputPath = decideOutputPath();
+//					if (outputPath != null) {
+//						createSnapshotOutputDir(outputPath);
+//						snapShot(movingObjs);
+//					}
+//
+//				}
+//			});
 
 			positionAlgorithmComboBox.addActionListener(new ActionListener() {
 
@@ -1392,49 +1414,49 @@ public class Home extends JApplet {
 				}
 			});
 
-			btnPositionGenerate.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					if (chckbxPositiongData.isSelected()) {
-						String outputPath = decideOutputPath();
-						if (outputPath != null) {
-							String postioningOutputPath = createPositioningOutputDir(outputPath);
-							storeAlgProp();
-							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-
-							ExecutorService threadPool = Executors.newCachedThreadPool();
-
-							if ("Trilateration".equals(selected_algorithm)) {
-								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								tri.calAlgorithmForAll(threadPool);
-							} else if ("Fingerprinting".equals(selected_algorithm)) {
-								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								fpt.calAlgorithmForAll(threadPool);
-							} else {
-								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								pxm.calAlgorithmForAll(threadPool);
-							}
-							exportPositioningConfiguration(postioningOutputPath);
-
-							threadPool.shutdown();
-
-							try {
-								threadPool.awaitTermination(50, TimeUnit.SECONDS);
-							} catch (InterruptedException e) {
-								//
-								e.printStackTrace();
-							}
-
-							JOptionPane.showMessageDialog(this, "Generating Indoor Positioning Data is done!",
-									"Information", JOptionPane.INFORMATION_MESSAGE);
-						}
-					}
-				}
-			});
+//			btnPositionGenerate.addActionListener(new ActionListener() {
+//
+//				@Override
+//				public void actionPerformed(ActionEvent arg0) {
+//					if (chckbxPositiongData.isSelected()) {
+//						String outputPath = decideOutputPath();
+//						if (outputPath != null) {
+//							String postioningOutputPath = createPositioningOutputDir(outputPath);
+//							storeAlgProp();
+//							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+//
+//							ExecutorService threadPool = Executors.newCachedThreadPool();
+//
+//							if ("Trilateration".equals(selected_algorithm)) {
+//								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
+//										postioningOutputPath);
+//								tri.calAlgorithmForAll(threadPool);
+//							} else if ("Fingerprinting".equals(selected_algorithm)) {
+//								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
+//										postioningOutputPath);
+//								fpt.calAlgorithmForAll(threadPool);
+//							} else {
+//								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
+//										postioningOutputPath);
+//								pxm.calAlgorithmForAll(threadPool);
+//							}
+//							exportPositioningConfiguration(postioningOutputPath);
+//
+//							threadPool.shutdown();
+//
+//							try {
+//								threadPool.awaitTermination(50, TimeUnit.SECONDS);
+//							} catch (InterruptedException e) {
+//								//
+//								e.printStackTrace();
+//							}
+//
+//							JOptionPane.showMessageDialog(this, "Generating Indoor Positioning Data is done!",
+//									"Information", JOptionPane.INFORMATION_MESSAGE);
+//						}
+//					}
+//				}
+//			});
 
 		}
 
@@ -1635,9 +1657,9 @@ public class Home extends JApplet {
 				btnObjectStop.removeActionListener(al);
 			}
 
-			for (ActionListener al : btnSnapShot.getActionListeners()) {
-				btnSnapShot.removeActionListener(al);
-			}
+//			for (ActionListener al : btnSnapShot.getActionListeners()) {
+//				btnSnapShot.removeActionListener(al);
+//			}
 
 			for (ActionListener al : stationTypeComboBox.getActionListeners()) {
 				stationTypeComboBox.removeActionListener(al);

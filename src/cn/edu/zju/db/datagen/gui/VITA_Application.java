@@ -81,7 +81,6 @@ import javax.swing.filechooser.FileFilter;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.FPT;
-import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import cn.edu.zju.db.datagen.algorithm.PXM;
 import cn.edu.zju.db.datagen.algorithm.TRI;
 import cn.edu.zju.db.datagen.database.DB_Connection;
@@ -111,7 +110,7 @@ import diva.util.java2d.Polygon2D;
 public class VITA_Application extends JApplet {
 
 	private static JFrame mainFrame;
-	private static Dimension size = new Dimension(1400, 1075);
+	private static Dimension size = new Dimension(1370, 880);
 
 	private static String lastSelectedFileName = null;
 
@@ -121,60 +120,44 @@ public class VITA_Application extends JApplet {
 	private JTextField txtScanRange;
 	private JTextField txtScanRate;
 	private JTextField txtMaxMovObjNumInPart;
-	private JTextField txtMaxWheelMovObjNumInPart;
 	private JTextField txtMaximumLifeSpan;
-	private JTextField txtMaximumLifeSpanWheel;
 	private JTextField txtMaxStepLength;
-	private JTextField txtMaxStepLengthWheel;
 	private JTextField txtMoveRate;
-	private JTextField txtMoveRateWheel;
 	private JTextField txtStartTime;
-	private JTextField txtStartTimeWheel;
 	private JTextField txtEndTime;
-	private JTextField txtEndTimeWheel;
-	//	private JTextField txtRssiInputPath;
+	private JTextField txtRssiInputPath;
 
 	private JButton btnImport;
-	private JButton btnImportSpark;
 	private JButton btnDeleteFile;
 	private JButton btnView;
-//	private JButton btnDecompAll;
-//	private JButton btnDeleteFloor;
-//	private JButton btnDeleteEntity;
+	private JButton btnDecompAll;
+	private JButton btnDeleteFloor;
+	private JButton btnDeleteEntity;
 	private JButton btnStationGenerate;
 	private JButton btnObjectInit;
 	private JButton btnObjectStart;
 	private JButton btnObjectStop;
 	private JButton btnSnapShot;
-	private JButton btnStartLearning;
-//	private JButton btnPositionGenerate;
+	private JButton btnPositionGenerate;
 
 	private JPanel filePanel;
 	private JPanel mapPanel;
-	private JPanel mapVisualPanel;
 	private JPanel controlPanel;
 	private JPanel dbiPanel;
 	private JPanel uclPanel;
 	private JPanel movingObjectPanel;
 	private JPanel playPanel;
 	private JPanel stationPanel;
-//	private JPanel positionAlgPanel;
-	private JPanel infraPanel;
-	private JPanel floorPanel;
-	private JPanel learnPanel;
-	private JPanel generatorPanel;
-	private JPanel visualPanel;
-	private JPanel consolePanel;
-	private JPanel learnConfigPanel;
+	private JPanel positionAlgPanel;
 
-//	private JLabel lblConnectedPartitions1;
-//	private JLabel lblselectedEntityLabel2;
-//	private JLabel lblConnectedPartitions2;
+	private JLabel lblConnectedPartitions1;
+	private JLabel lblselectedEntityLabel2;
+	private JLabel lblConnectedPartitions2;
 	private JLabel lblStationDistributerType2;
 	private JLabel lblMovingObjectType2;
 	private JLabel lblMaximumLifeSpan2;
 	private JLabel lblMaximumVelocity2;
-//	private JLabel lblPositionAlgorithm2;
+	private JLabel lblPositionAlgorithm2;
 	private JLabel lblmaximumNumberIn;
 	private JLabel lblCommentsMaxMovObjNumInPart;
 	private JLabel lblmaxStepLength;
@@ -186,9 +169,9 @@ public class VITA_Application extends JApplet {
 	private JLabel lblScanRate1;
 	private JLabel lblScanRate2;
 	private JLabel lblMovingObjectType1;
-//	private JLabel lblPositioningParamenters;
-//	private JLabel lblPositionAlgorithm1;
-//	private JLabel lblPropertiesFile;
+	private JLabel lblPositioningParamenters;
+	private JLabel lblPositionAlgorithm1;
+	private JLabel lblPropertiesFile;
 	private JLabel lblGenerationPeriod1;
 	private JLabel lblMaximumVelocity1;
 	private JLabel lblMaximumLifeSpan1;
@@ -200,45 +183,38 @@ public class VITA_Application extends JApplet {
 	private JLabel lblStationType;
 	private JLabel lblStationParameters;
 	private JLabel lblUserConfigurationLoader;
-//	private JLabel lblselectedEntityLabel1;
+	private JLabel lblselectedEntityLabel1;
 	private JLabel lblselectedFloorLabel;
 	private JLabel lblDBIEntities;
-//	private JLabel lblInputRssiPath;
+	private JLabel lblInputRssiPath;
 
 	public static JTextArea txtConsoleArea;
 	private JTextArea positionPropertiesArea;
 
 	private JCheckBox chckbxPositiongData;
 	private JCheckBox chckbxTrajectory;
-	private JCheckBox chckbxWheelTrajectory;
 	private JCheckBox chckbxTracking;
-	private JCheckBox chckbxWheelTracking;
 	private JCheckBox chckbxPositioningDevice;
 	private JCheckBox chckbxEnvironment;
 
-//	private JScrollPane scrollPaneConsole;
-//	private JScrollPane positionPropertiesScrollPane;
+	private JScrollPane scrollPaneConsole;
+	private JScrollPane positionPropertiesScrollPane;
 	private JScrollPane scrollPanePart;
 
 	private JTabbedPane tabbedVITAPane;
-	private JTabbedPane mainTabPane;
 
 	private JComboBox<String> stationTypeComboBox;
 	private JComboBox<String> stationDistriTypeComboBox;
 	private JComboBox<String> movingObjectTypeComboBox;
-	private JComboBox<String> movingObjectTypeWheelComboBox;
 	private JComboBox<String> movObjDistributerTypeComboBox;
-	private JComboBox<String> movObjDistributerTypeWheelComboBox;
-	//	private JComboBox<String> positionAlgorithmComboBox;
+	private JComboBox<String> positionAlgorithmComboBox;
 	private JComboBox<UploadObject> fileComboBox;
-	private JComboBox<String> sparkComboBox;
 	private JComboBox<Floor> floorCombobox;
 
 	private Calendar startCalendar;
 	private Calendar endCalendar;
 
 	private MapPainter mapPainter;
-	private MapPainter mapVisualPainter;
 	private Connection connection = null;
 	private Floor chosenFloor = null;
 	private Partition selectedPart = null;
@@ -266,9 +242,9 @@ public class VITA_Application extends JApplet {
 	private HashMap<String, String> movingObjTypeMap = new HashMap<String, String>();
 	private HashMap<String, String> movObjInitMap = new HashMap<String, String>();
 	private HashMap<String, String> stationInitMap = new HashMap<String, String>();
-//	private HashMap<String, String> positionAlgorithmMap = new HashMap<String, String>();
+	private HashMap<String, String> positionAlgorithmMap = new HashMap<String, String>();
 
-//	private List<Partition> possibleConnectedPartsList;
+	private List<Partition> possibleConnectedPartsList;
 	private JLabel lblConsole;
 	private JLabel lblGenerationPeriod2;
 	private JLabel lblMovObjDistributerType2;
@@ -291,7 +267,7 @@ public class VITA_Application extends JApplet {
 
 	private void gui() {
 
-		this.setSize(new Dimension(1370, 1000));
+		this.setSize(new Dimension(1370, 870));
 		getContentPane().setLayout(null);
 
 		/*---------------------- view panel start here! ----------------------*/
@@ -303,19 +279,19 @@ public class VITA_Application extends JApplet {
 		filePanel.setBorder(null);
 		filePanel.setLayout(null);
 
-		fileComboBox = new JComboBox<UploadObject>();
-		fileComboBox.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		fileComboBox.setBackground(Color.WHITE);
-		fileComboBox.setBounds(0, 0, 430, 30);
-		filePanel.add(fileComboBox);
-		
 		btnImport = new JButton("");
 		btnImport.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnImport.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/import.png")));
 		btnImport.setBackground(Color.WHITE);
 		btnImport.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-		btnImport.setBounds(450, 0, 30, 30);
+		btnImport.setBounds(0, 0, 30, 30);
 		filePanel.add(btnImport);
+
+		fileComboBox = new JComboBox<UploadObject>();
+		fileComboBox.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		fileComboBox.setBackground(Color.WHITE);
+		fileComboBox.setBounds(45, 0, 430, 30);
+		filePanel.add(fileComboBox);
 
 		btnDeleteFile = new JButton("");
 		btnDeleteFile.setBorder(new LineBorder(new Color(0, 0, 0), 0));
@@ -326,84 +302,139 @@ public class VITA_Application extends JApplet {
 		btnDeleteFile.setBounds(480, 0, 30, 30);
 		filePanel.add(btnDeleteFile);
 
-		btnView = new JButton("");
-		btnView.setBorder(new LineBorder(new Color(0, 0, 0), 0));
-		btnView
-		.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/check.png")));
+		btnView = new JButton("View");
 		btnView.setBackground(Color.WHITE);
 		btnView.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-		btnView.setBounds(510, 0, 30, 30);
+		btnView.setBounds(555, 0, 120, 30);
 		filePanel.add(btnView);
-		
-		/*---------------------- tab panel start here! ----------------------*/
-		
-		mainTabPane = new JTabbedPane(JTabbedPane.TOP);
-		mainTabPane.setFont(new Font("Dialog", Font.ITALIC, 18));
-		mainTabPane.setBackground(Color.WHITE);
-		mainTabPane.setBounds(10, 55, 1365, 975);
-		getContentPane().add(mainTabPane);
-		
-		/*---------------------- deep learning panel start here! ----------------------*/		
-		
-		learnPanel = new JPanel();
-		learnPanel.setBackground(Color.WHITE);
-		mainTabPane.addTab("Learning", null, learnPanel, null);
-		learnPanel.setLayout(null);
-		
-		consolePanel = new JPanel();
-		consolePanel.setBounds(10, 120, 800, 800);
-		consolePanel.setBackground(Color.WHITE);
-		consolePanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		consolePanel.setLayout(null);
-		learnPanel.add(consolePanel);
-		
-		learnConfigPanel = new JPanel();
-		learnConfigPanel.setBackground(Color.WHITE);
-		learnConfigPanel.setBounds(820, 10, 540, 1000);
-		learnConfigPanel.setLayout(null);
-		learnPanel.add(learnConfigPanel);
-		
-		/*---------------------- generator panel start here! ----------------------*/		
-		
-		generatorPanel = new JPanel();
-		generatorPanel.setBackground(Color.WHITE);
-		mainTabPane.addTab("Generator", null, generatorPanel, null);
-		generatorPanel.setLayout(null);
-		
-		/*---------------------- floor panel start here! ----------------------*/
-		
-		floorPanel = new JPanel();
-		floorPanel.setBounds(10, 0, 800, 100);
-		floorPanel.setBackground(Color.WHITE);
-		floorPanel.setLayout(null);
-		generatorPanel.add(floorPanel);
-		
-		lblDBIEntities = new JLabel("Building");
+
+		btnDecompAll = new JButton("Decompose");
+		btnDecompAll.setBackground(Color.WHITE);
+		btnDecompAll.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+		btnDecompAll.setBounds(680, 0, 120, 30);
+		filePanel.add(btnDecompAll);
+
+		/*---------------------- map panel start here! ----------------------*/
+
+		mapPanel = new JPanel();
+		mapPanel.setBounds(10, 45, 800, 800);
+		getContentPane().add(mapPanel);
+		mapPanel.setBackground(Color.WHITE);
+		mapPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		mapPanel.setLayout(null);
+
+		/*---------------------- control panel start here! ----------------------*/
+
+		controlPanel = new JPanel();
+		controlPanel.setBackground(Color.WHITE);
+		controlPanel.setBounds(820, 10, 540, 835);
+		getContentPane().add(controlPanel);
+		controlPanel.setLayout(null);
+
+		/*---------------------- DBI Entities ----------------------*/
+
+		lblConsole = new JLabel("Console");
+		lblConsole.setBounds(5, 0, 160, 30);
+		controlPanel.add(lblConsole);
+		lblConsole.setForeground(new Color(74, 144, 226));
+		lblConsole.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblConsole.setBackground(Color.WHITE);
+
+		scrollPaneConsole = new JScrollPane();
+		scrollPaneConsole.setBounds(5, 30, 530, 120);
+		controlPanel.add(scrollPaneConsole);
+		scrollPaneConsole.setBorder(new LineBorder(Color.LIGHT_GRAY));
+		scrollPaneConsole.setBackground(Color.WHITE);
+		scrollPaneConsole.setWheelScrollingEnabled(true);
+
+		txtConsoleArea = new JTextArea();
+		txtConsoleArea.setFont(new Font("Dialog", Font.ITALIC, 14));
+		txtConsoleArea.setRows(6);
+		txtConsoleArea.setBackground(Color.WHITE);
+		txtConsoleArea.setSize(530, 65);
+		scrollPaneConsole.setViewportView(txtConsoleArea);
+		txtConsoleArea.setEditable(false);
+		txtConsoleArea.requestFocus();
+
+		lblDBIEntities = new JLabel("DBI Entities");
 		lblDBIEntities.setForeground(new Color(74, 144, 226));
 		lblDBIEntities.setBackground(Color.WHITE);
 		lblDBIEntities.setFont(new Font("Lucida Grande", Font.BOLD, 20));
-		lblDBIEntities.setBounds(0, 0, 180, 50);
-		floorPanel.add(lblDBIEntities);
-		
-		lblselectedFloorLabel = new JLabel("Floor: ");
+		lblDBIEntities.setBounds(5, 150, 160, 30);
+		controlPanel.add(lblDBIEntities);
+
+		dbiPanel = new JPanel();
+		dbiPanel.setBackground(Color.WHITE);
+		dbiPanel.setBorder(null);
+		dbiPanel.setBounds(5, 180, 530, 190);
+		controlPanel.add(dbiPanel);
+		dbiPanel.setLayout(null);
+
+		lblselectedFloorLabel = new JLabel("Selected Floor: ");
 		lblselectedFloorLabel.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
 		lblselectedFloorLabel.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblselectedFloorLabel.setBounds(0, 55, 50, 20);
-		floorPanel.add(lblselectedFloorLabel);
-		
+		lblselectedFloorLabel.setBounds(20, 10, 135, 20);
+		dbiPanel.add(lblselectedFloorLabel);
+
 		floorCombobox = new JComboBox<Floor>();
 		floorCombobox.setFont(new Font("Dialog", Font.PLAIN, 13));
 		floorCombobox.setBackground(Color.WHITE);
 		floorCombobox.setSize(310, 30);
-		floorCombobox.setLocation(75, 55);
-		floorPanel.add(floorCombobox);
-		
+		floorCombobox.setLocation(180, 5);
+		dbiPanel.add(floorCombobox);
+
+		btnDeleteFloor = new JButton("");
+		btnDeleteFloor.setBackground(Color.WHITE);
+		btnDeleteFloor.setBorder(new LineBorder(new Color(0, 0, 0), 0));
+		btnDeleteFloor
+				.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+		btnDeleteFloor.setBounds(500, 8, 16, 25);
+		dbiPanel.add(btnDeleteFloor);
+
+		lblselectedEntityLabel1 = new JLabel("Selected Entity ");
+		lblselectedEntityLabel1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblselectedEntityLabel1.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblselectedEntityLabel1.setBounds(20, 45, 135, 20);
+		dbiPanel.add(lblselectedEntityLabel1);
+
+		lblselectedEntityLabel2 = new JLabel("Name: ");
+		lblselectedEntityLabel2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblselectedEntityLabel2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblselectedEntityLabel2.setBounds(20, 60, 135, 20);
+		dbiPanel.add(lblselectedEntityLabel2);
+
+		txtselectedNameField = new JTextField();
+		txtselectedNameField.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtselectedNameField.setBounds(180, 50, 310, 30);
+		dbiPanel.add(txtselectedNameField);
+		txtselectedNameField.setColumns(10);
+
+		btnDeleteEntity = new JButton("");
+		btnDeleteEntity.setBorder(new LineBorder(new Color(0, 0, 0), 0));
+		btnDeleteEntity.setBackground(Color.WHITE);
+		btnDeleteEntity
+				.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+		btnDeleteEntity.setBounds(500, 53, 16, 25);
+		dbiPanel.add(btnDeleteEntity);
+
+		lblConnectedPartitions1 = new JLabel("Connected ");
+		lblConnectedPartitions1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblConnectedPartitions1.setHorizontalAlignment(SwingConstants.TRAILING);
+		dbiPanel.add(lblConnectedPartitions1);
+		lblConnectedPartitions1.setBounds(20, 90, 135, 20);
+
+		lblConnectedPartitions2 = new JLabel("Partitions: ");
+		lblConnectedPartitions2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblConnectedPartitions2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblConnectedPartitions2.setBounds(20, 105, 135, 20);
+		dbiPanel.add(lblConnectedPartitions2);
+
 		scrollPanePart = new JScrollPane();
 		scrollPanePart.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		scrollPanePart.setBackground(Color.WHITE);
-		scrollPanePart.setBounds(180, 110, 0, 0);
-		floorPanel.add(scrollPanePart);
-		
+		scrollPanePart.setBounds(180, 90, 310, 85);
+		dbiPanel.add(scrollPanePart);
+
 		connectedPartsModel = new DefaultListModel<Partition>();
 		connectedPartsList = new JList<Partition>(connectedPartsModel);
 		connectedPartsList.setBackground(Color.WHITE);
@@ -413,452 +444,186 @@ public class VITA_Application extends JApplet {
 		connectedPartsList.setSelectedIndex(0);
 		connectedPartsList.setLayoutOrientation(JList.VERTICAL);
 		connectedPartsList.setBounds(20, 20, 300, 70);
-		scrollPanePart.setViewportView(connectedPartsList);		
-		
-		/*---------------------- map panel start here! ----------------------*/
+		scrollPanePart.setViewportView(connectedPartsList);
 
-		mapPanel = new JPanel();
-		mapPanel.setBounds(10, 120, 800, 800);
-		mapPanel.setBackground(Color.WHITE);
-		mapPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		mapPanel.setLayout(null);
-		generatorPanel.add(mapPanel);
-
-		/*---------------------- control panel start here! ----------------------*/
-
-		controlPanel = new JPanel();
-		controlPanel.setBackground(Color.WHITE);
-		controlPanel.setBounds(820, 10, 540, 1000);
-		controlPanel.setLayout(null);
-		generatorPanel.add(controlPanel);
-		
-		/*---------------------- Deep Learning Modules ----------------------*/
-
-		lblConsole = new JLabel("Learning");
-		lblConsole.setBounds(5, 0, 160, 30);
-		controlPanel.add(lblConsole);
-		lblConsole.setForeground(new Color(74, 144, 226));
-		lblConsole.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblConsole.setBackground(Color.WHITE);
-		
-		dbiPanel = new JPanel();
-		dbiPanel.setBackground(Color.WHITE);
-		dbiPanel.setBorder(null);
-		dbiPanel.setBounds(5, 30, 530, 40);
-		controlPanel.add(dbiPanel);
-		dbiPanel.setLayout(null);
-		
-		lblStationParameters = new JLabel("Stored Model: ");
-		lblStationParameters.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblStationParameters.setBackground(Color.WHITE);
-		lblStationParameters.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStationParameters.setBounds(10, 10, 100, 20);
-		dbiPanel.add(lblStationParameters);
-		
-		sparkComboBox = new JComboBox<String>();
-		sparkComboBox.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		sparkComboBox.setBackground(Color.WHITE);
-		sparkComboBox.setBounds(130, 10, 270, 30);
-		dbiPanel.add(sparkComboBox);
-		
-		btnImportSpark = new JButton("");
-		btnImportSpark.setBorder(new LineBorder(new Color(0, 0, 0), 0));
-		btnImportSpark
-		.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/import.png")));
-		btnImportSpark.setBackground(Color.WHITE);
-		btnImportSpark.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-		btnImportSpark.setBounds(420, 10, 30, 30);		
-		dbiPanel.add(btnImportSpark);
-		
-		btnStartLearning = new JButton("");
-		btnStartLearning.setBorder(new LineBorder(new Color(0, 0, 0), 0));
-		btnStartLearning
-		.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/check.png")));
-		btnStartLearning.setBackground(Color.WHITE);
-		btnStartLearning.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-		btnStartLearning.setBounds(450, 10, 30, 30);
-		dbiPanel.add(btnStartLearning);		
-		
-		infraPanel = new JPanel();
-		infraPanel.setBackground(Color.WHITE);
-		infraPanel.setBorder(null);
-		infraPanel.setBounds(5, 70, 530, 380);
-		controlPanel.add(infraPanel);
-		infraPanel.setLayout(null);
-
-		lblDBIEntities = new JLabel("Infrastructure");
-		lblDBIEntities.setForeground(new Color(74, 144, 226));
-		lblDBIEntities.setBackground(Color.WHITE);
-		lblDBIEntities.setFont(new Font("Lucida Grande", Font.BOLD, 20));
-		lblDBIEntities.setBounds(5, 10, 160, 30);
-		infraPanel.add(lblDBIEntities);
-		
-		// Infrastructure Layer start here!
-
-		lblStationParameters = new JLabel("Export: ");
-		lblStationParameters.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblStationParameters.setBackground(Color.WHITE);
-		lblStationParameters.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStationParameters.setBounds(10, 45, 135, 20);
-		infraPanel.add(lblStationParameters);
-
-		chckbxPositioningDevice = new JCheckBox("Positioning Device");
-		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxPositioningDevice.setBackground(Color.WHITE);
-		chckbxPositioningDevice.setBounds(300, 45, 190, 20);
-		chckbxPositioningDevice.setSelected(true);
-		infraPanel.add(chckbxPositioningDevice);
-
-		chckbxEnvironment = new JCheckBox("Environment");
-		chckbxEnvironment.setSelected(true);
-		chckbxEnvironment.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxEnvironment.setBackground(Color.WHITE);
-		chckbxEnvironment.setBounds(170, 45, 150, 20);
-		chckbxEnvironment.setSelected(true);
-		infraPanel.add(chckbxEnvironment);
-
-		lblStationType = new JLabel("Device Type: ");
-		lblStationType.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblStationType.setBackground(Color.WHITE);
-		lblStationType.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStationType.setBounds(10, 80, 135, 20);
-		infraPanel.add(lblStationType);
-
-		stationTypeComboBox = new JComboBox<String>();
-		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		stationTypeComboBox.setBackground(Color.WHITE);
-		stationTypeComboBox.setBounds(170, 80, 310, 30);
-		infraPanel.add(stationTypeComboBox);
-
-		lblStationDistributerType1 = new JLabel("Deployment ");
-		lblStationDistributerType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblStationDistributerType1.setBackground(Color.WHITE);
-		lblStationDistributerType1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStationDistributerType1.setBounds(10, 115, 135, 20);
-		infraPanel.add(lblStationDistributerType1);
-
-		lblStationDistributerType2 = new JLabel("Model: ");
-		lblStationDistributerType2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblStationDistributerType2.setBackground(Color.WHITE);
-		lblStationDistributerType2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStationDistributerType2.setBounds(10, 130, 135, 20);
-		infraPanel.add(lblStationDistributerType2);
-
-		stationDistriTypeComboBox = new JComboBox<String>();
-		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		stationDistriTypeComboBox.setBackground(Color.WHITE);
-		stationDistriTypeComboBox.setBounds(170, 120, 310, 30);
-		infraPanel.add(stationDistriTypeComboBox);
-
-		lblMaxNumberIn = new JLabel("Device Number: ");
-		lblMaxNumberIn.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaxNumberIn.setBackground(Color.WHITE);
-		lblMaxNumberIn.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaxNumberIn.setBounds(10, 180, 135, 20);
-		infraPanel.add(lblMaxNumberIn);
-
-		txtStationMaxNumInPart = new JTextField();
-		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtStationMaxNumInPart.setBackground(Color.WHITE);
-		txtStationMaxNumInPart.setName("");
-		txtStationMaxNumInPart.setColumns(10);
-		txtStationMaxNumInPart.setBounds(170, 160, 310, 30);
-		infraPanel.add(txtStationMaxNumInPart);
-
-		lblCommentStationMaxNumInPart = new JLabel("*maximum number in a partition");
-		lblCommentStationMaxNumInPart.setForeground(Color.DARK_GRAY);
-		lblCommentStationMaxNumInPart.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblCommentStationMaxNumInPart.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblCommentStationMaxNumInPart.setBounds(280, 190, 200, 15);
-		infraPanel.add(lblCommentStationMaxNumInPart);
-
-		txtStationMaxNumInArea = new JTextField();
-		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtStationMaxNumInArea.setBackground(Color.WHITE);
-		txtStationMaxNumInArea.setName("");
-		txtStationMaxNumInArea.setColumns(10);
-		txtStationMaxNumInArea.setBounds(170, 205, 310, 30);
-		infraPanel.add(txtStationMaxNumInArea);
-
-		lblmaximumNumberIn = new JLabel("*maximum number in 100 m^2");
-		lblmaximumNumberIn.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblmaximumNumberIn.setForeground(Color.DARK_GRAY);
-		lblmaximumNumberIn.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblmaximumNumberIn.setBounds(280, 235, 200, 15);
-		infraPanel.add(lblmaximumNumberIn);
-
-		lblScanRange1 = new JLabel("Detection Range ");
-		lblScanRange1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblScanRange1.setBackground(Color.WHITE);
-		lblScanRange1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblScanRange1.setBounds(10, 250, 135, 20);
-		infraPanel.add(lblScanRange1);
-
-		lblScanRange2 = new JLabel("(meter): ");
-		lblScanRange2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblScanRange2.setBackground(Color.WHITE);
-		lblScanRange2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblScanRange2.setBounds(10, 265, 135, 20);
-		infraPanel.add(lblScanRange2);
-
-		txtScanRange = new JTextField();
-		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtScanRange.setBackground(Color.WHITE);
-		txtScanRange.setText((String) null);
-		txtScanRange.setColumns(10);
-		txtScanRange.setBounds(170, 255, 310, 30);
-		infraPanel.add(txtScanRange);
-
-		lblScanRate1 = new JLabel("Detection ");
-		lblScanRate1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblScanRate1.setBackground(Color.WHITE);
-		lblScanRate1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblScanRate1.setBounds(10, 290, 135, 20);
-		infraPanel.add(lblScanRate1);
-
-		lblScanRate2 = new JLabel("Frequency (ms): ");
-		lblScanRate2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblScanRate2.setBackground(Color.WHITE);
-		lblScanRate2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblScanRate2.setBounds(10, 305, 135, 20);
-		infraPanel.add(lblScanRate2);
-
-		txtScanRate = new JTextField();
-		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtScanRate.setBackground(Color.WHITE);
-		txtScanRate.setText((String) null);
-		txtScanRate.setColumns(10);
-		txtScanRate.setBounds(170, 295, 310, 30);
-		infraPanel.add(txtScanRate);
-
-		btnStationGenerate = new JButton("Generate Device");
-		btnStationGenerate.setFont(new Font("Dialog", Font.BOLD, 14));
-		btnStationGenerate.setBackground(Color.WHITE);
-		btnStationGenerate.setBounds(320, 340, 160, 40);
-		infraPanel.add(btnStationGenerate);
+		possibleConnectedPartsList = new ArrayList<>();
 
 		/*---------------------- User Configuration----------------------*/
 
-		lblUserConfigurationLoader = new JLabel("Generator");
+		lblUserConfigurationLoader = new JLabel("User Configuration");
 		lblUserConfigurationLoader.setForeground(new Color(74, 144, 226));
 		lblUserConfigurationLoader.setBackground(Color.WHITE);
 		lblUserConfigurationLoader.setFont(new Font("Lucida Grande", Font.BOLD, 20));
-		lblUserConfigurationLoader.setBounds(5, 450, 260, 30);
+		lblUserConfigurationLoader.setBounds(5, 370, 260, 30);
 		controlPanel.add(lblUserConfigurationLoader);
 
 		uclPanel = new JPanel();
 		uclPanel.setBackground(Color.WHITE);
 		uclPanel.setLayout(null);
 		uclPanel.setBorder(null);
-		uclPanel.setBounds(5, 490, 530, 380);
+		uclPanel.setBounds(5, 400, 530, 440);
 		controlPanel.add(uclPanel);
 
 		tabbedVITAPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedVITAPane.setFont(new Font("Dialog", Font.ITALIC, 18));
 		tabbedVITAPane.setBackground(Color.WHITE);
-		tabbedVITAPane.setBounds(0, 0, 530, 370);
+		tabbedVITAPane.setBounds(0, 0, 530, 440);
 		uclPanel.add(tabbedVITAPane);
 
-		// Normal Person
+		// Infrastructure Layer start here!
+
 		stationPanel = new JPanel();
 		stationPanel.setBackground(Color.WHITE);
-		tabbedVITAPane.addTab("Normal", null, stationPanel, null);
+		tabbedVITAPane.addTab("Infrastrcuture", null, stationPanel, null);
 		stationPanel.setLayout(null);
-		
-		lblMovingObjectParamenters = new JLabel("Export: ");
-		lblMovingObjectParamenters.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMovingObjectParamenters.setBackground(Color.WHITE);
-		lblMovingObjectParamenters.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMovingObjectParamenters.setBounds(10, 10, 135, 20);
-		stationPanel.add(lblMovingObjectParamenters);
 
-		chckbxTrajectory = new JCheckBox("Trajectory");
-		chckbxTrajectory.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxTrajectory.setBackground(Color.WHITE);
-		chckbxTrajectory.setBounds(170, 10, 120, 20);
-		chckbxTrajectory.setSelected(true);
-		MovingObj.setTrajectoryFlag(true);
-		stationPanel.add(chckbxTrajectory);
+		lblStationParameters = new JLabel("Export: ");
+		lblStationParameters.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblStationParameters.setBackground(Color.WHITE);
+		lblStationParameters.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStationParameters.setBounds(10, 10, 135, 20);
+		stationPanel.add(lblStationParameters);
 
-		chckbxTracking = new JCheckBox("Raw RSSI");
-		chckbxTracking.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxTracking.setBackground(Color.WHITE);
-		chckbxTracking.setBounds(300, 10, 140, 20);
-		chckbxTracking.setSelected(true);
-		MovingObj.setTrackingFlag(true);
-		stationPanel.add(chckbxTracking);
+		chckbxPositioningDevice = new JCheckBox("Positioning Device");
+		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
+		chckbxPositioningDevice.setBackground(Color.WHITE);
+		chckbxPositioningDevice.setBounds(300, 10, 190, 20);
+		chckbxPositioningDevice.setSelected(true);
+		stationPanel.add(chckbxPositioningDevice);
 
-		lblMovingObjectType1 = new JLabel("Moving Object ");
-		lblMovingObjectType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMovingObjectType1.setBackground(Color.WHITE);
-		lblMovingObjectType1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMovingObjectType1.setBounds(10, 45, 135, 20);
-		stationPanel.add(lblMovingObjectType1);
+		chckbxEnvironment = new JCheckBox("Environment");
+		chckbxEnvironment.setSelected(true);
+		chckbxEnvironment.setFont(new Font("Dialog", Font.PLAIN, 14));
+		chckbxEnvironment.setBackground(Color.WHITE);
+		chckbxEnvironment.setBounds(170, 10, 150, 20);
+		chckbxEnvironment.setSelected(true);
+		stationPanel.add(chckbxEnvironment);
 
-		lblMovingObjectType2 = new JLabel("Type: ");
-		lblMovingObjectType2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMovingObjectType2.setBackground(Color.WHITE);
-		lblMovingObjectType2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMovingObjectType2.setBounds(10, 60, 135, 20);
-		stationPanel.add(lblMovingObjectType2);
+		lblStationType = new JLabel("Device Type: ");
+		lblStationType.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblStationType.setBackground(Color.WHITE);
+		lblStationType.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStationType.setBounds(10, 45, 135, 20);
+		stationPanel.add(lblStationType);
 
-		movingObjectTypeComboBox = new JComboBox<String>();
-		movingObjectTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		movingObjectTypeComboBox.setBackground(Color.WHITE);
-		movingObjectTypeComboBox.setBounds(170, 50, 310, 30);
-		stationPanel.add(movingObjectTypeComboBox);
+		stationTypeComboBox = new JComboBox<String>();
+		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
+		stationTypeComboBox.setBackground(Color.WHITE);
+		stationTypeComboBox.setBounds(170, 45, 310, 30);
+		stationPanel.add(stationTypeComboBox);
 
-		lblMovObjDistributerType1 = new JLabel("Initial ");
-		lblMovObjDistributerType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMovObjDistributerType1.setBackground(Color.WHITE);
-		lblMovObjDistributerType1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMovObjDistributerType1.setBounds(10, 90, 135, 20);
-		stationPanel.add(lblMovObjDistributerType1);
+		lblStationDistributerType1 = new JLabel("Deployment ");
+		lblStationDistributerType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblStationDistributerType1.setBackground(Color.WHITE);
+		lblStationDistributerType1.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStationDistributerType1.setBounds(10, 80, 135, 20);
+		stationPanel.add(lblStationDistributerType1);
 
-		lblMovObjDistributerType2 = new JLabel("Distribution: ");
-		lblMovObjDistributerType2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMovObjDistributerType2.setBackground(Color.WHITE);
-		lblMovObjDistributerType2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMovObjDistributerType2.setBounds(10, 105, 135, 20);
-		stationPanel.add(lblMovObjDistributerType2);
+		lblStationDistributerType2 = new JLabel("Model: ");
+		lblStationDistributerType2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblStationDistributerType2.setBackground(Color.WHITE);
+		lblStationDistributerType2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblStationDistributerType2.setBounds(10, 95, 135, 20);
+		stationPanel.add(lblStationDistributerType2);
 
-		movObjDistributerTypeComboBox = new JComboBox<String>();
-		movObjDistributerTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		movObjDistributerTypeComboBox.setBackground(Color.WHITE);
-		movObjDistributerTypeComboBox.setBounds(170, 85, 310, 30);
-		stationPanel.add(movObjDistributerTypeComboBox);
+		stationDistriTypeComboBox = new JComboBox<String>();
+		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
+		stationDistriTypeComboBox.setBackground(Color.WHITE);
+		stationDistriTypeComboBox.setBounds(170, 85, 310, 30);
+		stationPanel.add(stationDistriTypeComboBox);
 
-		lblMaxMovObjNumInPart = new JLabel("Object Number: ");
-		lblMaxMovObjNumInPart.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaxMovObjNumInPart.setBackground(Color.WHITE);
-		lblMaxMovObjNumInPart.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaxMovObjNumInPart.setBounds(10, 135, 135, 20);
-		stationPanel.add(lblMaxMovObjNumInPart);
+		lblMaxNumberIn = new JLabel("Device Number: ");
+		lblMaxNumberIn.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblMaxNumberIn.setBackground(Color.WHITE);
+		lblMaxNumberIn.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblMaxNumberIn.setBounds(10, 145, 135, 20);
+		stationPanel.add(lblMaxNumberIn);
 
-		txtMaxMovObjNumInPart = new JTextField();
-		txtMaxMovObjNumInPart.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaxMovObjNumInPart.setBackground(Color.WHITE);
-		txtMaxMovObjNumInPart.setColumns(10);
-		txtMaxMovObjNumInPart.setBounds(170, 125, 310, 30);
-		stationPanel.add(txtMaxMovObjNumInPart);
+		txtStationMaxNumInPart = new JTextField();
+		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtStationMaxNumInPart.setBackground(Color.WHITE);
+		txtStationMaxNumInPart.setName("");
+		txtStationMaxNumInPart.setColumns(10);
+		txtStationMaxNumInPart.setBounds(170, 125, 310, 30);
+		stationPanel.add(txtStationMaxNumInPart);
 
-		lblCommentsMaxMovObjNumInPart = new JLabel("*maximum number in a partition");
-		lblCommentsMaxMovObjNumInPart.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblCommentsMaxMovObjNumInPart.setForeground(Color.DARK_GRAY);
-		lblCommentsMaxMovObjNumInPart.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblCommentsMaxMovObjNumInPart.setBounds(280, 155, 200, 15);
-		stationPanel.add(lblCommentsMaxMovObjNumInPart);
+		lblCommentStationMaxNumInPart = new JLabel("*maximum number in a partition");
+		lblCommentStationMaxNumInPart.setForeground(Color.DARK_GRAY);
+		lblCommentStationMaxNumInPart.setFont(new Font("Dialog", Font.ITALIC, 12));
+		lblCommentStationMaxNumInPart.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblCommentStationMaxNumInPart.setBounds(280, 155, 200, 15);
+		stationPanel.add(lblCommentStationMaxNumInPart);
 
-		lblMaximumLifeSpan1 = new JLabel("Maximum Life ");
-		lblMaximumLifeSpan1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaximumLifeSpan1.setBackground(Color.WHITE);
-		lblMaximumLifeSpan1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaximumLifeSpan1.setBounds(10, 170, 135, 20);
-		stationPanel.add(lblMaximumLifeSpan1);
+		txtStationMaxNumInArea = new JTextField();
+		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtStationMaxNumInArea.setBackground(Color.WHITE);
+		txtStationMaxNumInArea.setName("");
+		txtStationMaxNumInArea.setColumns(10);
+		txtStationMaxNumInArea.setBounds(170, 170, 310, 30);
+		stationPanel.add(txtStationMaxNumInArea);
 
-		lblMaximumLifeSpan2 = new JLabel("Span (s):  ");
-		lblMaximumLifeSpan2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaximumLifeSpan2.setBackground(Color.WHITE);
-		lblMaximumLifeSpan2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaximumLifeSpan2.setBounds(10, 185, 135, 20);
-		stationPanel.add(lblMaximumLifeSpan2);
+		lblmaximumNumberIn = new JLabel("*maximum number in 100 m^2");
+		lblmaximumNumberIn.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblmaximumNumberIn.setForeground(Color.DARK_GRAY);
+		lblmaximumNumberIn.setFont(new Font("Dialog", Font.ITALIC, 12));
+		lblmaximumNumberIn.setBounds(280, 200, 200, 15);
+		stationPanel.add(lblmaximumNumberIn);
 
-		txtMaximumLifeSpan = new JTextField();
-		txtMaximumLifeSpan.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaximumLifeSpan.setBackground(Color.WHITE);
-		txtMaximumLifeSpan.setText((String) null);
-		txtMaximumLifeSpan.setColumns(10);
-		txtMaximumLifeSpan.setBounds(170, 175, 310, 30);
-		stationPanel.add(txtMaximumLifeSpan);
+		lblScanRange1 = new JLabel("Detection Range ");
+		lblScanRange1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblScanRange1.setBackground(Color.WHITE);
+		lblScanRange1.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblScanRange1.setBounds(10, 215, 135, 20);
+		stationPanel.add(lblScanRange1);
 
-		lblMaximumVelocity1 = new JLabel("Maximum Speed ");
-		lblMaximumVelocity1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaximumVelocity1.setBackground(Color.WHITE);
-		lblMaximumVelocity1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaximumVelocity1.setBounds(10, 225, 135, 20);
-		stationPanel.add(lblMaximumVelocity1);
+		lblScanRange2 = new JLabel("(meter): ");
+		lblScanRange2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblScanRange2.setBackground(Color.WHITE);
+		lblScanRange2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblScanRange2.setBounds(10, 230, 135, 20);
+		stationPanel.add(lblScanRange2);
 
-		lblMaximumVelocity2 = new JLabel(" (m/ms): ");
-		lblMaximumVelocity2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblMaximumVelocity2.setBackground(Color.WHITE);
-		lblMaximumVelocity2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMaximumVelocity2.setBounds(10, 240, 135, 20);
-		stationPanel.add(lblMaximumVelocity2);
+		txtScanRange = new JTextField();
+		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtScanRange.setBackground(Color.WHITE);
+		txtScanRange.setText((String) null);
+		txtScanRange.setColumns(10);
+		txtScanRange.setBounds(170, 220, 310, 30);
+		stationPanel.add(txtScanRange);
 
-		txtMaxStepLength = new JTextField();
-		txtMaxStepLength.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaxStepLength.setBackground(Color.WHITE);
-		txtMaxStepLength.setColumns(10);
-		txtMaxStepLength.setBounds(170, 225, 145, 30);
-		stationPanel.add(txtMaxStepLength);
+		lblScanRate1 = new JLabel("Detection ");
+		lblScanRate1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblScanRate1.setBackground(Color.WHITE);
+		lblScanRate1.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblScanRate1.setBounds(10, 255, 135, 20);
+		stationPanel.add(lblScanRate1);
 
-		lblmaxStepLength = new JLabel("*max step length");
-		lblmaxStepLength.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblmaxStepLength.setForeground(Color.DARK_GRAY);
-		lblmaxStepLength.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblmaxStepLength.setBounds(195, 255, 120, 15);
-		stationPanel.add(lblmaxStepLength);
+		lblScanRate2 = new JLabel("Frequency (ms): ");
+		lblScanRate2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblScanRate2.setBackground(Color.WHITE);
+		lblScanRate2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblScanRate2.setBounds(10, 270, 135, 20);
+		stationPanel.add(lblScanRate2);
 
-		txtMoveRate = new JTextField();
-		txtMoveRate.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMoveRate.setBackground(Color.WHITE);
-		txtMoveRate.setColumns(10);
-		txtMoveRate.setBounds(335, 225, 145, 30);
-		stationPanel.add(txtMoveRate);
+		txtScanRate = new JTextField();
+		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtScanRate.setBackground(Color.WHITE);
+		txtScanRate.setText((String) null);
+		txtScanRate.setColumns(10);
+		txtScanRate.setBounds(170, 260, 310, 30);
+		stationPanel.add(txtScanRate);
 
-		lblmoveRate = new JLabel("*move rate");
-		lblmoveRate.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblmoveRate.setForeground(Color.DARK_GRAY);
-		lblmoveRate.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblmoveRate.setBounds(360, 255, 120, 15);
-		stationPanel.add(lblmoveRate);
+		btnStationGenerate = new JButton("Generate Device");
+		btnStationGenerate.setFont(new Font("Dialog", Font.BOLD, 14));
+		btnStationGenerate.setBackground(Color.WHITE);
+		btnStationGenerate.setBounds(320, 340, 160, 40);
+		stationPanel.add(btnStationGenerate);
 
-		lblGenerationPeriod1 = new JLabel("Generation ");
-		lblGenerationPeriod1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblGenerationPeriod1.setBackground(Color.WHITE);
-		lblGenerationPeriod1.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblGenerationPeriod1.setBounds(10, 275, 135, 20);
-		stationPanel.add(lblGenerationPeriod1);
+		// Moving Object Layer start here!
 
-		lblGenerationPeriod2 = new JLabel("Period: ");
-		lblGenerationPeriod2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
-		lblGenerationPeriod2.setBackground(Color.WHITE);
-		lblGenerationPeriod2.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblGenerationPeriod2.setBounds(10, 290, 135, 20);
-		stationPanel.add(lblGenerationPeriod2);
-
-		txtStartTime = new JTextField();
-		txtStartTime.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtStartTime.setBackground(Color.WHITE);
-		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(170, 275, 145, 30);
-		stationPanel.add(txtStartTime);
-
-		lblstartTime = new JLabel("*start time");
-		lblstartTime.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblstartTime.setForeground(Color.DARK_GRAY);
-		lblstartTime.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblstartTime.setBounds(195, 305, 120, 15);
-		stationPanel.add(lblstartTime);
-
-		txtEndTime = new JTextField();
-		txtEndTime.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtEndTime.setBackground(Color.WHITE);
-		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(335, 275, 145, 30);
-		stationPanel.add(txtEndTime);
-
-		lblendTime = new JLabel("*end time");
-		lblendTime.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblendTime.setForeground(Color.DARK_GRAY);
-		lblendTime.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblendTime.setBounds(360, 305, 120, 15);
-		stationPanel.add(lblendTime);		
-		
-		// Wheelchair Person
 		movingObjectPanel = new JPanel();
 		movingObjectPanel.setBackground(Color.WHITE);
-		tabbedVITAPane.addTab("Wheelchair", null, movingObjectPanel, null);
+		tabbedVITAPane.addTab("Moving Object", null, movingObjectPanel, null);
 		movingObjectPanel.setLayout(null);
 
 		lblMovingObjectParamenters = new JLabel("Export: ");
@@ -868,21 +633,21 @@ public class VITA_Application extends JApplet {
 		lblMovingObjectParamenters.setBounds(10, 10, 135, 20);
 		movingObjectPanel.add(lblMovingObjectParamenters);
 
-		chckbxWheelTrajectory = new JCheckBox("Trajectory");
-		chckbxWheelTrajectory.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxWheelTrajectory.setBackground(Color.WHITE);
-		chckbxWheelTrajectory.setBounds(170, 10, 120, 20);
-		chckbxWheelTrajectory.setSelected(true);
+		chckbxTrajectory = new JCheckBox("Trajectory");
+		chckbxTrajectory.setFont(new Font("Dialog", Font.PLAIN, 14));
+		chckbxTrajectory.setBackground(Color.WHITE);
+		chckbxTrajectory.setBounds(170, 10, 120, 20);
+		chckbxTrajectory.setSelected(true);
 		MovingObj.setTrajectoryFlag(true);
-		movingObjectPanel.add(chckbxWheelTrajectory);
+		movingObjectPanel.add(chckbxTrajectory);
 
-		chckbxWheelTracking = new JCheckBox("Raw RSSI");
-		chckbxWheelTracking.setFont(new Font("Dialog", Font.PLAIN, 14));
-		chckbxWheelTracking.setBackground(Color.WHITE);
-		chckbxWheelTracking.setBounds(300, 10, 140, 20);
-		chckbxWheelTracking.setSelected(true);
+		chckbxTracking = new JCheckBox("Raw RSSI");
+		chckbxTracking.setFont(new Font("Dialog", Font.PLAIN, 14));
+		chckbxTracking.setBackground(Color.WHITE);
+		chckbxTracking.setBounds(300, 10, 140, 20);
+		chckbxTracking.setSelected(true);
 		MovingObj.setTrackingFlag(true);
-		movingObjectPanel.add(chckbxWheelTracking);
+		movingObjectPanel.add(chckbxTracking);
 
 		lblMovingObjectType1 = new JLabel("Moving Object ");
 		lblMovingObjectType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
@@ -898,11 +663,11 @@ public class VITA_Application extends JApplet {
 		lblMovingObjectType2.setBounds(10, 60, 135, 20);
 		movingObjectPanel.add(lblMovingObjectType2);
 
-		movingObjectTypeWheelComboBox = new JComboBox<String>();
-		movingObjectTypeWheelComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		movingObjectTypeWheelComboBox.setBackground(Color.WHITE);
-		movingObjectTypeWheelComboBox.setBounds(170, 50, 310, 30);
-		movingObjectPanel.add(movingObjectTypeWheelComboBox);
+		movingObjectTypeComboBox = new JComboBox<String>();
+		movingObjectTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
+		movingObjectTypeComboBox.setBackground(Color.WHITE);
+		movingObjectTypeComboBox.setBounds(170, 50, 310, 30);
+		movingObjectPanel.add(movingObjectTypeComboBox);
 
 		lblMovObjDistributerType1 = new JLabel("Initial ");
 		lblMovObjDistributerType1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
@@ -918,11 +683,11 @@ public class VITA_Application extends JApplet {
 		lblMovObjDistributerType2.setBounds(10, 105, 135, 20);
 		movingObjectPanel.add(lblMovObjDistributerType2);
 
-		movObjDistributerTypeWheelComboBox = new JComboBox<String>();
-		movObjDistributerTypeWheelComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
-		movObjDistributerTypeWheelComboBox.setBackground(Color.WHITE);
-		movObjDistributerTypeWheelComboBox.setBounds(170, 85, 310, 30);
-		movingObjectPanel.add(movObjDistributerTypeWheelComboBox);
+		movObjDistributerTypeComboBox = new JComboBox<String>();
+		movObjDistributerTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
+		movObjDistributerTypeComboBox.setBackground(Color.WHITE);
+		movObjDistributerTypeComboBox.setBounds(170, 85, 310, 30);
+		movingObjectPanel.add(movObjDistributerTypeComboBox);
 
 		lblMaxMovObjNumInPart = new JLabel("Object Number: ");
 		lblMaxMovObjNumInPart.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
@@ -931,12 +696,12 @@ public class VITA_Application extends JApplet {
 		lblMaxMovObjNumInPart.setBounds(10, 135, 135, 20);
 		movingObjectPanel.add(lblMaxMovObjNumInPart);
 
-		txtMaxWheelMovObjNumInPart = new JTextField();
-		txtMaxWheelMovObjNumInPart.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaxWheelMovObjNumInPart.setBackground(Color.WHITE);
-		txtMaxWheelMovObjNumInPart.setColumns(10);
-		txtMaxWheelMovObjNumInPart.setBounds(170, 125, 310, 30);
-		movingObjectPanel.add(txtMaxWheelMovObjNumInPart);
+		txtMaxMovObjNumInPart = new JTextField();
+		txtMaxMovObjNumInPart.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtMaxMovObjNumInPart.setBackground(Color.WHITE);
+		txtMaxMovObjNumInPart.setColumns(10);
+		txtMaxMovObjNumInPart.setBounds(170, 125, 310, 30);
+		movingObjectPanel.add(txtMaxMovObjNumInPart);
 
 		lblCommentsMaxMovObjNumInPart = new JLabel("*maximum number in a partition");
 		lblCommentsMaxMovObjNumInPart.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -959,13 +724,13 @@ public class VITA_Application extends JApplet {
 		lblMaximumLifeSpan2.setBounds(10, 185, 135, 20);
 		movingObjectPanel.add(lblMaximumLifeSpan2);
 
-		txtMaximumLifeSpanWheel = new JTextField();
-		txtMaximumLifeSpanWheel.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaximumLifeSpanWheel.setBackground(Color.WHITE);
-		txtMaximumLifeSpanWheel.setText((String) null);
-		txtMaximumLifeSpanWheel.setColumns(10);
-		txtMaximumLifeSpanWheel.setBounds(170, 175, 310, 30);
-		movingObjectPanel.add(txtMaximumLifeSpanWheel);
+		txtMaximumLifeSpan = new JTextField();
+		txtMaximumLifeSpan.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtMaximumLifeSpan.setBackground(Color.WHITE);
+		txtMaximumLifeSpan.setText((String) null);
+		txtMaximumLifeSpan.setColumns(10);
+		txtMaximumLifeSpan.setBounds(170, 175, 310, 30);
+		movingObjectPanel.add(txtMaximumLifeSpan);
 
 		lblMaximumVelocity1 = new JLabel("Maximum Speed ");
 		lblMaximumVelocity1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
@@ -981,12 +746,12 @@ public class VITA_Application extends JApplet {
 		lblMaximumVelocity2.setBounds(10, 240, 135, 20);
 		movingObjectPanel.add(lblMaximumVelocity2);
 
-		txtMaxStepLengthWheel = new JTextField();
-		txtMaxStepLengthWheel.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMaxStepLengthWheel.setBackground(Color.WHITE);
-		txtMaxStepLengthWheel.setColumns(10);
-		txtMaxStepLengthWheel.setBounds(170, 225, 145, 30);
-		movingObjectPanel.add(txtMaxStepLengthWheel);
+		txtMaxStepLength = new JTextField();
+		txtMaxStepLength.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtMaxStepLength.setBackground(Color.WHITE);
+		txtMaxStepLength.setColumns(10);
+		txtMaxStepLength.setBounds(170, 225, 145, 30);
+		movingObjectPanel.add(txtMaxStepLength);
 
 		lblmaxStepLength = new JLabel("*max step length");
 		lblmaxStepLength.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -995,12 +760,12 @@ public class VITA_Application extends JApplet {
 		lblmaxStepLength.setBounds(195, 255, 120, 15);
 		movingObjectPanel.add(lblmaxStepLength);
 
-		txtMoveRateWheel = new JTextField();
-		txtMoveRateWheel.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtMoveRateWheel.setBackground(Color.WHITE);
-		txtMoveRateWheel.setColumns(10);
-		txtMoveRateWheel.setBounds(335, 225, 145, 30);
-		movingObjectPanel.add(txtMoveRateWheel);
+		txtMoveRate = new JTextField();
+		txtMoveRate.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtMoveRate.setBackground(Color.WHITE);
+		txtMoveRate.setColumns(10);
+		txtMoveRate.setBounds(335, 225, 145, 30);
+		movingObjectPanel.add(txtMoveRate);
 
 		lblmoveRate = new JLabel("*move rate");
 		lblmoveRate.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -1023,12 +788,12 @@ public class VITA_Application extends JApplet {
 		lblGenerationPeriod2.setBounds(10, 290, 135, 20);
 		movingObjectPanel.add(lblGenerationPeriod2);
 
-		txtStartTimeWheel = new JTextField();
-		txtStartTimeWheel.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtStartTimeWheel.setBackground(Color.WHITE);
-		txtStartTimeWheel.setColumns(10);
-		txtStartTimeWheel.setBounds(170, 275, 145, 30);
-		movingObjectPanel.add(txtStartTimeWheel);
+		txtStartTime = new JTextField();
+		txtStartTime.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtStartTime.setBackground(Color.WHITE);
+		txtStartTime.setColumns(10);
+		txtStartTime.setBounds(170, 275, 145, 30);
+		movingObjectPanel.add(txtStartTime);
 
 		lblstartTime = new JLabel("*start time");
 		lblstartTime.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -1037,12 +802,12 @@ public class VITA_Application extends JApplet {
 		lblstartTime.setBounds(195, 305, 120, 15);
 		movingObjectPanel.add(lblstartTime);
 
-		txtEndTimeWheel = new JTextField();
-		txtEndTimeWheel.setFont(new Font("Dialog", Font.PLAIN, 13));
-		txtEndTimeWheel.setBackground(Color.WHITE);
-		txtEndTimeWheel.setColumns(10);
-		txtEndTimeWheel.setBounds(335, 275, 145, 30);
-		movingObjectPanel.add(txtEndTimeWheel);
+		txtEndTime = new JTextField();
+		txtEndTime.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtEndTime.setBackground(Color.WHITE);
+		txtEndTime.setColumns(10);
+		txtEndTime.setBounds(335, 275, 145, 30);
+		movingObjectPanel.add(txtEndTime);
 
 		lblendTime = new JLabel("*end time");
 		lblendTime.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -1050,12 +815,10 @@ public class VITA_Application extends JApplet {
 		lblendTime.setFont(new Font("Dialog", Font.ITALIC, 12));
 		lblendTime.setBounds(360, 305, 120, 15);
 		movingObjectPanel.add(lblendTime);
-		
-		//Button Layer start here!
 
 		playPanel = new JPanel();
 		playPanel.setBackground(Color.WHITE);
-		playPanel.setBounds(40, 875, 460, 40);
+		playPanel.setBounds(20, 340, 460, 40);
 		movingObjectPanel.add(playPanel);
 		playPanel.setLayout(null);
 
@@ -1082,25 +845,85 @@ public class VITA_Application extends JApplet {
 		btnSnapShot.setBackground(Color.WHITE);
 		btnSnapShot.setBounds(348, 0, 100, 40);
 		playPanel.add(btnSnapShot);
-		controlPanel.add(playPanel);
-		
-		/*---------------------- visualization panel start here! ----------------------*/		
-		
-		visualPanel = new JPanel();
-		visualPanel.setBackground(Color.WHITE);
-		mainTabPane.addTab("Visualization", null, visualPanel, null);
-		visualPanel.setLayout(null);
-		
-		/*---------------------- map panel start here! ----------------------*/
 
-		mapVisualPanel = new JPanel();
-		mapVisualPanel.setBounds(10, 120, 800, 800);
-//		getContentPane().add(mapPanel);
-		mapVisualPanel.setBackground(Color.WHITE);
-		mapVisualPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		mapVisualPanel.setLayout(null);
-		visualPanel.add(mapVisualPanel);
-		
+		// Positioning Layer start here!
+
+		positionAlgPanel = new JPanel();
+		positionAlgPanel.setBackground(Color.WHITE);
+		tabbedVITAPane.addTab("Positioning", null, positionAlgPanel, null);
+		positionAlgPanel.setLayout(null);
+
+		lblPositioningParamenters = new JLabel("Export: ");
+		lblPositioningParamenters.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblPositioningParamenters.setBackground(Color.WHITE);
+		lblPositioningParamenters.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPositioningParamenters.setBounds(10, 10, 135, 20);
+		positionAlgPanel.add(lblPositioningParamenters);
+
+		chckbxPositiongData = new JCheckBox("Positioning Data");
+		chckbxPositiongData.setFont(new Font("Dialog", Font.PLAIN, 14));
+		chckbxPositiongData.setBackground(Color.WHITE);
+		chckbxPositiongData.setBounds(170, 10, 160, 20);
+		chckbxPositiongData.setSelected(true);
+		positionAlgPanel.add(chckbxPositiongData);
+
+		lblPositionAlgorithm1 = new JLabel("Positioning ");
+		lblPositionAlgorithm1.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblPositionAlgorithm1.setBackground(Color.WHITE);
+		lblPositionAlgorithm1.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPositionAlgorithm1.setBounds(10, 45, 135, 20);
+		positionAlgPanel.add(lblPositionAlgorithm1);
+
+		lblPositionAlgorithm2 = new JLabel("Algorithm: ");
+		lblPositionAlgorithm2.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblPositionAlgorithm2.setBackground(Color.WHITE);
+		lblPositionAlgorithm2.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPositionAlgorithm2.setBounds(10, 60, 135, 20);
+		positionAlgPanel.add(lblPositionAlgorithm2);
+
+		positionAlgorithmComboBox = new JComboBox<String>();
+		positionAlgorithmComboBox.setFont(new Font("Dialog", Font.PLAIN, 13));
+		positionAlgorithmComboBox.setBackground(Color.WHITE);
+		positionAlgorithmComboBox.setBounds(170, 45, 310, 30);
+		positionAlgPanel.add(positionAlgorithmComboBox);
+
+		lblPropertiesFile = new JLabel("Properties: ");
+		lblPropertiesFile.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblPropertiesFile.setBackground(Color.WHITE);
+		lblPropertiesFile.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPropertiesFile.setBounds(10, 140, 135, 20);
+		positionAlgPanel.add(lblPropertiesFile);
+
+		lblInputRssiPath = new JLabel("Input RSSI Path: ");
+		lblInputRssiPath.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblInputRssiPath.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 14));
+		lblInputRssiPath.setBackground(Color.WHITE);
+		lblInputRssiPath.setBounds(10, 100, 135, 20);
+		positionAlgPanel.add(lblInputRssiPath);
+
+		txtRssiInputPath = new JTextField();
+		txtRssiInputPath.setFont(new Font("Dialog", Font.PLAIN, 13));
+		txtRssiInputPath.setColumns(10);
+		txtRssiInputPath.setBackground(Color.WHITE);
+		txtRssiInputPath.setBounds(170, 95, 310, 30);
+		positionAlgPanel.add(txtRssiInputPath);
+
+		positionPropertiesScrollPane = new JScrollPane();
+		positionPropertiesScrollPane.setBounds(170, 140, 310, 170);
+		positionAlgPanel.add(positionPropertiesScrollPane);
+
+		positionPropertiesArea = new JTextArea();
+		positionPropertiesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+		positionPropertiesArea.setBackground(Color.WHITE);
+		positionPropertiesScrollPane.setViewportView(positionPropertiesArea);
+		positionPropertiesArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
+
+		btnPositionGenerate = new JButton("Generate Positioning Data");
+		btnPositionGenerate.setFont(new Font("Dialog", Font.BOLD, 14));
+		btnPositionGenerate.setBackground(Color.WHITE);
+		btnPositionGenerate.setBounds(240, 340, 240, 40);
+		positionAlgPanel.add(btnPositionGenerate);
+
 		addActionListeners();
 		addFocusListeners();
 
@@ -1215,54 +1038,54 @@ public class VITA_Application extends JApplet {
 
 		});
 
-//		txtRssiInputPath.addMouseListener(new MouseListener() {
-//
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				String previousPath = txtRssiInputPath.getText();
-//				String inputPath = decideOutputPath();
-//				if (inputPath != null) {
-//					txtRssiInputPath.setText(inputPath);
-//				} else {
-//					txtRssiInputPath.setText(previousPath);
-//				}
-//
-//				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
-//					btnPositionGenerate.setEnabled(true);
-//				}
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//
-//			}
-//
-//		});
+		txtRssiInputPath.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String previousPath = txtRssiInputPath.getText();
+				String inputPath = decideOutputPath();
+				if (inputPath != null) {
+					txtRssiInputPath.setText(inputPath);
+				} else {
+					txtRssiInputPath.setText(previousPath);
+				}
+
+				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
+					btnPositionGenerate.setEnabled(true);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+
+		});
 
 	}
 
 	private void toggleGeneratationBtns(boolean state) {
-//		btnDeleteFloor.setEnabled(state);
-//		btnDeleteEntity.setEnabled(state);
+		btnDeleteFloor.setEnabled(state);
+		btnDeleteEntity.setEnabled(state);
 		btnStationGenerate.setEnabled(state);
 		btnObjectInit.setEnabled(state);
 		toggleMovingObjectGenerationBtns(false);
-//		btnPositionGenerate.setEnabled(state);
+		btnPositionGenerate.setEnabled(state);
 	}
 
 	private void toggleMovingObjectGenerationBtns(boolean state) {
@@ -1272,62 +1095,55 @@ public class VITA_Application extends JApplet {
 	}
 
 	private void switchStateForButtons(int state) {
-		
+
 		switch (state) {
 		case InteractionState.BEFORE_IMPORT:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(false);
 			btnView.setEnabled(false);
-//			btnDecompAll.setEnabled(false);
-			btnStartLearning.setEnabled(false);
+			btnDecompAll.setEnabled(false);
 			toggleGeneratationBtns(false);
 			break;
 		case InteractionState.AFTER_IMPORT:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(true);
 			btnView.setEnabled(true);
-//			btnDecompAll.setEnabled(false);
-			btnStartLearning.setEnabled(false);
+			btnDecompAll.setEnabled(false);
 			toggleGeneratationBtns(false);
 			break;
 		case InteractionState.AFTER_UPLOAD_FILE:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(true);
 			btnView.setEnabled(true);
-//			btnDecompAll.setEnabled(false);
-			btnStartLearning.setEnabled(false);
+			btnDecompAll.setEnabled(false);
 			toggleGeneratationBtns(false);
 			break;
 		case InteractionState.AFTER_VIEW_FILE_NO_CHANGE:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(true);
 			btnView.setEnabled(false);
-//			btnDecompAll.setEnabled(true);
-			btnStartLearning.setEnabled(true);			
+			btnDecompAll.setEnabled(true);
 			toggleGeneratationBtns(true);
 			break;
 		case InteractionState.AFTER_VIEW_FILE_CHANGED:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(true);
 			btnView.setEnabled(true);
-//			btnDecompAll.setEnabled(true);
-			btnStartLearning.setEnabled(true);
+			btnDecompAll.setEnabled(true);
 			toggleGeneratationBtns(true);
 			break;
 		case InteractionState.AFTER_DECOMPOSE:
 			btnImport.setEnabled(true);
 			btnDeleteFile.setEnabled(true);
 			btnView.setEnabled(false);
-//			btnDecompAll.setEnabled(false);
-			btnStartLearning.setEnabled(true);
+			btnDecompAll.setEnabled(false);
 			toggleGeneratationBtns(true);
 			break;
 		default:
 			btnImport.setEnabled(false);
 			btnDeleteFile.setEnabled(false);
 			btnView.setEnabled(false);
-//			btnDecompAll.setEnabled(false);
-			btnStartLearning.setEnabled(false);
+			btnDecompAll.setEnabled(false);
 			toggleGeneratationBtns(false);
 		}
 
@@ -1341,7 +1157,7 @@ public class VITA_Application extends JApplet {
 				updateFileChooser();
 				if (files.size() > 0) {
 					fileComboBox.setSelectedItem(files.get(files.size() - 1));
-//					printUploadInfo();
+					printUploadInfo();
 					switchStateForButtons(InteractionState.AFTER_IMPORT);
 				}
 			}
@@ -1387,24 +1203,24 @@ public class VITA_Application extends JApplet {
 
 	}
 
-//	private void printUploadInfo() {
-//		txtConsoleArea.append("You have extracted: \n");
-//		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
-//		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
-//		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
-//		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
-//		txtConsoleArea.append("----------------------------------------------------------------\n");
-//	}
+	private void printUploadInfo() {
+		txtConsoleArea.append("You have extracted: \n");
+		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
+		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
+		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
+		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
+		txtConsoleArea.append("----------------------------------------------------------------\n");
+	}
 
-//	private void printPartAPInfo() {
-//		txtConsoleArea.append("Viewing File " + fileChosen.getUploadId() + ". " + fileChosen.getFilename() + "\n");
-//		txtConsoleArea.append("There are in total: \n");
-//		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
-//		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
-//		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
-//		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
-//		txtConsoleArea.append("----------------------------------------------------------------\n");
-//	}
+	private void printPartAPInfo() {
+		txtConsoleArea.append("Viewing File " + fileChosen.getUploadId() + ". " + fileChosen.getFilename() + "\n");
+		txtConsoleArea.append("There are in total: \n");
+		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
+		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
+		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
+		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
+		txtConsoleArea.append("----------------------------------------------------------------\n");
+	}
 
 	private void uploadFile() {
 		JFileChooser chooser = new JFileChooser();
@@ -1430,11 +1246,11 @@ public class VITA_Application extends JApplet {
 			if (isFileExisted(object) == true) {
 				System.out.println("File already existed!");
 				JOptionPane.showMessageDialog(mainFrame, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-//				txtConsoleArea.append("File Already Existed! PASS\n");
+				txtConsoleArea.append("File Already Existed! PASS\n");
 				return;
 			}
 
-//			txtConsoleArea.append("Uploading File......");
+			txtConsoleArea.append("Uploading File......");
 			DB_FileUploader uploader = new DB_FileUploader();
 			boolean status = uploader.saveObjectToDB(object, file);
 			if (!status) {
@@ -1497,12 +1313,9 @@ public class VITA_Application extends JApplet {
 			}
 
 			mapPainter = new MapPainter(fileChosen.getUploadId());
-			mapVisualPainter = new MapPainter(fileChosen.getFile_size());
-			
 			mapPanel.add(mapPainter);
-			mapVisualPanel.add(mapVisualPainter);
 			switchStateForButtons(InteractionState.AFTER_VIEW_FILE_NO_CHANGE);
-//			printPartAPInfo();
+			printPartAPInfo();
 		} else if (n == JOptionPane.NO_OPTION) {
 			// Nothing
 		} else {
@@ -1519,7 +1332,7 @@ public class VITA_Application extends JApplet {
 
 			try {
 				fileChosen = (UploadObject) fileComboBox.getSelectedItem();
-//				txtConsoleArea.append(fileChosen.getFilename() + " is deleted!!!\n");
+				txtConsoleArea.append(fileChosen.getFilename() + " is deleted!!!\n");
 				DB_WrapperDelete.deleteFile(connection, fileChosen);
 				connection.close();
 			} catch (SQLException ex) {
@@ -1645,96 +1458,96 @@ public class VITA_Application extends JApplet {
 
 			});
 
-//			btnDecompAll.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//
-//					int n = JOptionPane.showConfirmDialog(mainFrame,
-//							"Are you sure you want to decompose the selected file?", "Confirmation",
-//							JOptionPane.YES_NO_OPTION);
-//					if (n == JOptionPane.YES_OPTION) {
-//						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-//						clearIllegal();
-//
-//						System.out.println(
-//								"\nBefore decomposed partitions " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
-//						try {
-//							DB_Import.decompose(con);
-//							DB_WrapperLoad.loadALL(con, fileIDX);
-//							con.close();
-//						} catch (SQLException e1) {
-//							e1.printStackTrace();
-//						}
-//
-//						D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
-//								DB_WrapperLoad.accessPointConnectorT);
+			btnDecompAll.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					int n = JOptionPane.showConfirmDialog(mainFrame,
+							"Are you sure you want to decompose the selected file?", "Confirmation",
+							JOptionPane.YES_NO_OPTION);
+					if (n == JOptionPane.YES_OPTION) {
+						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
+						clearIllegal();
+
+						System.out.println(
+								"\nBefore decomposed partitions " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
+						try {
+							DB_Import.decompose(con);
+							DB_WrapperLoad.loadALL(con, fileIDX);
+							con.close();
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+
+						D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
+								DB_WrapperLoad.accessPointConnectorT);
 						// BuildingD2DGrpah.partitions =
 						// DB_WrapperLoad.partitionDecomposedT;
 						// BuildingD2DGrpah.accessPoints =
 						// DB_WrapperLoad.accessPointConnectorT;
 						// BuildingD2DGrpah buildingD2D = new
 						// BuildingD2DGrpah();
-//						buildingD2D.generateD2DDistance();
-//
-//						for (Floor floor : DB_WrapperLoad.floorT) {
-//							floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
-//							floor.setD2dGraph(buildingD2D);
-//							System.out.println(
-//									floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
-//
-//						}
-//
-//						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
-//						JOptionPane.showMessageDialog(mainFrame, "Decomposing File is done!", "Information",
-//								JOptionPane.INFORMATION_MESSAGE);
-//						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
-//						selectedAP = null;
-//						selectedPart = null;
-//						loadFloorChooser();
-//						updateSelectPartsList();
-//						repaint();
-//					} else if (n == JOptionPane.NO_OPTION) {
-//						// Nothing
-//					} else {
-//						// Nothing
-//					}
-//
-//				}
-//			});
+						buildingD2D.generateD2DDistance();
 
-//			btnDeleteEntity.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					int n = JOptionPane.showConfirmDialog(mainFrame,
-//							"Are you sure you want to delete the selected entity?", "Confirmation",
-//							JOptionPane.YES_NO_OPTION);
-//					if (n == JOptionPane.YES_OPTION) {
-//						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-//						try {
-//							if (selectedPart != null) {
-//								DB_WrapperDelete.deletePartition(con, selectedPart);
-//							} else if (selectedAP != null) {
-//								DB_WrapperDelete.deleteAccessPoint(con, selectedAP);
-//							}
-//							DB_WrapperLoad.loadALL(con, fileIDX);
-//							con.close();
-//						} catch (SQLException e1) {
-//							e1.printStackTrace();
-//						}
-//						JOptionPane.showMessageDialog(mainFrame, "Deleting Entity is done!", "Information",
-//								JOptionPane.INFORMATION_MESSAGE);
-////						loadFloorChooser();
-//						repaint();
-//					} else if (n == JOptionPane.NO_OPTION) {
-//						// Nothing
-//					} else {
-//						// Nothing
-//					}
-//
-//				}
-//
-//			});
+						for (Floor floor : DB_WrapperLoad.floorT) {
+							floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
+							floor.setD2dGraph(buildingD2D);
+							System.out.println(
+									floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
+
+						}
+
+						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
+						JOptionPane.showMessageDialog(mainFrame, "Decomposing File is done!", "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
+						selectedAP = null;
+						selectedPart = null;
+						loadFloorChooser();
+						updateSelectPartsList();
+						repaint();
+					} else if (n == JOptionPane.NO_OPTION) {
+						// Nothing
+					} else {
+						// Nothing
+					}
+
+				}
+			});
+
+			btnDeleteEntity.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int n = JOptionPane.showConfirmDialog(mainFrame,
+							"Are you sure you want to delete the selected entity?", "Confirmation",
+							JOptionPane.YES_NO_OPTION);
+					if (n == JOptionPane.YES_OPTION) {
+						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
+						try {
+							if (selectedPart != null) {
+								DB_WrapperDelete.deletePartition(con, selectedPart);
+							} else if (selectedAP != null) {
+								DB_WrapperDelete.deleteAccessPoint(con, selectedAP);
+							}
+							DB_WrapperLoad.loadALL(con, fileIDX);
+							con.close();
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						JOptionPane.showMessageDialog(mainFrame, "Deleting Entity is done!", "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+						loadFloorChooser();
+						repaint();
+					} else if (n == JOptionPane.NO_OPTION) {
+						// Nothing
+					} else {
+						// Nothing
+					}
+
+				}
+
+			});
 
 			connectedPartsList.addListSelectionListener(new ListSelectionListener() {
 
@@ -1767,12 +1580,12 @@ public class VITA_Application extends JApplet {
 							JOptionPane.showMessageDialog(mainFrame, "Generating Infrastrcture Data is done!",
 									"Information", JOptionPane.INFORMATION_MESSAGE);
 						}
-//						String selected_station_type = stationTypeComboBox.getSelectedItem().toString();
-//						if (selected_station_type.equals("WIFI")) {
-//							initAlgorithmMap();
-//						} else {
-//							initAlgorithmMapForRFIDAndBT();
-//						}
+						String selected_station_type = stationTypeComboBox.getSelectedItem().toString();
+						if (selected_station_type.equals("WIFI")) {
+							initAlgorithmMap();
+						} else {
+							initAlgorithmMapForRFIDAndBT();
+						}
 					}
 				}
 
@@ -1830,7 +1643,7 @@ public class VITA_Application extends JApplet {
 								btnObjectStop.setEnabled(true);
 								btnSnapShot.setEnabled(false);
 								setStartEndTimer();
-//								updateAlgProps();
+								updateAlgProps();
 							}
 						}
 					} else if (btnObjectStart.getText().equals("Pause")) {
@@ -1873,83 +1686,70 @@ public class VITA_Application extends JApplet {
 				}
 			});
 
-//			positionAlgorithmComboBox.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent arg0) {
-//					if (positionAlgorithmComboBox.getSelectedItem() != null) {
-//						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-//						loadAlgorithmProp(algorithmType);
-//					}
-//				}
-//			});
+			positionAlgorithmComboBox.addActionListener(new ActionListener() {
 
-//			chckbxPositiongData.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					if (chckbxPositiongData.isSelected() == true) {
-//						Algorithm.exportFlag = true;
-//					} else {
-//						Algorithm.exportFlag = false;
-//					}
-//				}
-//			});
-
-//			btnPositionGenerate.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent arg0) {
-//					if (chckbxPositiongData.isSelected()) {
-//						String outputPath = decideOutputPath();
-//						if (outputPath != null) {
-//							String postioningOutputPath = createPositioningOutputDir(outputPath);
-//							storeAlgProp();
-//							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-//
-//							ExecutorService threadPool = Executors.newCachedThreadPool();
-//
-//							if ("Trilateration".equals(selected_algorithm)) {
-//								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								tri.calAlgorithmForAll(threadPool);
-//							} else if ("Fingerprinting".equals(selected_algorithm)) {
-//								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								fpt.calAlgorithmForAll(threadPool);
-//							} else {
-//								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								pxm.calAlgorithmForAll(threadPool);
-//							}
-//							exportPositioningConfiguration(postioningOutputPath);
-//
-//							threadPool.shutdown();
-//
-//							try {
-//								threadPool.awaitTermination(50, TimeUnit.SECONDS);
-//							} catch (InterruptedException e) {
-//								//
-//								e.printStackTrace();
-//							}
-//
-//							JOptionPane.showMessageDialog(mainFrame, "Generating Indoor Positioning Data is done!",
-//									"Information", JOptionPane.INFORMATION_MESSAGE);
-//						}
-//					}
-//				}
-//			});
-			
-			btnStartLearning.addActionListener(new ActionListener() {
-				NeuralNetwork slstm = new NeuralNetwork();
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					String outputPath = decideOutputPath();
-					System.out.println(outputPath);
-					
-					// train the system
-					slstm.test(outputPath);
+					if (positionAlgorithmComboBox.getSelectedItem() != null) {
+						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+						loadAlgorithmProp(algorithmType);
+					}
+				}
+			});
+
+			chckbxPositiongData.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (chckbxPositiongData.isSelected() == true) {
+						Algorithm.exportFlag = true;
+					} else {
+						Algorithm.exportFlag = false;
+					}
+				}
+			});
+
+			btnPositionGenerate.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					if (chckbxPositiongData.isSelected()) {
+						String outputPath = decideOutputPath();
+						if (outputPath != null) {
+							String postioningOutputPath = createPositioningOutputDir(outputPath);
+							storeAlgProp();
+							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+
+							ExecutorService threadPool = Executors.newCachedThreadPool();
+
+							if ("Trilateration".equals(selected_algorithm)) {
+								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								tri.calAlgorithmForAll(threadPool);
+							} else if ("Fingerprinting".equals(selected_algorithm)) {
+								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								fpt.calAlgorithmForAll(threadPool);
+							} else {
+								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								pxm.calAlgorithmForAll(threadPool);
+							}
+							exportPositioningConfiguration(postioningOutputPath);
+
+							threadPool.shutdown();
+
+							try {
+								threadPool.awaitTermination(50, TimeUnit.SECONDS);
+							} catch (InterruptedException e) {
+								//
+								e.printStackTrace();
+							}
+
+							JOptionPane.showMessageDialog(mainFrame, "Generating Indoor Positioning Data is done!",
+									"Information", JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
 				}
 			});
 
@@ -1962,7 +1762,7 @@ public class VITA_Application extends JApplet {
 		 * partition, and delete them all, because they can caught an exception
 		 * when decompose delete all the isolation access points, try to fix
 		 * isolate partitions remember to reload all the space object, because
-		 * some partitions may have been deleted
+		 * some partitions may have benn deleted
 		 */
 		private void clearIllegal() {
 			PrintIsolatedObject.printAllIsolation(DB_WrapperLoad.partitionDecomposedT,
@@ -2047,11 +1847,11 @@ public class VITA_Application extends JApplet {
 			}, endPoint);
 		}
 
-//		private void updateAlgProps() {
-//			// IdrObjsUtility.changeAllAlgInputPath();
-//			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-//			loadAlgorithmProp(algorithmType);
-//		}
+		private void updateAlgProps() {
+			// IdrObjsUtility.changeAllAlgInputPath();
+			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+			loadAlgorithmProp(algorithmType);
+		}
 
 		private void loadAlgorithmProp(String algorithmType) {
 			if (algorithmType.equals("Trilateration")) {
@@ -2083,54 +1883,54 @@ public class VITA_Application extends JApplet {
 			}
 		}
 
-//		private void storeAlgProp() {
-//			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-//			String outputFileName = null;
-//			System.out.println(algorithmType);
-//			if (algorithmType.equals("Trilateration")) {
-//				outputFileName = "conf/trilateration.properties";
-//			}
-//			if (algorithmType.equals("Fingerprinting")) {
-//				outputFileName = "conf/fingerprint.properties";
-//			}
-//			if (algorithmType.equals("Proximity_Analysis")) {
-//				outputFileName = "conf/proximity.properties";
-//			}
-//
-//			try {
-//				FileWriter writer = new FileWriter(outputFileName);
-//				String positionPropsTxt = positionPropertiesArea.getText();
-//
-//				boolean dateFlag = true;
-//				String[] lines = positionPropsTxt.split("\n");
-//				for (String line : lines) {
-//					System.out.println(line);
-//					// update the time-stamp for properties file
-//					if (dateFlag && "#".equals(line.substring(0, 1))) {
-//						dateFlag = false;
-//						writer.write("#" + new Date(System.currentTimeMillis()).toString() + "\n");
-//					} else
-//						writer.write(line + "\n");
-//				}
-//
-//				writer.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		private void storeAlgProp() {
+			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+			String outputFileName = null;
+			System.out.println(algorithmType);
+			if (algorithmType.equals("Trilateration")) {
+				outputFileName = "conf/trilateration.properties";
+			}
+			if (algorithmType.equals("Fingerprinting")) {
+				outputFileName = "conf/fingerprint.properties";
+			}
+			if (algorithmType.equals("Proximity_Analysis")) {
+				outputFileName = "conf/proximity.properties";
+			}
+
+			try {
+				FileWriter writer = new FileWriter(outputFileName);
+				String positionPropsTxt = positionPropertiesArea.getText();
+
+				boolean dateFlag = true;
+				String[] lines = positionPropsTxt.split("\n");
+				for (String line : lines) {
+					System.out.println(line);
+					// update the time-stamp for properties file
+					if (dateFlag && "#".equals(line.substring(0, 1))) {
+						dateFlag = false;
+						writer.write("#" + new Date(System.currentTimeMillis()).toString() + "\n");
+					} else
+						writer.write(line + "\n");
+				}
+
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		private void clearMapPainterActionListener() {
 			for (ActionListener al : floorCombobox.getActionListeners()) {
 				floorCombobox.removeActionListener(al);
 			}
 
-//			for (ActionListener al : btnDecompAll.getActionListeners()) {
-//				btnDecompAll.removeActionListener(al);
-//			}
-//
-//			for (ActionListener al : btnDeleteEntity.getActionListeners()) {
-//				btnDeleteEntity.removeActionListener(al);
-//			}
+			for (ActionListener al : btnDecompAll.getActionListeners()) {
+				btnDecompAll.removeActionListener(al);
+			}
+
+			for (ActionListener al : btnDeleteEntity.getActionListeners()) {
+				btnDeleteEntity.removeActionListener(al);
+			}
 
 			for (ListSelectionListener al : connectedPartsList.getListSelectionListeners()) {
 				connectedPartsList.removeListSelectionListener(al);
@@ -2166,7 +1966,7 @@ public class VITA_Application extends JApplet {
 			initStationInitMap();
 			initMovingObjTypeMap();
 			initMovObjInitMap();
-//			initAlgorithmMap();
+			initAlgorithmMap();
 		}
 
 		private void initStationTypeMap() {
@@ -2260,57 +2060,57 @@ public class VITA_Application extends JApplet {
 			}
 		}
 
-//		private void initAlgorithmMap() {
-//			try {
-//				FileReader fileReader = new FileReader("conf/algorithmTypeMap.properties");
-//				BufferedReader buff = new BufferedReader(fileReader);
-//				String line;
-//				positionAlgorithmMap.clear();
-//				for (int i = 0; i < positionAlgorithmComboBox.getItemCount(); i++) {
-//					System.out.println("--" + positionAlgorithmComboBox.getItemAt(i));
-//				}
-//				positionAlgorithmComboBox.removeAllItems();
-//				while ((line = buff.readLine()) != null) {
-//					String[] splitedString = new String[2];
-//					splitedString = line.split("=");
-//					positionAlgorithmMap.put(splitedString[0], splitedString[1]);
-//					positionAlgorithmComboBox.addItem(splitedString[0]);
-//				}
-//				fileReader.close();
-//				buff.close();
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		private void initAlgorithmMapForRFIDAndBT() {
-//			try {
-//				FileReader fileReader = new FileReader("conf/algorithmTypeMap.properties");
-//				BufferedReader buff = new BufferedReader(fileReader);
-//				String line;
-//				positionAlgorithmMap.clear();
-//				for (int i = 0; i < positionAlgorithmComboBox.getItemCount(); i++) {
-//					System.out.println("--" + positionAlgorithmComboBox.getItemAt(i));
-//				}
-//				positionAlgorithmComboBox.removeAllItems();
-//				while ((line = buff.readLine()) != null) {
-//					String[] splitedString = new String[2];
-//					splitedString = line.split("=");
-//					if (!splitedString[0].equals("Fingerprinting")) {
-//						positionAlgorithmMap.put(splitedString[0], splitedString[1]);
-//						positionAlgorithmComboBox.addItem(splitedString[0]);
-//					}
-//				}
-//				fileReader.close();
-//				buff.close();
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		private void initAlgorithmMap() {
+			try {
+				FileReader fileReader = new FileReader("conf/algorithmTypeMap.properties");
+				BufferedReader buff = new BufferedReader(fileReader);
+				String line;
+				positionAlgorithmMap.clear();
+				for (int i = 0; i < positionAlgorithmComboBox.getItemCount(); i++) {
+					System.out.println("--" + positionAlgorithmComboBox.getItemAt(i));
+				}
+				positionAlgorithmComboBox.removeAllItems();
+				while ((line = buff.readLine()) != null) {
+					String[] splitedString = new String[2];
+					splitedString = line.split("=");
+					positionAlgorithmMap.put(splitedString[0], splitedString[1]);
+					positionAlgorithmComboBox.addItem(splitedString[0]);
+				}
+				fileReader.close();
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void initAlgorithmMapForRFIDAndBT() {
+			try {
+				FileReader fileReader = new FileReader("conf/algorithmTypeMap.properties");
+				BufferedReader buff = new BufferedReader(fileReader);
+				String line;
+				positionAlgorithmMap.clear();
+				for (int i = 0; i < positionAlgorithmComboBox.getItemCount(); i++) {
+					System.out.println("--" + positionAlgorithmComboBox.getItemAt(i));
+				}
+				positionAlgorithmComboBox.removeAllItems();
+				while ((line = buff.readLine()) != null) {
+					String[] splitedString = new String[2];
+					splitedString = line.split("=");
+					if (!splitedString[0].equals("Fingerprinting")) {
+						positionAlgorithmMap.put(splitedString[0], splitedString[1]);
+						positionAlgorithmComboBox.addItem(splitedString[0]);
+					}
+				}
+				fileReader.close();
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
@@ -2333,15 +2133,15 @@ public class VITA_Application extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 
-//			 Point2D.Double point1 = new Point2D.Double(343, 250);
-//			 DstMovingObj dstMovingObj = new
-//			 DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
-//			 dstMovingObj.setCurrentPartition(IdrObjsUtility.findPartitionForPoint(DB_WrapperLoad.floorT.get(1),
-//			 point1));
-//			 Point2D.Double point2 = new Point2D.Double(405, 180);
-//			 dstMovingObj.setCurDestPoint(point2);
-//			 dstMovingObj.setCurDestFloor(DB_WrapperLoad.floorT.get(2));
-//			 paintTrajectory(g2, tx, Pen2, dstMovingObj, chosenFloor);
+			// Point2D.Double point1 = new Point2D.Double(343, 250);
+			// DstMovingObj dstMovingObj = new
+			// DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
+			// dstMovingObj.setCurrentPartition(IdrObjsUtility.findPartitionForPoint(DB_WrapperLoad.floorT.get(1),
+			// point1));
+			// Point2D.Double point2 = new Point2D.Double(405, 180);
+			// dstMovingObj.setCurDestPoint(point2);
+			// dstMovingObj.setCurDestFloor(DB_WrapperLoad.floorT.get(2));
+			// // paintTrajectory(g2, tx, Pen2, dstMovingObj, chosenFloor);
 		}
 
 		private void paintIFCObjects(Floor chosenFloor, Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2,
@@ -2647,7 +2447,7 @@ public class VITA_Application extends JApplet {
 			FileOutputStream outStr = null;
 			BufferedOutputStream buff = null;
 
-			String floor_outputPath = currentPath + "//Floors" + ".csv";
+			String floor_outputPath = currentPath + "//Floors" + ".txt";
 			try {
 				file = new File(floor_outputPath);
 				file.createNewFile();
@@ -2663,7 +2463,7 @@ public class VITA_Application extends JApplet {
 				e.printStackTrace();
 			}
 
-			String accessPoint_outputPath = currentPath + "//Access Points" + ".csv";
+			String accessPoint_outputPath = currentPath + "//Access Points" + ".txt";
 			try {
 				file = new File(accessPoint_outputPath);
 				file.createNewFile();
@@ -2680,7 +2480,7 @@ public class VITA_Application extends JApplet {
 				e.printStackTrace();
 			}
 
-			String parition_outputPath = currentPath + "//Partitions" + ".csv";
+			String parition_outputPath = currentPath + "//Partitions" + ".txt";
 			try {
 				file = new File(parition_outputPath);
 				file.createNewFile();
@@ -2697,7 +2497,7 @@ public class VITA_Application extends JApplet {
 				e.printStackTrace();
 			}
 
-			String connector_outputPath = currentPath + "//Connectors" + ".csv";
+			String connector_outputPath = currentPath + "//Connectors" + ".txt";
 			try {
 				file = new File(connector_outputPath);
 				file.createNewFile();
@@ -2714,7 +2514,7 @@ public class VITA_Application extends JApplet {
 				e.printStackTrace();
 			}
 
-			String connectivity_outputPath = currentPath + "//Connectivity" + ".csv";
+			String connectivity_outputPath = currentPath + "//Connectivity" + ".txt";
 			try {
 				file = new File(connectivity_outputPath);
 				file.createNewFile();
@@ -2724,7 +2524,7 @@ public class VITA_Application extends JApplet {
 					buff.write((connectivity.toString() + "\n").getBytes());
 				}
 				buff.close();
-			} catch (FileNotFoundException e) { 
+			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -2735,7 +2535,7 @@ public class VITA_Application extends JApplet {
 		private void exportMovingPatternsConfiguration(String outputPath, String time) {
 
 			// System.out.println(outputPath);
-			String mo_configuration_outputPath = outputPath + "//Moving_Object_Configuration_" + time + ".csv";
+			String mo_configuration_outputPath = outputPath + "//Moving_Object_Configuration_" + time + ".txt";
 			// System.out.println(mo_configuration_outputPath);
 			try {
 				File file = new File(mo_configuration_outputPath);
@@ -2765,34 +2565,34 @@ public class VITA_Application extends JApplet {
 
 		}
 
-//		private void exportPositioningConfiguration(String outputPath) {
-//
-//			System.out.println(outputPath);
-//			String position_configuration_outputPath = outputPath.substring(0, outputPath.lastIndexOf(File.separator))
-//					+ "//Positioning_Configuration_"
-//					+ outputPath.substring(outputPath.lastIndexOf(File.separator) + 1, outputPath.length()) + ".csv";
-//			System.out.println(position_configuration_outputPath);
-//			try {
-//				File file = new File(position_configuration_outputPath);
-//				if (!file.exists()) {
-//					file.getParentFile().mkdirs();
-//					file.createNewFile();
-//				}
-//				FileOutputStream outStr = new FileOutputStream(file);
-//				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-//				String configure = positionPropertiesArea.getText();
-//				configure = configure + "\n" + "positioning_algorithm="
-//						+ positionAlgorithmComboBox.getSelectedItem().toString() + "\n";
-//				configure = configure + "\n" + "input_rssi_path=" + txtRssiInputPath.getText() + "\n";
-//				buff.write(configure.getBytes());
-//				buff.close();
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
-//		}
+		private void exportPositioningConfiguration(String outputPath) {
+
+			System.out.println(outputPath);
+			String position_configuration_outputPath = outputPath.substring(0, outputPath.lastIndexOf(File.separator))
+					+ "//Positioning_Configuration_"
+					+ outputPath.substring(outputPath.lastIndexOf(File.separator) + 1, outputPath.length()) + ".txt";
+			System.out.println(position_configuration_outputPath);
+			try {
+				File file = new File(position_configuration_outputPath);
+				if (!file.exists()) {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+				}
+				FileOutputStream outStr = new FileOutputStream(file);
+				BufferedOutputStream buff = new BufferedOutputStream(outStr);
+				String configure = positionPropertiesArea.getText();
+				configure = configure + "\n" + "positioning_algorithm="
+						+ positionAlgorithmComboBox.getSelectedItem().toString() + "\n";
+				configure = configure + "\n" + "input_rssi_path=" + txtRssiInputPath.getText() + "\n";
+				buff.write(configure.getBytes());
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
 
 		private void exportStations(String stationDir) {
 
@@ -2801,17 +2601,15 @@ public class VITA_Application extends JApplet {
 
 			// IdrObjsUtility.createOutputDir();
 
-			String station_outputPath = stationDir + "//Devices_" + time + ".csv";
-			String station_configuration_outputPath = stationDir + "//Device_Configuration_" + time + ".csv";
+			String station_outputPath = stationDir + "//Devices_" + time + ".txt";
+			String station_configuration_outputPath = stationDir + "//Device_Configuration_" + time + ".txt";
 			try {
 				File file = new File(station_outputPath);
 				file.createNewFile();
 				FileOutputStream outStr = new FileOutputStream(file);
 				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-//				String comments = "deviceId" + "\t" + "floorId" + "\t" + "partitionId" + "\t" + "location_x" + "\t"
-//						+ "location_y" + "\n";
-				String comments = "\"deviceId\"" + "," + "\"floorId\"" + "," + "\"partitionId\"" + "," + "\"location_x\"" + ","
-				+ "\"location_y\"" + "\n";
+				String comments = "deviceId" + "\t" + "floorId" + "\t" + "partitionId" + "\t" + "location_x" + "\t"
+						+ "location_y" + "\n";
 				buff.write(comments.getBytes());
 				boolean flag = false;
 				Station sampled_station = null;
@@ -3054,7 +2852,7 @@ public class VITA_Application extends JApplet {
 						+ (System.currentTimeMillis() - IdrObjsUtility.startClickedTime.getTime())));
 
 				// create snap shot file
-				File file = new File(IdrObjsUtility.snapshotDir + "//snapshot_" + time + ".csv");
+				File file = new File(IdrObjsUtility.snapshotDir + "//snapshot_" + time + ".txt");
 				file.createNewFile();
 				FileOutputStream outStr = new FileOutputStream(file);
 				BufferedOutputStream buff = new BufferedOutputStream(outStr);
@@ -3124,9 +2922,9 @@ public class VITA_Application extends JApplet {
 			String movingObjMaxLifeSpan = txtMaximumLifeSpan.getText();
 			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
 
-//			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-//			String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
-//			props.setProperty("positionAlgorithm", posAlgType);
+			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+			String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
+			props.setProperty("positionAlgorithm", posAlgType);
 
 			MovingObj.setScanRange(Double.parseDouble(scanRange));
 			MovingObj.setMaxStepLength(Double.parseDouble(maxStepLength));
@@ -3243,52 +3041,51 @@ public class VITA_Application extends JApplet {
 				}
 			}
 
-//			public void mousePressed(MouseEvent e) {
-//				previousX = e.getX();
-//				previousY = e.getY();
-				
-				// First point
-//				startDrag = new Point(e.getX(), e.getY()); 
-//				if (!empty) {
-//					txtselectedNameField.setText("");
-//					selectedPart = null;
-//					selectedAP = null;
+			public void mousePressed(MouseEvent e) {
+				previousX = e.getX();
+				previousY = e.getY();
 
-//					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
-//						if (mapping.getKey().contains(startDrag)) {
-//							selectedPart = mapping.getValue();
-//							selectedAP = null;
-//							selectedCon = null;
-//							break;
-//						}
-//					}
+				startDrag = new Point(e.getX(), e.getY()); // First point
+				if (!empty) {
+					txtselectedNameField.setText("");
+					selectedPart = null;
+					selectedAP = null;
 
-//					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
-//						if (mapping.getKey().contains(startDrag)) {
-//							selectedAP = mapping.getValue();
-//							selectedPart = null;
-//							selectedCon = null;
-//							break;
-//						}
-//					}
+					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedPart = mapping.getValue();
+							selectedAP = null;
+							selectedCon = null;
+							break;
+						}
+					}
 
-//					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
-//						if (mapping.getKey().contains(startDrag)) {
-//							selectedCon = mapping.getValue();
-//							selectedPart = null;
-//							selectedAP = null;
-//							break;
-//						}
-//					}
+					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedAP = mapping.getValue();
+							selectedPart = null;
+							selectedCon = null;
+							break;
+						}
+					}
 
-//					connectedPartsModel.clear();
-//					updateSelectPartsList();
+					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedCon = mapping.getValue();
+							selectedPart = null;
+							selectedAP = null;
+							break;
+						}
+					}
+
+					connectedPartsModel.clear();
+					updateSelectPartsList();
 
 					// possibleConnectedPartsList.clear();
 					// updatePossibleConnectedPartsList();
-//				}
-//				repaint();
-//			}
+				}
+				repaint();
+			}
 
 			public void mouseDragged(MouseEvent e) {
 
@@ -3322,7 +3119,7 @@ public class VITA_Application extends JApplet {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.getContentPane().add(vita);
 		mainFrame.setPreferredSize(size);
-		mainFrame.setTitle("DEGAN");
+		mainFrame.setTitle("VITA - Verstile Indoor Mobility Data Generator");
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 
