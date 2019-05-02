@@ -137,6 +137,7 @@ public class Home extends JApplet {
 	private JButton btnObjectStop;
 	private JButton btnSnapShot;
 	private JButton btnPositionGenerate;
+	private JButton btnMachineUpload;
 
 	private JPanel filePanel;
 	private JPanel mapPanel;
@@ -330,15 +331,15 @@ public class Home extends JApplet {
 		lblMachineConfiguration.setBounds(357, 10, 186, 23);
 		panel.add(lblMachineConfiguration);
 		
-		JButton btnAdd = new JButton("Clear");
-		btnAdd.addActionListener(new ActionListener() {
+		JButton btnMachineClear = new JButton("Clear");
+		btnMachineClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MachinesWindow panel = new MachinesWindow();
 				panel.main(null);
 			}
 		});
-		btnAdd.setBounds(575, 45, 97, 23);
-		panel.add(btnAdd);
+		btnMachineClear.setBounds(575, 45, 97, 23);
+		panel.add(btnMachineClear);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.LIGHT_GRAY);
@@ -397,9 +398,9 @@ public class Home extends JApplet {
 		textField.setBounds(482, 240, 190, 21);
 		panel.add(textField);
 		
-		JButton btnUpload = new JButton("Upload");
-		btnUpload.setBounds(466, 45, 97, 23);
-		panel.add(btnUpload);
+		btnMachineUpload = new JButton("Upload");
+		btnMachineUpload.setBounds(466, 45, 97, 23);
+		panel.add(btnMachineUpload);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Generator", null, panel_1, null);
@@ -855,6 +856,12 @@ public class Home extends JApplet {
 	}
 
 	private void addActionListeners() {
+		
+		btnMachineUpload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				uploadFile();
+			}
+		});
 
 		btnImport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
