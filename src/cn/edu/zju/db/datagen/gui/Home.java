@@ -106,6 +106,7 @@ import cn.edu.zju.db.datagen.indoorobject.station.Station;
 import cn.edu.zju.db.datagen.indoorobject.utility.IdrObjsUtility;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import diva.util.java2d.Polygon2D;
+import javax.swing.ListModel;
 
 public class Home extends JApplet {
 
@@ -248,8 +249,8 @@ public class Home extends JApplet {
 	private JLabel lblGenerationPeriod2;
 	private JLabel lblMovObjDistributerType2;
 	private JLabel lblMovObjDistributerType1;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JComboBox textField_1;
+	private JComboBox textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
 	private JTextField textField_5;
@@ -259,6 +260,7 @@ public class Home extends JApplet {
 	private JTextField textField_8;
 	private JTextField textField_9;
 	private JTextField textField_10;
+	private JTextField textField_11;
 
 	/**
 	 * Launch the application.
@@ -289,7 +291,7 @@ public class Home extends JApplet {
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("Trajectory Generator");
-		frmTrajectoryGenerator.setBounds(100, 100, 790, 710);
+		frmTrajectoryGenerator.setBounds(100, 100, 790, 810);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
 		
@@ -319,7 +321,7 @@ public class Home extends JApplet {
 		filePanel.add(btnDecompAll);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 43, 774, 628);
+		tabbedPane.setBounds(0, 43, 774, 728);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
@@ -328,7 +330,7 @@ public class Home extends JApplet {
 		
 		JLabel lblMachineConfiguration = new JLabel("Machine Configuration");
 		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMachineConfiguration.setBounds(357, 10, 186, 23);
+		lblMachineConfiguration.setBounds(442, 20, 186, 23);
 		panel.add(lblMachineConfiguration);
 		
 		JButton btnMachineClear = new JButton("Clear");
@@ -338,68 +340,68 @@ public class Home extends JApplet {
 				panel.main(null);
 			}
 		});
-		btnMachineClear.setBounds(575, 45, 97, 23);
+		btnMachineClear.setBounds(660, 55, 97, 23);
 		panel.add(btnMachineClear);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.LIGHT_GRAY);
-		panel_3.setBounds(357, 78, 315, 105);
+		panel_3.setBounds(442, 88, 315, 105);
 		panel.add(panel_3);
 		
 		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
 		lblTrainingConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblTrainingConfiguration.setBounds(357, 193, 186, 23);
+		lblTrainingConfiguration.setBounds(442, 203, 186, 23);
 		panel.add(lblTrainingConfiguration);
 		
 		JButton button = new JButton("Load");
-		button.setBounds(357, 333, 97, 23);
+		button.setBounds(442, 343, 97, 23);
 		panel.add(button);
 		
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(466, 333, 97, 23);
+		btnClear.setBounds(551, 343, 97, 23);
 		panel.add(btnClear);
 		
 		JButton btnTrain = new JButton("Train");
-		btnTrain.setBounds(575, 333, 97, 23);
+		btnTrain.setBounds(660, 343, 97, 23);
 		panel.add(btnTrain);
 		
 		txtConsoleArea = new JTextArea();
 		txtConsoleArea.setEditable(false);
 		txtConsoleArea.setBackground(Color.WHITE);
-		txtConsoleArea.setBounds(12, 10, 333, 540);
+		txtConsoleArea.setBounds(12, 10, 418, 679);
 		panel.add(txtConsoleArea);
 		
 		JLabel lblNeuralNetwork = new JLabel("Neural Network");
 		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNeuralNetwork.setBounds(357, 279, 113, 23);
+		lblNeuralNetwork.setBounds(442, 289, 113, 23);
 		panel.add(lblNeuralNetwork);
 		
 		JLabel label_2 = new JLabel("Model:");
 		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_2.setBounds(357, 300, 113, 23);
+		label_2.setBounds(442, 310, 113, 23);
 		panel.add(label_2);
 		
 		textField_7 = new JComboBox();
-		textField_7.setBounds(482, 293, 190, 21);
+		textField_7.setBounds(567, 303, 190, 21);
 		panel.add(textField_7);
 		
 		JLabel lblTraining = new JLabel("Training");
 		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblTraining.setBounds(357, 226, 113, 23);
+		lblTraining.setBounds(442, 236, 113, 23);
 		panel.add(lblTraining);
 		
 		JLabel lblIteration = new JLabel("Iteration:");
 		lblIteration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblIteration.setBounds(357, 247, 113, 23);
+		lblIteration.setBounds(442, 257, 113, 23);
 		panel.add(lblIteration);
 		
 		textField = new JTextField();
 		textField.setColumns(10);
-		textField.setBounds(482, 240, 190, 21);
+		textField.setBounds(567, 250, 190, 21);
 		panel.add(textField);
 		
 		btnMachineUpload = new JButton("Upload");
-		btnMachineUpload.setBounds(466, 45, 97, 23);
+		btnMachineUpload.setBounds(551, 55, 97, 23);
 		panel.add(btnMachineUpload);
 		
 		JPanel panel_1 = new JPanel();
@@ -408,116 +410,114 @@ public class Home extends JApplet {
 		
 		mapPanel = new JPanel();
 		mapPanel.setBackground(Color.WHITE);
-		mapPanel.setBounds(12, 10, 333, 540);
+		mapPanel.setBounds(12, 10, 393, 679);
 		panel_1.add(mapPanel);
 		
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblDeviceConfiguration.setBounds(357, 10, 186, 23);
+		lblDeviceConfiguration.setBounds(417, 10, 186, 23);
 		panel_1.add(lblDeviceConfiguration);
 		
 		JLabel lblExport = new JLabel("Export:");
 		lblExport.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblExport.setBounds(357, 40, 95, 23);
+		lblExport.setBounds(417, 40, 95, 23);
 		panel_1.add(lblExport);
 		
 		JCheckBox chckbxEnvironment = new JCheckBox("Environment");
-		chckbxEnvironment.setBounds(460, 43, 105, 23);
+		chckbxEnvironment.setBounds(520, 43, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
 		JCheckBox chckbxDevicePosition = new JCheckBox("Device Position");
-		chckbxDevicePosition.setBounds(580, 43, 121, 23);
+		chckbxDevicePosition.setBounds(640, 43, 121, 23);
 		panel_1.add(chckbxDevicePosition);
 		
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice.setBounds(357, 73, 95, 23);
+		lblDevice.setBounds(417, 73, 95, 23);
 		panel_1.add(lblDevice);
 		
 		JLabel lblType = new JLabel("Type:");
 		lblType.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblType.setBounds(357, 94, 95, 23);
+		lblType.setBounds(417, 94, 95, 23);
 		panel_1.add(lblType);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(460, 87, 237, 21);
-		panel_1.add(textField_1);
+		stationTypeComboBox = new JComboBox();
+		stationTypeComboBox.setBounds(520, 87, 237, 21);
+		panel_1.add(stationTypeComboBox);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(460, 141, 237, 21);
-		panel_1.add(textField_2);
+		stationDistriTypeComboBox = new JComboBox();
+		stationDistriTypeComboBox.setBounds(520, 141, 237, 21);
+		panel_1.add(stationDistriTypeComboBox);
 		
 		JLabel lblDeployment = new JLabel("Deployment");
 		lblDeployment.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDeployment.setBounds(357, 127, 95, 23);
+		lblDeployment.setBounds(417, 127, 95, 23);
 		panel_1.add(lblDeployment);
 		
 		JLabel lblModel_1 = new JLabel("Model:");
 		lblModel_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblModel_1.setBounds(357, 148, 95, 23);
+		lblModel_1.setBounds(417, 148, 95, 23);
 		panel_1.add(lblModel_1);
 		
 		JLabel lblDevice_1 = new JLabel("Device");
 		lblDevice_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice_1.setBounds(357, 191, 95, 23);
+		lblDevice_1.setBounds(417, 191, 95, 23);
 		panel_1.add(lblDevice_1);
 		
 		JLabel lblNumber = new JLabel("Number:");
 		lblNumber.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNumber.setBounds(357, 212, 95, 23);
+		lblNumber.setBounds(417, 212, 95, 23);
 		panel_1.add(lblNumber);
 		
 		textField_3 = new JTextField();
 		textField_3.setToolTipText("Maximum for each room");
 		textField_3.setColumns(10);
-		textField_3.setBounds(460, 183, 237, 21);
+		textField_3.setBounds(520, 183, 237, 21);
 		panel_1.add(textField_3);
 		
 		textField_4 = new JTextField();
 		textField_4.setToolTipText("Maximum for each 100 meter square");
 		textField_4.setColumns(10);
-		textField_4.setBounds(460, 214, 237, 21);
+		textField_4.setBounds(520, 214, 237, 21);
 		panel_1.add(textField_4);
 		
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection.setBounds(357, 245, 95, 23);
+		lblDetection.setBounds(417, 245, 95, 23);
 		panel_1.add(lblDetection);
 		
 		JLabel lblRange = new JLabel("Range:");
 		lblRange.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRange.setBounds(357, 266, 95, 23);
+		lblRange.setBounds(417, 266, 95, 23);
 		panel_1.add(lblRange);
 		
 		textField_5 = new JTextField();
 		textField_5.setColumns(10);
-		textField_5.setBounds(460, 259, 237, 21);
+		textField_5.setBounds(520, 259, 237, 21);
 		panel_1.add(textField_5);
 		
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection_1.setBounds(357, 299, 95, 23);
+		lblDetection_1.setBounds(417, 299, 95, 23);
 		panel_1.add(lblDetection_1);
 		
 		JLabel lblFrequency = new JLabel("Frequency:");
 		lblFrequency.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFrequency.setBounds(357, 320, 95, 23);
+		lblFrequency.setBounds(417, 320, 95, 23);
 		panel_1.add(lblFrequency);
 		
 		textField_6 = new JTextField();
 		textField_6.setColumns(10);
-		textField_6.setBounds(460, 313, 237, 21);
+		textField_6.setBounds(520, 313, 237, 21);
 		panel_1.add(textField_6);
 		
 		btnStationGenerate = new JButton("Generate");
-		btnStationGenerate.setBounds(600, 344, 97, 23);
+		btnStationGenerate.setBounds(660, 344, 97, 23);
 		panel_1.add(btnStationGenerate);
 		
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovingObjectConfiguration.setBounds(357, 377, 237, 23);
+		lblMovingObjectConfiguration.setBounds(417, 377, 237, 23);
 		panel_1.add(lblMovingObjectConfiguration);
 		
 		JButton btnClear_1 = new JButton("Clear");
@@ -526,29 +526,42 @@ public class Home extends JApplet {
 				new MovingObjectsWindow().main(null);
 			}
 		});
-		btnClear_1.setBounds(600, 412, 97, 23);
+		btnClear_1.setBounds(660, 412, 97, 23);
 		panel_1.add(btnClear_1);
 		
 		JPanel panel_6 = new JPanel();
 		panel_6.setBackground(Color.LIGHT_GRAY);
-		panel_6.setBounds(357, 445, 340, 105);
+		panel_6.setBounds(417, 445, 340, 137);
 		panel_1.add(panel_6);
 		
 		btnObjectInit = new JButton("Init");
-		btnObjectInit.setBounds(377, 560, 97, 23);
+		btnObjectInit.setBounds(417, 621, 97, 23);
 		panel_1.add(btnObjectInit);
 		
 		btnObjectStart = new JButton("Start");
-		btnObjectStart.setBounds(480, 560, 97, 23);
+		btnObjectStart.setBounds(526, 621, 97, 23);
 		panel_1.add(btnObjectStart);
 		
 		btnObjectStop = new JButton("Stop");
-		btnObjectStop.setBounds(589, 560, 97, 23);
+		btnObjectStop.setBounds(635, 621, 97, 23);
 		panel_1.add(btnObjectStop);
 		
 		JButton btnUpload_1 = new JButton("Upload");
-		btnUpload_1.setBounds(497, 412, 97, 23);
+		btnUpload_1.setBounds(557, 412, 97, 23);
 		panel_1.add(btnUpload_1);
+		
+		chckbxTrajectory = new JCheckBox("Trajectory");
+		chckbxTrajectory.setBounds(516, 588, 105, 23);
+		panel_1.add(chckbxTrajectory);
+		
+		chckbxTracking = new JCheckBox("Raw RSSI");
+		chckbxTracking.setBounds(636, 588, 121, 23);
+		panel_1.add(chckbxTracking);
+		
+		JLabel label = new JLabel("Export:");
+		label.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label.setBounds(417, 585, 91, 23);
+		panel_1.add(label);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -556,80 +569,155 @@ public class Home extends JApplet {
 		
 		mapVisualPanel = new JPanel();
 		mapVisualPanel.setBackground(Color.WHITE);
-		mapVisualPanel.setBounds(12, 10, 333, 540);
+		mapVisualPanel.setBounds(12, 10, 418, 679);
 		panel_2.add(mapVisualPanel);
 		
 		JLabel lblBuildingDetails = new JLabel("Building Details");
 		lblBuildingDetails.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblBuildingDetails.setBounds(357, 10, 186, 23);
+		lblBuildingDetails.setBounds(442, 10, 186, 23);
 		panel_2.add(lblBuildingDetails);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(482, 45, 190, 23);
-		panel_2.add(comboBox_1);
+		floorCombobox = new JComboBox();
+		floorCombobox.setBounds(567, 45, 190, 23);
+		panel_2.add(floorCombobox);
 		
 		JLabel lblFloor = new JLabel("Floor:");
 		lblFloor.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFloor.setBounds(357, 43, 113, 23);
+		lblFloor.setBounds(442, 43, 113, 23);
 		panel_2.add(lblFloor);
 		
 		JLabel lblDetails = new JLabel("Details:");
 		lblDetails.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetails.setBounds(357, 111, 113, 23);
+		lblDetails.setBounds(442, 175, 113, 23);
 		panel_2.add(lblDetails);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(482, 113, 190, 65);
-		panel_2.add(textArea);
+		scrollPanePart = new JScrollPane();
+		scrollPanePart.setBounds(567, 177, 190, 65);
+		panel_2.add(scrollPanePart);
+		
+		connectedPartsModel = new DefaultListModel<Partition>();
+		connectedPartsList = new JList<Partition>(connectedPartsModel);
+		connectedPartsList.setBackground(Color.WHITE);
+		connectedPartsList.setFont(new Font("Dialog", Font.PLAIN, 14));
+		connectedPartsList.setVisibleRowCount(6);
+		connectedPartsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		connectedPartsList.setSelectedIndex(0);
+		connectedPartsList.setLayoutOrientation(JList.VERTICAL);
+		connectedPartsList.setBounds(20, 20, 300, 70);
+		scrollPanePart.setViewportView(connectedPartsList);
+
+		possibleConnectedPartsList = new ArrayList<>();
 		
 		JLabel lblRoom = new JLabel("Room:");
 		lblRoom.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRoom.setBounds(357, 78, 95, 23);
+		lblRoom.setBounds(442, 111, 95, 23);
 		panel_2.add(lblRoom);
 		
 		textField_8 = new JTextField();
 		textField_8.setEditable(false);
 		textField_8.setColumns(10);
-		textField_8.setBounds(482, 78, 190, 21);
+		textField_8.setBounds(567, 111, 190, 21);
 		panel_2.add(textField_8);
 		
 		JLabel lblMovementPatterns = new JLabel("Movement Patterns");
 		lblMovementPatterns.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovementPatterns.setBounds(357, 235, 186, 23);
+		lblMovementPatterns.setBounds(442, 275, 186, 23);
 		panel_2.add(lblMovementPatterns);
 		
 		JLabel lblStartDate = new JLabel("Start Date:");
 		lblStartDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblStartDate.setBounds(357, 268, 95, 23);
+		lblStartDate.setBounds(442, 308, 95, 23);
 		panel_2.add(lblStartDate);
 		
 		txtStartTime = new JTextField();
 		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(482, 268, 190, 21);
+		txtStartTime.setBounds(567, 308, 190, 21);
 		panel_2.add(txtStartTime);
 		
 		JLabel lblEndDate = new JLabel("End Date:");
 		lblEndDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblEndDate.setBounds(357, 301, 95, 23);
+		lblEndDate.setBounds(442, 341, 95, 23);
 		panel_2.add(lblEndDate);
 		
 		txtEndTime = new JTextField();
 		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(482, 301, 190, 21);
+		txtEndTime.setBounds(567, 341, 190, 21);
 		panel_2.add(txtEndTime);
 		
 		JButton btnShow = new JButton("Show");
-		btnShow.setBounds(575, 332, 97, 23);
+		btnShow.setBounds(660, 372, 97, 23);
 		panel_2.add(btnShow);
 		
 		btnDeleteFloor = new JButton("Clear");
-		btnDeleteFloor.setBounds(684, 45, 73, 23);
+		btnDeleteFloor.setBounds(684, 78, 73, 23);
 		panel_2.add(btnDeleteFloor);
 		
 		btnDeleteEntity = new JButton("Clear");
-		btnDeleteEntity.setBounds(684, 79, 73, 23);
+		btnDeleteEntity.setBounds(684, 142, 73, 23);
 		panel_2.add(btnDeleteEntity);
 		
+		JLabel lblPositioning = new JLabel("Positioning");
+		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblPositioning.setBounds(442, 418, 186, 23);
+		panel_2.add(lblPositioning);
+		
+		JLabel label_1 = new JLabel("Export:");
+		label_1.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_1.setBounds(442, 447, 87, 23);
+		panel_2.add(label_1);
+		
+		JCheckBox chckbxPositioningData = new JCheckBox("Positioning Data");
+		chckbxPositioningData.setBounds(567, 448, 123, 23);
+		panel_2.add(chckbxPositioningData);
+		
+		JLabel lblPositioning_1 = new JLabel("Positioning");
+		lblPositioning_1.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblPositioning_1.setBounds(442, 480, 113, 23);
+		panel_2.add(lblPositioning_1);
+		
+		JLabel lblAlgorithm = new JLabel("Algorithm:");
+		lblAlgorithm.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblAlgorithm.setBounds(442, 501, 113, 23);
+		panel_2.add(lblAlgorithm);
+		
+		positionAlgorithmComboBox = new JComboBox();
+		positionAlgorithmComboBox.setBounds(567, 494, 190, 21);
+		panel_2.add(positionAlgorithmComboBox);
+		
+		JLabel lblRssi = new JLabel("RSSI");
+		lblRssi.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblRssi.setBounds(442, 534, 113, 23);
+		panel_2.add(lblRssi);
+		
+		JLabel lblPath = new JLabel("Path:");
+		lblPath.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblPath.setBounds(442, 555, 113, 23);
+		panel_2.add(lblPath);
+		
+		txtRssiInputPath = new JTextField();
+		txtRssiInputPath.setColumns(10);
+		txtRssiInputPath.setBounds(567, 548, 190, 21);
+		panel_2.add(txtRssiInputPath);
+		
+		JLabel label_3 = new JLabel("Details:");
+		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_3.setBounds(442, 588, 113, 23);
+		panel_2.add(label_3);
+		
+		positionPropertiesScrollPane = new JScrollPane();
+		positionPropertiesScrollPane.setBounds(567, 590, 190, 65);
+		panel_2.add(positionPropertiesScrollPane);
+		
+		positionPropertiesArea = new JTextArea();
+		positionPropertiesArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+		positionPropertiesArea.setBackground(Color.WHITE);
+		positionPropertiesScrollPane.setViewportView(positionPropertiesArea);
+		positionPropertiesArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
+		
+		btnPositionGenerate = new JButton("Generate");
+		btnPositionGenerate.setBounds(660, 665, 97, 23);
+		panel_2.add(btnPositionGenerate);
+				
 		addActionListeners();
 		addFocusListeners();
 
@@ -1398,28 +1486,28 @@ public class Home extends JApplet {
 //				}
 //			});
 
-			positionAlgorithmComboBox.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					if (positionAlgorithmComboBox.getSelectedItem() != null) {
-						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-						loadAlgorithmProp(algorithmType);
-					}
-				}
-			});
-
-			chckbxPositiongData.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (chckbxPositiongData.isSelected() == true) {
-						Algorithm.exportFlag = true;
-					} else {
-						Algorithm.exportFlag = false;
-					}
-				}
-			});
+//			positionAlgorithmComboBox.addActionListener(new ActionListener() {
+//
+//				@Override
+//				public void actionPerformed(ActionEvent arg0) {
+//					if (positionAlgorithmComboBox.getSelectedItem() != null) {
+//						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+//						loadAlgorithmProp(algorithmType);
+//					}
+//				}
+//			});
+//
+//			chckbxPositiongData.addActionListener(new ActionListener() {
+//
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					if (chckbxPositiongData.isSelected() == true) {
+//						Algorithm.exportFlag = true;
+//					} else {
+//						Algorithm.exportFlag = false;
+//					}
+//				}
+//			});
 
 //			btnPositionGenerate.addActionListener(new ActionListener() {
 //
