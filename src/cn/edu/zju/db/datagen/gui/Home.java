@@ -80,6 +80,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
@@ -102,10 +105,14 @@ import cn.edu.zju.db.datagen.gui.util.calendar.JTimeChooser;
 import cn.edu.zju.db.datagen.indoorobject.IndoorObjsFactory;
 import cn.edu.zju.db.datagen.indoorobject.movingobject.DstMovingObj;
 import cn.edu.zju.db.datagen.indoorobject.movingobject.MovingObj;
+import cn.edu.zju.db.datagen.indoorobject.movingobject.MovingObjResponse;
 import cn.edu.zju.db.datagen.indoorobject.movingobject.RegularMultiDestCustomer;
 import cn.edu.zju.db.datagen.indoorobject.station.Pack;
 import cn.edu.zju.db.datagen.indoorobject.station.Station;
 import cn.edu.zju.db.datagen.indoorobject.utility.IdrObjsUtility;
+import cn.edu.zju.db.datagen.json.DateSerializer;
+import cn.edu.zju.db.datagen.json.TimeDeserializer;
+import cn.edu.zju.db.datagen.json.TimeSerializer;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import diva.util.java2d.Polygon2D;
 import javax.swing.ListModel;
@@ -218,6 +225,7 @@ public class Home extends JApplet {
 	private Calendar endCalendar;
 
 	private MapPainter mapPainter;
+	private MapVisualPainter mapVisualPainter;
 	private Connection connection = null;
 	private Floor chosenFloor = null;
 	private Partition selectedPart = null;
@@ -294,12 +302,12 @@ public class Home extends JApplet {
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("Trajectory Generator");
-		frmTrajectoryGenerator.setBounds(100, 100, 790, 810);
+		frmTrajectoryGenerator.setBounds(100, 100, 940, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
 		
 		JPanel filePanel = new JPanel();
-		filePanel.setBounds(0, 0, 774, 45);
+		filePanel.setBounds(0, 0, 924, 45);
 		frmTrajectoryGenerator.getContentPane().add(filePanel);
 		filePanel.setLayout(null);
 		
@@ -324,7 +332,7 @@ public class Home extends JApplet {
 		filePanel.add(btnDecompAll);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 43, 774, 728);
+		tabbedPane.setBounds(0, 43, 924, 853);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
@@ -333,7 +341,7 @@ public class Home extends JApplet {
 		
 		JLabel lblMachineConfiguration = new JLabel("Machine Configuration");
 		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMachineConfiguration.setBounds(442, 20, 186, 23);
+		lblMachineConfiguration.setBounds(504, 10, 186, 23);
 		panel.add(lblMachineConfiguration);
 		
 		JButton btnMachineClear = new JButton("Clear");
@@ -343,69 +351,83 @@ public class Home extends JApplet {
 				panel.main(null);
 			}
 		});
-		btnMachineClear.setBounds(660, 55, 97, 23);
+		btnMachineClear.setBounds(725, 78, 97, 23);
 		panel.add(btnMachineClear);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.LIGHT_GRAY);
-		panel_3.setBounds(442, 88, 315, 105);
+		panel_3.setBounds(504, 109, 318, 105);
 		panel.add(panel_3);
 		
 		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
 		lblTrainingConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblTrainingConfiguration.setBounds(442, 203, 186, 23);
+		lblTrainingConfiguration.setBounds(504, 224, 186, 23);
 		panel.add(lblTrainingConfiguration);
 		
 		JButton button = new JButton("Load");
-		button.setBounds(442, 343, 97, 23);
+		button.setBounds(504, 375, 97, 23);
 		panel.add(button);
 		
 		JButton btnClear = new JButton("Clear");
-		btnClear.setBounds(551, 343, 97, 23);
+		btnClear.setBounds(613, 375, 97, 23);
 		panel.add(btnClear);
 		
 		JButton btnTrain = new JButton("Train");
-		btnTrain.setBounds(660, 343, 97, 23);
+		btnTrain.setBounds(725, 375, 97, 23);
 		panel.add(btnTrain);
 		
 		txtConsoleArea = new JTextArea();
 		txtConsoleArea.setEditable(false);
 		txtConsoleArea.setBackground(Color.WHITE);
-		txtConsoleArea.setBounds(12, 10, 418, 679);
+		txtConsoleArea.setBounds(12, 10, 480, 804);
 		panel.add(txtConsoleArea);
 		
 		JLabel lblNeuralNetwork = new JLabel("Neural Network");
 		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNeuralNetwork.setBounds(442, 289, 113, 23);
+		lblNeuralNetwork.setBounds(504, 310, 113, 23);
 		panel.add(lblNeuralNetwork);
 		
 		JLabel label_2 = new JLabel("Model:");
 		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_2.setBounds(442, 310, 113, 23);
+		label_2.setBounds(504, 331, 113, 23);
 		panel.add(label_2);
 		
 		textField_7 = new JComboBox();
-		textField_7.setBounds(567, 303, 190, 21);
+		textField_7.setBounds(629, 324, 193, 21);
 		panel.add(textField_7);
 		
 		JLabel lblTraining = new JLabel("Training");
 		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblTraining.setBounds(442, 236, 113, 23);
+		lblTraining.setBounds(504, 257, 113, 23);
 		panel.add(lblTraining);
 		
 		JLabel lblIteration = new JLabel("Iteration:");
 		lblIteration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblIteration.setBounds(442, 257, 113, 23);
+		lblIteration.setBounds(504, 278, 113, 23);
 		panel.add(lblIteration);
 		
 		textField = new JTextField();
 		textField.setColumns(10);
-		textField.setBounds(567, 250, 190, 21);
+		textField.setBounds(629, 271, 193, 21);
 		panel.add(textField);
 		
 		btnMachineUpload = new JButton("Upload");
-		btnMachineUpload.setBounds(551, 55, 97, 23);
+		btnMachineUpload.setBounds(616, 78, 97, 23);
 		panel.add(btnMachineUpload);
+		
+		JLabel label_4 = new JLabel("Configuration");
+		label_4.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_4.setBounds(504, 43, 113, 23);
+		panel.add(label_4);
+		
+		JLabel label_5 = new JLabel("Files:");
+		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_5.setBounds(504, 64, 113, 23);
+		panel.add(label_5);
+		
+		JComboBox<UploadObject> comboBox_1 = new JComboBox<UploadObject>();
+		comboBox_1.setBounds(619, 45, 203, 23);
+		panel.add(comboBox_1);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Generator", null, panel_1, null);
@@ -413,114 +435,114 @@ public class Home extends JApplet {
 		
 		mapPanel = new JPanel();
 		mapPanel.setBackground(Color.WHITE);
-		mapPanel.setBounds(12, 10, 393, 679);
+		mapPanel.setBounds(12, 10, 515, 804);
 		panel_1.add(mapPanel);
 		
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblDeviceConfiguration.setBounds(417, 10, 186, 23);
+		lblDeviceConfiguration.setBounds(567, 20, 186, 23);
 		panel_1.add(lblDeviceConfiguration);
 		
 		JLabel lblExport = new JLabel("Export:");
 		lblExport.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblExport.setBounds(417, 40, 95, 23);
+		lblExport.setBounds(567, 50, 95, 23);
 		panel_1.add(lblExport);
 		
 		JCheckBox chckbxEnvironment = new JCheckBox("Environment");
-		chckbxEnvironment.setBounds(520, 43, 105, 23);
+		chckbxEnvironment.setBounds(670, 53, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
 		JCheckBox chckbxDevicePosition = new JCheckBox("Device Position");
-		chckbxDevicePosition.setBounds(640, 43, 121, 23);
+		chckbxDevicePosition.setBounds(790, 53, 121, 23);
 		panel_1.add(chckbxDevicePosition);
 		
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice.setBounds(417, 73, 95, 23);
+		lblDevice.setBounds(567, 83, 95, 23);
 		panel_1.add(lblDevice);
 		
 		JLabel lblType = new JLabel("Type:");
 		lblType.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblType.setBounds(417, 94, 95, 23);
+		lblType.setBounds(567, 104, 95, 23);
 		panel_1.add(lblType);
 		
 		stationTypeComboBox = new JComboBox();
-		stationTypeComboBox.setBounds(520, 87, 237, 21);
+		stationTypeComboBox.setBounds(670, 97, 237, 21);
 		panel_1.add(stationTypeComboBox);
 		
 		stationDistriTypeComboBox = new JComboBox();
-		stationDistriTypeComboBox.setBounds(520, 141, 237, 21);
+		stationDistriTypeComboBox.setBounds(670, 151, 237, 21);
 		panel_1.add(stationDistriTypeComboBox);
 		
 		JLabel lblDeployment = new JLabel("Deployment");
 		lblDeployment.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDeployment.setBounds(417, 127, 95, 23);
+		lblDeployment.setBounds(567, 137, 95, 23);
 		panel_1.add(lblDeployment);
 		
 		JLabel lblModel_1 = new JLabel("Model:");
 		lblModel_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblModel_1.setBounds(417, 148, 95, 23);
+		lblModel_1.setBounds(567, 158, 95, 23);
 		panel_1.add(lblModel_1);
 		
 		JLabel lblDevice_1 = new JLabel("Device");
 		lblDevice_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice_1.setBounds(417, 191, 95, 23);
+		lblDevice_1.setBounds(567, 201, 95, 23);
 		panel_1.add(lblDevice_1);
 		
 		JLabel lblNumber = new JLabel("Number:");
 		lblNumber.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNumber.setBounds(417, 212, 95, 23);
+		lblNumber.setBounds(567, 222, 95, 23);
 		panel_1.add(lblNumber);
 		
 		textField_3 = new JTextField();
 		textField_3.setToolTipText("Maximum for each room");
 		textField_3.setColumns(10);
-		textField_3.setBounds(520, 183, 237, 21);
+		textField_3.setBounds(670, 193, 237, 21);
 		panel_1.add(textField_3);
 		
 		textField_4 = new JTextField();
 		textField_4.setToolTipText("Maximum for each 100 meter square");
 		textField_4.setColumns(10);
-		textField_4.setBounds(520, 214, 237, 21);
+		textField_4.setBounds(670, 224, 237, 21);
 		panel_1.add(textField_4);
 		
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection.setBounds(417, 245, 95, 23);
+		lblDetection.setBounds(567, 255, 95, 23);
 		panel_1.add(lblDetection);
 		
 		JLabel lblRange = new JLabel("Range:");
 		lblRange.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRange.setBounds(417, 266, 95, 23);
+		lblRange.setBounds(567, 276, 95, 23);
 		panel_1.add(lblRange);
 		
 		textField_5 = new JTextField();
 		textField_5.setColumns(10);
-		textField_5.setBounds(520, 259, 237, 21);
+		textField_5.setBounds(670, 269, 237, 21);
 		panel_1.add(textField_5);
 		
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection_1.setBounds(417, 299, 95, 23);
+		lblDetection_1.setBounds(567, 309, 95, 23);
 		panel_1.add(lblDetection_1);
 		
 		JLabel lblFrequency = new JLabel("Frequency:");
 		lblFrequency.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFrequency.setBounds(417, 320, 95, 23);
+		lblFrequency.setBounds(567, 330, 95, 23);
 		panel_1.add(lblFrequency);
 		
 		textField_6 = new JTextField();
 		textField_6.setColumns(10);
-		textField_6.setBounds(520, 313, 237, 21);
+		textField_6.setBounds(670, 323, 237, 21);
 		panel_1.add(textField_6);
 		
 		btnStationGenerate = new JButton("Generate");
-		btnStationGenerate.setBounds(660, 344, 97, 23);
+		btnStationGenerate.setBounds(810, 354, 97, 23);
 		panel_1.add(btnStationGenerate);
 		
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovingObjectConfiguration.setBounds(417, 377, 237, 23);
+		lblMovingObjectConfiguration.setBounds(567, 387, 237, 23);
 		panel_1.add(lblMovingObjectConfiguration);
 		
 		JButton btnClear_1 = new JButton("Clear");
@@ -529,42 +551,64 @@ public class Home extends JApplet {
 				new MovingObjectsWindow().main(null);
 			}
 		});
-		btnClear_1.setBounds(660, 412, 97, 23);
+		btnClear_1.setBounds(810, 453, 97, 23);
 		panel_1.add(btnClear_1);
 		
 		JPanel panel_6 = new JPanel();
 		panel_6.setBackground(Color.LIGHT_GRAY);
-		panel_6.setBounds(417, 445, 340, 137);
+		panel_6.setBounds(567, 486, 340, 137);
 		panel_1.add(panel_6);
 		
 		btnObjectInit = new JButton("Init");
-		btnObjectInit.setBounds(417, 621, 97, 23);
+		btnObjectInit.setBounds(705, 661, 97, 23);
 		panel_1.add(btnObjectInit);
 		
 		btnObjectStart = new JButton("Start");
-		btnObjectStart.setBounds(526, 621, 97, 23);
+		btnObjectStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnObjectStart.setBounds(810, 661, 97, 23);
 		panel_1.add(btnObjectStart);
 		
 		btnObjectStop = new JButton("Stop");
-		btnObjectStop.setBounds(635, 621, 97, 23);
+		btnObjectStop.setBounds(707, 694, 97, 23);
 		panel_1.add(btnObjectStop);
 		
 		btnMovingObjUpload = new JButton("Upload");
-		btnMovingObjUpload.setBounds(557, 412, 97, 23);
+		btnMovingObjUpload.setBounds(707, 453, 97, 23);
 		panel_1.add(btnMovingObjUpload);
 		
 		chckbxTrajectory = new JCheckBox("Trajectory");
-		chckbxTrajectory.setBounds(516, 588, 105, 23);
+		chckbxTrajectory.setBounds(666, 632, 105, 23);
 		panel_1.add(chckbxTrajectory);
 		
 		chckbxTracking = new JCheckBox("Raw RSSI");
-		chckbxTracking.setBounds(636, 588, 121, 23);
+		chckbxTracking.setBounds(786, 632, 121, 23);
 		panel_1.add(chckbxTracking);
 		
 		JLabel label = new JLabel("Export:");
 		label.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label.setBounds(417, 585, 91, 23);
+		label.setBounds(567, 629, 91, 23);
 		panel_1.add(label);
+		
+		JComboBox<UploadObject> comboBox = new JComboBox<UploadObject>();
+		comboBox.setBounds(682, 420, 225, 23);
+		panel_1.add(comboBox);
+		
+		JLabel lblConfiguration = new JLabel("Configuration");
+		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblConfiguration.setBounds(567, 418, 113, 23);
+		panel_1.add(lblConfiguration);
+		
+		JLabel lblFiles = new JLabel("Files:");
+		lblFiles.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblFiles.setBounds(567, 439, 113, 23);
+		panel_1.add(lblFiles);
+		
+		btnSnapShot = new JButton("Capture");
+		btnSnapShot.setBounds(810, 694, 97, 23);
+		panel_1.add(btnSnapShot);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -572,30 +616,30 @@ public class Home extends JApplet {
 		
 		mapVisualPanel = new JPanel();
 		mapVisualPanel.setBackground(Color.WHITE);
-		mapVisualPanel.setBounds(12, 10, 418, 679);
+		mapVisualPanel.setBounds(12, 10, 519, 804);
 		panel_2.add(mapVisualPanel);
 		
 		JLabel lblBuildingDetails = new JLabel("Building Details");
 		lblBuildingDetails.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblBuildingDetails.setBounds(442, 10, 186, 23);
+		lblBuildingDetails.setBounds(543, 10, 186, 23);
 		panel_2.add(lblBuildingDetails);
 		
 		floorCombobox = new JComboBox();
-		floorCombobox.setBounds(567, 45, 190, 23);
+		floorCombobox.setBounds(668, 45, 190, 23);
 		panel_2.add(floorCombobox);
 		
 		JLabel lblFloor = new JLabel("Floor:");
 		lblFloor.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFloor.setBounds(442, 43, 113, 23);
+		lblFloor.setBounds(543, 43, 113, 23);
 		panel_2.add(lblFloor);
 		
 		JLabel lblDetails = new JLabel("Details:");
 		lblDetails.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetails.setBounds(442, 175, 113, 23);
+		lblDetails.setBounds(543, 175, 113, 23);
 		panel_2.add(lblDetails);
 		
 		scrollPanePart = new JScrollPane();
-		scrollPanePart.setBounds(567, 177, 190, 65);
+		scrollPanePart.setBounds(668, 177, 190, 65);
 		panel_2.add(scrollPanePart);
 		
 		connectedPartsModel = new DefaultListModel<Partition>();
@@ -613,102 +657,102 @@ public class Home extends JApplet {
 		
 		JLabel lblRoom = new JLabel("Room:");
 		lblRoom.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRoom.setBounds(442, 111, 95, 23);
+		lblRoom.setBounds(543, 111, 95, 23);
 		panel_2.add(lblRoom);
 		
-		textField_8 = new JTextField();
-		textField_8.setEditable(false);
-		textField_8.setColumns(10);
-		textField_8.setBounds(567, 111, 190, 21);
-		panel_2.add(textField_8);
+		txtselectedNameField = new JTextField();
+		txtselectedNameField.setEditable(false);
+		txtselectedNameField.setColumns(10);
+		txtselectedNameField.setBounds(668, 111, 190, 21);
+		panel_2.add(txtselectedNameField);
 		
 		JLabel lblMovementPatterns = new JLabel("Movement Patterns");
 		lblMovementPatterns.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovementPatterns.setBounds(442, 275, 186, 23);
+		lblMovementPatterns.setBounds(543, 275, 186, 23);
 		panel_2.add(lblMovementPatterns);
 		
 		JLabel lblStartDate = new JLabel("Start Date:");
 		lblStartDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblStartDate.setBounds(442, 308, 95, 23);
+		lblStartDate.setBounds(543, 308, 95, 23);
 		panel_2.add(lblStartDate);
 		
 		txtStartTime = new JTextField();
 		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(567, 308, 190, 21);
+		txtStartTime.setBounds(668, 308, 190, 21);
 		panel_2.add(txtStartTime);
 		
 		JLabel lblEndDate = new JLabel("End Date:");
 		lblEndDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblEndDate.setBounds(442, 341, 95, 23);
+		lblEndDate.setBounds(543, 341, 95, 23);
 		panel_2.add(lblEndDate);
 		
 		txtEndTime = new JTextField();
 		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(567, 341, 190, 21);
+		txtEndTime.setBounds(668, 341, 190, 21);
 		panel_2.add(txtEndTime);
 		
 		JButton btnShow = new JButton("Show");
-		btnShow.setBounds(660, 372, 97, 23);
+		btnShow.setBounds(761, 372, 97, 23);
 		panel_2.add(btnShow);
 		
 		btnDeleteFloor = new JButton("Clear");
-		btnDeleteFloor.setBounds(684, 78, 73, 23);
+		btnDeleteFloor.setBounds(785, 78, 73, 23);
 		panel_2.add(btnDeleteFloor);
 		
 		btnDeleteEntity = new JButton("Clear");
-		btnDeleteEntity.setBounds(684, 142, 73, 23);
+		btnDeleteEntity.setBounds(785, 142, 73, 23);
 		panel_2.add(btnDeleteEntity);
 		
 		JLabel lblPositioning = new JLabel("Positioning");
 		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblPositioning.setBounds(442, 418, 186, 23);
+		lblPositioning.setBounds(543, 418, 186, 23);
 		panel_2.add(lblPositioning);
 		
 		JLabel label_1 = new JLabel("Export:");
 		label_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_1.setBounds(442, 447, 87, 23);
+		label_1.setBounds(543, 447, 87, 23);
 		panel_2.add(label_1);
 		
 		JCheckBox chckbxPositioningData = new JCheckBox("Positioning Data");
-		chckbxPositioningData.setBounds(567, 448, 123, 23);
+		chckbxPositioningData.setBounds(668, 448, 123, 23);
 		panel_2.add(chckbxPositioningData);
 		
 		JLabel lblPositioning_1 = new JLabel("Positioning");
 		lblPositioning_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPositioning_1.setBounds(442, 480, 113, 23);
+		lblPositioning_1.setBounds(543, 480, 113, 23);
 		panel_2.add(lblPositioning_1);
 		
 		JLabel lblAlgorithm = new JLabel("Algorithm:");
 		lblAlgorithm.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblAlgorithm.setBounds(442, 501, 113, 23);
+		lblAlgorithm.setBounds(543, 501, 113, 23);
 		panel_2.add(lblAlgorithm);
 		
 		positionAlgorithmComboBox = new JComboBox();
-		positionAlgorithmComboBox.setBounds(567, 494, 190, 21);
+		positionAlgorithmComboBox.setBounds(668, 494, 190, 21);
 		panel_2.add(positionAlgorithmComboBox);
 		
 		JLabel lblRssi = new JLabel("RSSI");
 		lblRssi.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRssi.setBounds(442, 534, 113, 23);
+		lblRssi.setBounds(543, 534, 113, 23);
 		panel_2.add(lblRssi);
 		
 		JLabel lblPath = new JLabel("Path:");
 		lblPath.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPath.setBounds(442, 555, 113, 23);
+		lblPath.setBounds(543, 555, 113, 23);
 		panel_2.add(lblPath);
 		
 		txtRssiInputPath = new JTextField();
 		txtRssiInputPath.setColumns(10);
-		txtRssiInputPath.setBounds(567, 548, 190, 21);
+		txtRssiInputPath.setBounds(668, 548, 190, 21);
 		panel_2.add(txtRssiInputPath);
 		
 		JLabel label_3 = new JLabel("Details:");
 		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_3.setBounds(442, 588, 113, 23);
+		label_3.setBounds(543, 588, 113, 23);
 		panel_2.add(label_3);
 		
 		positionPropertiesScrollPane = new JScrollPane();
-		positionPropertiesScrollPane.setBounds(567, 590, 190, 65);
+		positionPropertiesScrollPane.setBounds(668, 590, 239, 99);
 		panel_2.add(positionPropertiesScrollPane);
 		
 		positionPropertiesArea = new JTextArea();
@@ -718,7 +762,11 @@ public class Home extends JApplet {
 		positionPropertiesArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		
 		btnPositionGenerate = new JButton("Generate");
-		btnPositionGenerate.setBounds(660, 665, 97, 23);
+		btnPositionGenerate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnPositionGenerate.setBounds(810, 699, 97, 23);
 		panel_2.add(btnPositionGenerate);
 				
 		addActionListeners();
@@ -888,7 +936,7 @@ public class Home extends JApplet {
 	private void toggleMovingObjectGenerationBtns(boolean state) {
 		btnObjectStart.setEnabled(state);
 		btnObjectStop.setEnabled(state);
-//		btnSnapShot.setEnabled(state);
+		btnSnapShot.setEnabled(state);
 	}
 
 	private void switchStateForButtons(int state) {
@@ -956,7 +1004,7 @@ public class Home extends JApplet {
 		
 		btnMovingObjUpload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				uploadFile();
+				uploadObjectFile();
 			}
 		});
 
@@ -1137,38 +1185,25 @@ public class Home extends JApplet {
 
 			// load moving objects
 			try {
-				JsonReader jsonReader = new JsonReader(new FileReader(file));
-				
-			    jsonReader.beginObject();
-
-			    while (jsonReader.hasNext()) {
-
-			    String name = jsonReader.nextName();
-			        if (name.equals("descriptor")) {
-			             readApp(jsonReader);
-			        }
-			    }
-
-			   jsonReader.endObject();
-			   jsonReader.close();
-			} catch (IOException e) {
+				GsonBuilder gsonBuilder = new GsonBuilder();
+				gsonBuilder.registerTypeAdapter(Date.class, new TimeSerializer());
+				gsonBuilder.registerTypeAdapter(Date.class, new TimeDeserializer());
+				Gson gson = gsonBuilder
+						.setPrettyPrinting()
+						.serializeNulls()
+						.create();
+				JsonReader reader = new JsonReader(new FileReader(file));
+				reader.setLenient(true);
+				MovingObjResponse[] objects = gson.fromJson(reader, MovingObjResponse[].class);
+				System.out.println(objects[0].getAge());
+				// Show the file in panel
+			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			// Show the file in panel
 		}
 	}
 	
-	public static void readApp(JsonReader jsonReader) throws IOException{
-	    jsonReader.beginObject();
-	     while (jsonReader.hasNext()) {
-	         String name = jsonReader.nextName();
-	         System.out.println(name);
-	     }
-	     jsonReader.endObject();
-	}
-
 	private boolean isFileExisted(UploadObject uploadFile) {
 		for (UploadObject uo : files) {
 			if (uploadFile.getFilename().equals(uo.getFilename())
@@ -1188,7 +1223,7 @@ public class Home extends JApplet {
 			Logger lgr = Logger.getLogger(PreparedStatement.class.getName());
 			lgr.log(Level.SEVERE, ex.getMessage(), ex);
 		}
-		// Close the preparedstatement and connection if necessary.
+		// Close the prepared statement and connection if necessary.
 		finally {
 			try {
 				if (connection != null) {
@@ -1215,8 +1250,11 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-			mapPainter = new MapPainter(fileChosen.getUploadId());
-			mapPanel.add(mapPainter);
+//			mapPainter = new MapPainter(fileChosen.getUploadId());
+//			mapPanel.add(mapPainter);
+			mapVisualPainter = new MapVisualPainter(fileChosen.getUploadId());
+			mapVisualPanel.add(mapVisualPainter);
+			
 			switchStateForButtons(InteractionState.AFTER_VIEW_FILE_NO_CHANGE);
 			printPartAPInfo();
 		} else if (n == JOptionPane.NO_OPTION) {
@@ -1298,7 +1336,8 @@ public class Home extends JApplet {
 		}
 
 	}
-
+	
+	// Generator Map Class
 	private class MapPainter extends JPanel {
 
 		private MovingAdapter ma = new MovingAdapter();
@@ -1313,7 +1352,7 @@ public class Home extends JApplet {
 
 			btnObjectStart.setEnabled(false);
 			btnObjectStop.setEnabled(false);
-//			btnSnapShot.setEnabled(false);
+			btnSnapShot.setEnabled(false);
 
 			loadFloorChooser();
 
@@ -1321,7 +1360,7 @@ public class Home extends JApplet {
 			addMapPainterActionListener();
 
 			initUCLComboBox();
-			loadPropFromFile("conf/pattern.properties");
+//			loadPropFromFile("conf/pattern.properties");
 
 			addMouseMotionListener(ma);
 			addMouseWheelListener(ma);
@@ -1544,17 +1583,17 @@ public class Home extends JApplet {
 								btnObjectInit.setEnabled(false);
 								btnObjectStart.setText("Pause");
 								btnObjectStop.setEnabled(true);
-//								btnSnapShot.setEnabled(false);
+								btnSnapShot.setEnabled(false);
 								setStartEndTimer();
 								updateAlgProps();
 							}
 						}
 					} else if (btnObjectStart.getText().equals("Pause")) {
-//						btnSnapShot.setEnabled(true);
+						btnSnapShot.setEnabled(true);
 						pauseIndoorObj();
 						btnObjectStart.setText("Resume");
 					} else if (btnObjectStart.getText().equals("Resume")) {
-//						btnSnapShot.setEnabled(false);
+						btnSnapShot.setEnabled(false);
 						pauseIndoorObj();
 						btnObjectStart.setText("Pause");
 					}
@@ -1572,34 +1611,34 @@ public class Home extends JApplet {
 					btnObjectStart.setEnabled(false);
 					btnObjectStop.setEnabled(false);
 					btnObjectStart.setText("Start");
-//					btnSnapShot.setEnabled(false);
+					btnSnapShot.setEnabled(false);
 					// System.out.println(IdrObjsUtility.trajDir);
 				}
 
 			});
 
-//			btnSnapShot.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					String outputPath = decideOutputPath();
-//					if (outputPath != null) {
-//						createSnapshotOutputDir(outputPath);
-//						snapShot(movingObjs);
-//					}
-//
-//				}
-//			});
+			btnSnapShot.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String outputPath = decideOutputPath();
+					if (outputPath != null) {
+						createSnapshotOutputDir(outputPath);
+						snapShot(movingObjs);
+					}
 
-//			positionAlgorithmComboBox.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent arg0) {
-//					if (positionAlgorithmComboBox.getSelectedItem() != null) {
-//						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-//						loadAlgorithmProp(algorithmType);
-//					}
-//				}
-//			});
-//
+				}
+			});
+
+			positionAlgorithmComboBox.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					if (positionAlgorithmComboBox.getSelectedItem() != null) {
+						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+						loadAlgorithmProp(algorithmType);
+					}
+				}
+			});
+
 //			chckbxPositiongData.addActionListener(new ActionListener() {
 //
 //				@Override
@@ -1612,49 +1651,49 @@ public class Home extends JApplet {
 //				}
 //			});
 
-//			btnPositionGenerate.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent arg0) {
-//					if (chckbxPositiongData.isSelected()) {
-//						String outputPath = decideOutputPath();
-//						if (outputPath != null) {
-//							String postioningOutputPath = createPositioningOutputDir(outputPath);
-//							storeAlgProp();
-//							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-//
-//							ExecutorService threadPool = Executors.newCachedThreadPool();
-//
-//							if ("Trilateration".equals(selected_algorithm)) {
-//								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								tri.calAlgorithmForAll(threadPool);
-//							} else if ("Fingerprinting".equals(selected_algorithm)) {
-//								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								fpt.calAlgorithmForAll(threadPool);
-//							} else {
-//								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
-//										postioningOutputPath);
-//								pxm.calAlgorithmForAll(threadPool);
-//							}
-//							exportPositioningConfiguration(postioningOutputPath);
-//
-//							threadPool.shutdown();
-//
-//							try {
-//								threadPool.awaitTermination(50, TimeUnit.SECONDS);
-//							} catch (InterruptedException e) {
-//								//
-//								e.printStackTrace();
-//							}
-//
-//							JOptionPane.showMessageDialog(this, "Generating Indoor Positioning Data is done!",
-//									"Information", JOptionPane.INFORMATION_MESSAGE);
-//						}
-//					}
-//				}
-//			});
+			btnPositionGenerate.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					if (chckbxPositiongData.isSelected()) {
+						String outputPath = decideOutputPath();
+						if (outputPath != null) {
+							String postioningOutputPath = createPositioningOutputDir(outputPath);
+							storeAlgProp();
+							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+
+							ExecutorService threadPool = Executors.newCachedThreadPool();
+
+							if ("Trilateration".equals(selected_algorithm)) {
+								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								tri.calAlgorithmForAll(threadPool);
+							} else if ("Fingerprinting".equals(selected_algorithm)) {
+								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								fpt.calAlgorithmForAll(threadPool);
+							} else {
+								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
+										postioningOutputPath);
+								pxm.calAlgorithmForAll(threadPool);
+							}
+							exportPositioningConfiguration(postioningOutputPath);
+
+							threadPool.shutdown();
+
+							try {
+								threadPool.awaitTermination(50, TimeUnit.SECONDS);
+							} catch (InterruptedException e) {
+								//
+								e.printStackTrace();
+							}
+
+							// JOptionPane.showMessageDialog(this, "Generating Indoor Positioning Data is done!",
+							//		"Information", JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+				}
+			});
 
 		}
 
@@ -1855,9 +1894,9 @@ public class Home extends JApplet {
 				btnObjectStop.removeActionListener(al);
 			}
 
-//			for (ActionListener al : btnSnapShot.getActionListeners()) {
-//				btnSnapShot.removeActionListener(al);
-//			}
+			for (ActionListener al : btnSnapShot.getActionListeners()) {
+				btnSnapShot.removeActionListener(al);
+			}
 
 			for (ActionListener al : stationTypeComboBox.getActionListeners()) {
 				stationTypeComboBox.removeActionListener(al);
@@ -1867,9 +1906,9 @@ public class Home extends JApplet {
 		private void initUCLComboBox() {
 			initStationTypeMap();
 			initStationInitMap();
-			initMovingObjTypeMap();
-			initMovObjInitMap();
-			initAlgorithmMap();
+//			initMovingObjTypeMap();
+//			initMovObjInitMap();
+//			initAlgorithmMap();
 		}
 
 		private void initStationTypeMap() {
@@ -1901,12 +1940,12 @@ public class Home extends JApplet {
 				BufferedReader buff = new BufferedReader(fileReader);
 				String line;
 				movingObjTypeMap.clear();
-				movingObjectTypeComboBox.removeAllItems();
+//				movingObjectTypeComboBox.removeAllItems();
 				while ((line = buff.readLine()) != null) {
 					String[] splitedString = new String[2];
 					splitedString = line.split("=");
 					movingObjTypeMap.put(splitedString[0], splitedString[1]);
-					movingObjectTypeComboBox.addItem(splitedString[0]);
+//					movingObjectTypeComboBox.addItem(splitedString[0]);
 				}
 				fileReader.close();
 				buff.close();
@@ -2005,6 +2044,1337 @@ public class Home extends JApplet {
 						positionAlgorithmMap.put(splitedString[0], splitedString[1]);
 						positionAlgorithmComboBox.addItem(splitedString[0]);
 					}
+				}
+				fileReader.close();
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			chosenFloor = (Floor) floorCombobox.getSelectedItem();
+
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			AffineTransform tx = getCurrentTransform();
+
+			Stroke Pen1, Pen2, PenDash;
+			Pen1 = new BasicStroke(1.5F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+			Pen2 = new BasicStroke(3.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+			float dash1[] = { 5.0f };
+			PenDash = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
+
+			paintIFCObjects(chosenFloor, g2, tx, Pen1, Pen2, PenDash);
+
+			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
+			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
+			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
+
+			// Point2D.Double point1 = new Point2D.Double(343, 250);
+			// DstMovingObj dstMovingObj = new
+			// DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
+			// dstMovingObj.setCurrentPartition(IdrObjsUtility.findPartitionForPoint(DB_WrapperLoad.floorT.get(1),
+			// point1));
+			// Point2D.Double point2 = new Point2D.Double(405, 180);
+			// dstMovingObj.setCurDestPoint(point2);
+			// dstMovingObj.setCurDestFloor(DB_WrapperLoad.floorT.get(2));
+			// // paintTrajectory(g2, tx, Pen2, dstMovingObj, chosenFloor);
+		}
+
+		private void paintIFCObjects(Floor chosenFloor, Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2,
+				Stroke PenDash) {
+			empty = false;
+
+			if (chosenFloor == null) {
+				empty = true;
+
+			} else if (chosenFloor.getPartitions().isEmpty()) {
+				empty = true;
+			}
+
+			if (!empty) {
+				paintPartitions(g2, tx, Pen1, Pen2);
+				paintAccessPoints(g2, tx, PenDash, Pen1);
+				paintConnectors(g2, tx, Pen1, PenDash);
+			} else {
+				g2.drawString("No partitions on this floor!", 100, 300);
+			}
+		}
+
+		private void paintPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
+			partitionsMap.clear();
+			for (Partition r : chosenFloor.getPartsAfterDecomposed()) {
+				Polygon2D.Double po = r.getPolygon2D();
+
+				Path2D poNew = (Path2D) tx.createTransformedShape(po);
+				partitionsMap.put(poNew, r);
+
+				if (r == selectedPart) {
+					g2.setColor(new Color(74, 144, 226));
+				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
+					g2.setColor(new Color(103, 109, 116));
+				} else {
+					g2.setColor(new Color(249, 248, 246));
+				}
+				g2.fill(poNew);
+
+				if (r == selectedPart) {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				} else {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				}
+				g2.draw(poNew);
+
+				paintNameOnPart(r, g2, poNew);
+			}
+			if (selectedPart != null) {
+				paintConnectedPartitions(g2, tx, Pen1, Pen2);
+			}
+		}
+
+		private void paintNameOnPart(Partition r, Graphics2D g2, Path2D poNew) {
+			if (r.getPolygonGIS().numPoints() < 6) {
+
+				String s = r.getName();
+
+				FontRenderContext frc = g2.getFontRenderContext();
+				Font font = g2.getFont().deriveFont(10f);
+				g2.setColor(Color.black);
+				g2.setFont(font);
+				float sw = (float) font.getStringBounds(s, frc).getWidth();
+				LineMetrics lm = font.getLineMetrics(s, frc);
+				float sh = lm.getAscent() + lm.getDescent();
+
+				float sx = (float) (poNew.getBounds2D().getX() + (poNew.getBounds2D().getWidth() - sw) / 2);
+				float sy = (float) (poNew.getBounds2D().getY() + (poNew.getBounds2D().getHeight() + sh) / 2
+						- lm.getDescent());
+				g2.drawString(s, sx, sy);
+			}
+		}
+
+		private void paintConnectedPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
+			for (Partition part : selectedPart.getConParts()) {
+				if (part.getFloor() != selectedPart.getFloor()) {
+					continue;
+				}
+				Polygon2D.Double po = part.getPolygon2D();
+				Path2D poNew = (Path2D) tx.createTransformedShape(po);
+
+				g2.setColor(new Color(203, 209, 216));
+				g2.fill(poNew);
+
+				g2.setColor(new Color(173, 173, 173));
+				g2.setStroke(Pen1);
+				g2.draw(poNew);
+
+				paintNameOnPart(part, g2, poNew);
+
+			}
+		}
+
+		private void paintAccessPoints(Graphics2D g2, AffineTransform tx, Stroke PenDash, Stroke Pen1) {
+			accesspointsMap.clear();
+			for (AccessPoint ap : chosenFloor.getAccessPoints()) {
+
+				Path2D clickBox = (Path2D) tx.createTransformedShape(ap.getLine2DClickBox());
+
+				Path2D newLine = (Path2D) tx.createTransformedShape(ap.getLine2D());
+
+				accesspointsMap.put(clickBox, ap);
+
+				if (ap == selectedAP) {
+					g2.setColor(new Color(74, 144, 226));
+					g2.setStroke(Pen1);
+				} else if (ap.getApType().equals(2)) {
+					g2.setBackground(new Color(116, 124, 155));
+					g2.setColor(new Color(248, 231, 28));
+					g2.setStroke(PenDash);
+				} else {
+					g2.setColor(new Color(144, 19, 254));
+					g2.setStroke(Pen1);
+				}
+				g2.draw(newLine);
+			}
+		}
+
+		private void paintConnectors(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke penDash) {
+			connsMap.clear();
+			g2.setStroke(penDash);
+			for (Connector c : chosenFloor.getConnectors()) {
+				Point2D.Double point1 = c.getLocation2D();
+				Point2D.Double point2 = c.getUpperLocation2D();
+				double x, y, w, h;
+				if (point2 == null) {
+					x = point1.getX();
+					y = point1.getY();
+					w = 3;
+					h = 3;
+				} else {
+					x = Math.min(point1.getX(), point2.getX());
+					y = Math.min(point1.getY(), point2.getY());
+					w = Math.abs(point1.getX() - point2.getX());
+					h = Math.abs(point1.getY() - point2.getY());
+				}
+				Rectangle2D.Double rectangle = new Rectangle2D.Double(x, y, w + 3, h + 3);
+				Path2D newRect = (Path2D) tx.createTransformedShape(rectangle);
+				connsMap.put(newRect, c);
+				if (selectedCon == c) {
+					g2.setColor(new Color(74, 144, 226));
+
+					for (Partition part : selectedCon.getPartitions()) {
+						if (part.getFloor() != selectedCon.getFloor()) {
+							continue;
+						}
+						Polygon2D.Double po = part.getPolygon2D();
+						Path2D poNew = (Path2D) tx.createTransformedShape(po);
+
+						g2.setColor(new Color(203, 209, 216));
+						g2.fill(poNew);
+
+						g2.setColor(new Color(173, 173, 173));
+						g2.setStroke(Pen1);
+						g2.draw(poNew);
+
+						paintNameOnPart(part, g2, poNew);
+
+					}
+					g2.setColor(new Color(144, 19, 254));
+
+				} else {
+					g2.setColor(new Color(49, 76, 206));
+				}
+				g2.setStroke(penDash);
+				g2.draw(newRect);
+			}
+
+			for (Connector c : DB_WrapperLoad.connectorT) {
+				if (c.getUpperFloor() == chosenFloor) {
+					Point2D.Double point1 = c.getLocation2D();
+					Point2D.Double point2 = c.getUpperLocation2D();
+					double x, y, w, h;
+					if (point2 == null) {
+						x = point1.getX();
+						y = point1.getY();
+						w = 3;
+						h = 3;
+					} else {
+						x = Math.min(point1.getX(), point2.getX());
+						y = Math.min(point1.getY(), point2.getY());
+						w = Math.abs(point1.getX() - point2.getX());
+						h = Math.abs(point1.getY() - point2.getY());
+					}
+					Rectangle2D.Double rectangle = new Rectangle2D.Double(x, y, w + 3, h + 3);
+					Path2D newRect = (Path2D) tx.createTransformedShape(rectangle);
+					connsMap.put(newRect, c);
+					if (selectedCon == c) {
+						g2.setColor(new Color(74, 144, 226));
+					} else {
+						g2.setColor(new Color(49, 188, 77));
+
+					}
+					g2.draw(newRect);
+				}
+			}
+		}
+
+		private void updateSelectPartsList() {
+			connectedPartsModel.clear();
+			if (selectedPart != null) {
+				txtselectedNameField.setText(selectedPart.getName() + " AND ID: " + selectedPart.getItemID());
+				for (Partition partition : selectedPart.getConParts()) {
+					connectedPartsModel.addElement(partition);
+				}
+			} else if (selectedAP != null) {
+				txtselectedNameField.setText(selectedAP.getName() + " AND ID: " + selectedAP.getItemID());
+				for (Partition p : selectedAP.getPartitions()) {
+					connectedPartsModel.addElement(p);
+				}
+			} else if (selectedCon != null) {
+				txtselectedNameField.setText(selectedCon.getName() + " AND ID: " + selectedCon.getItemID());
+				for (Partition p : selectedCon.getPartitions()) {
+
+					connectedPartsModel.addElement(p);
+				}
+
+			} else {
+
+			}
+		}
+
+		private AffineTransform getCurrentTransform() {
+
+			AffineTransform tx = new AffineTransform();
+
+			double centerX = (double) getWidth() / 2;
+			double centerY = (double) getHeight() / 2;
+
+			tx.translate(centerX, centerY);
+			tx.scale(zoom, zoom);
+			tx.translate(currentX - centerX, currentY - centerY);
+
+			return tx;
+		}
+
+		private void incrementZoom(double amount) {
+			zoom += amount;
+			zoom = Math.max(0.00001, zoom);
+			repaint();
+		}
+
+		private Point2D getTranslatedPoint(double panelX, double panelY) {
+
+			AffineTransform tx = getCurrentTransform();
+			Point2D point2d = new Point2D.Double(panelX, panelY);
+			try {
+				return tx.inverseTransform(point2d, null);
+			} catch (NoninvertibleTransformException ex) {
+				ex.printStackTrace();
+				return null;
+			}
+		}
+
+		private void loadFloorChooser() {
+			String floor_globalid = null;
+			if (floorCombobox.getSelectedItem() != null) {
+				Floor f = (Floor) floorCombobox.getSelectedItem();
+				floor_globalid = f.getGlobalID();
+			}
+			floorCombobox.removeAllItems();
+			for (int i = 0; i < DB_WrapperLoad.floorT.size(); i++) {
+				Floor f = DB_WrapperLoad.floorT.get(i);
+				floorCombobox.addItem(f);
+			}
+			if (floor_globalid != null) {
+				for (int i = 0; i < floorCombobox.getModel().getSize(); i++) {
+					if (floorCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
+						floorCombobox.setSelectedItem(floorCombobox.getModel().getElementAt(i));
+						break;
+					}
+				}
+			}
+		}
+
+		private void generateStations() {
+			for (Floor floor : DB_WrapperLoad.floorT) {
+				floor.getStations().clear();
+			}
+			IndoorObjsFactory initlizer = new IndoorObjsFactory();
+			for (Floor floor : DB_WrapperLoad.floorT) {
+				ArrayList<Station> stations = new ArrayList<Station>();
+				initlizer.generateStationsOnFloor(floor, stations);
+				floor.setStations(stations);
+				floor.setStationsRTree(IdrObjsUtility.generateStationRTree(floor.getStations()));
+			}
+		}
+
+		private void exportEnvironment(String envDir) {
+
+			Date date = new Date(System.currentTimeMillis());
+			String time = IdrObjsUtility.dir_sdf.format(date);
+
+			String currentPath = envDir + "//" + time;
+			new File(currentPath).mkdirs();
+
+			File file = null;
+			FileOutputStream outStr = null;
+			BufferedOutputStream buff = null;
+
+			String floor_outputPath = currentPath + "//Floors" + ".txt";
+			try {
+				file = new File(floor_outputPath);
+				file.createNewFile();
+				outStr = new FileOutputStream(file);
+				buff = new BufferedOutputStream(outStr);
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					buff.write((floor.toString() + "\n").getBytes());
+				}
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			String accessPoint_outputPath = currentPath + "//Access Points" + ".txt";
+			try {
+				file = new File(accessPoint_outputPath);
+				file.createNewFile();
+				outStr = new FileOutputStream(file);
+				buff = new BufferedOutputStream(outStr);
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					for (AccessPoint ap : floor.getAccessPoints())
+						buff.write((ap.toString() + "\n").getBytes());
+				}
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			String parition_outputPath = currentPath + "//Partitions" + ".txt";
+			try {
+				file = new File(parition_outputPath);
+				file.createNewFile();
+				outStr = new FileOutputStream(file);
+				buff = new BufferedOutputStream(outStr);
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					for (Partition par : floor.getPartitions())
+						buff.write((par.toString2() + "\n").getBytes());
+				}
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			String connector_outputPath = currentPath + "//Connectors" + ".txt";
+			try {
+				file = new File(connector_outputPath);
+				file.createNewFile();
+				outStr = new FileOutputStream(file);
+				buff = new BufferedOutputStream(outStr);
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					for (Connector connector : floor.getConnectors())
+						buff.write((connector.toString() + "\n").getBytes());
+				}
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			String connectivity_outputPath = currentPath + "//Connectivity" + ".txt";
+			try {
+				file = new File(connectivity_outputPath);
+				file.createNewFile();
+				outStr = new FileOutputStream(file);
+				buff = new BufferedOutputStream(outStr);
+				for (Connectivity connectivity : DB_WrapperLoad.connectivityT) {
+					buff.write((connectivity.toString() + "\n").getBytes());
+				}
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void exportMovingPatternsConfiguration(String outputPath, String time) {
+
+			// System.out.println(outputPath);
+			String mo_configuration_outputPath = outputPath + "//Moving_Object_Configuration_" + time + ".txt";
+			// System.out.println(mo_configuration_outputPath);
+			try {
+				File file = new File(mo_configuration_outputPath);
+				if (!file.exists()) {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+				}
+				FileOutputStream outStr = new FileOutputStream(file);
+				BufferedOutputStream buff = new BufferedOutputStream(outStr);
+				String configure = "Moving Object Type=" + movingObjectTypeComboBox.getSelectedItem().toString() + "\n";
+				configure = configure + "Initial Distribution="
+						+ movObjDistributerTypeComboBox.getSelectedItem().toString() + "\n";
+				configure = configure + "Maximum Object Number in a Partition=" + txtMaxMovObjNumInPart.getText()
+						+ "\n";
+				configure = configure + "Maximum Life Span(s)=" + txtMaximumLifeSpan.getText() + "\n";
+				configure = configure + "Maximum Step Length(m)=" + txtMaxStepLength.getText() + "\n";
+				configure = configure + "Move Rate(ms)=" + txtMoveRate.getText() + "\n";
+				configure = configure + "Generation Period=" + txtStartTime.getText() + "-" + txtEndTime.getText()
+						+ "\n";
+				buff.write(configure.getBytes());
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void exportPositioningConfiguration(String outputPath) {
+
+			System.out.println(outputPath);
+			String position_configuration_outputPath = outputPath.substring(0, outputPath.lastIndexOf(File.separator))
+					+ "//Positioning_Configuration_"
+					+ outputPath.substring(outputPath.lastIndexOf(File.separator) + 1, outputPath.length()) + ".txt";
+			System.out.println(position_configuration_outputPath);
+			try {
+				File file = new File(position_configuration_outputPath);
+				if (!file.exists()) {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+				}
+				FileOutputStream outStr = new FileOutputStream(file);
+				BufferedOutputStream buff = new BufferedOutputStream(outStr);
+				String configure = positionPropertiesArea.getText();
+				configure = configure + "\n" + "positioning_algorithm="
+						+ positionAlgorithmComboBox.getSelectedItem().toString() + "\n";
+				configure = configure + "\n" + "input_rssi_path=" + txtRssiInputPath.getText() + "\n";
+				buff.write(configure.getBytes());
+				buff.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void exportStations(String stationDir) {
+
+			Date date = new Date(System.currentTimeMillis());
+			String time = IdrObjsUtility.dir_sdf.format(date);
+
+			// IdrObjsUtility.createOutputDir();
+
+			String station_outputPath = stationDir + "//Devices_" + time + ".txt";
+			String station_configuration_outputPath = stationDir + "//Device_Configuration_" + time + ".txt";
+			try {
+				File file = new File(station_outputPath);
+				file.createNewFile();
+				FileOutputStream outStr = new FileOutputStream(file);
+				BufferedOutputStream buff = new BufferedOutputStream(outStr);
+				String comments = "deviceId" + "\t" + "floorId" + "\t" + "partitionId" + "\t" + "location_x" + "\t"
+						+ "location_y" + "\n";
+				buff.write(comments.getBytes());
+				boolean flag = false;
+				Station sampled_station = null;
+				IdrObjsUtility.allStations = new Hashtable<Integer, Station>();
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					for (Station station : floor.getStations()) {
+						IdrObjsUtility.allStations.put(station.getId(), station);
+						if (!flag) {
+							sampled_station = station;
+							flag = true;
+						}
+						buff.write(station.toString().getBytes());
+					}
+				}
+				buff.close();
+
+				if (sampled_station != null) {
+					file = new File(station_configuration_outputPath);
+					file.createNewFile();
+					outStr = new FileOutputStream(file);
+					buff = new BufferedOutputStream(outStr);
+					String configure = "Device Type=" + stationTypeComboBox.getSelectedItem().toString() + "\n";
+					configure = configure + "Deployment Model=" + stationDistriTypeComboBox.getSelectedItem().toString()
+							+ "\n";
+					configure = configure + "Maximum Device Number in a Partition=" + txtStationMaxNumInPart.getText()
+							+ "\n";
+					configure = configure + "Maximum Device Number in 100 m^2=" + txtStationMaxNumInArea.getText()
+							+ "\n";
+					configure = configure + "Detection Range(m)=" + txtScanRange.getText() + "\n";
+					configure = configure + "Detection Frequency(ms)=" + txtScanRate.getText() + "\n";
+					buff.write(configure.getBytes());
+					buff.close();
+				}
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private String createEnvironmentOutputDir(String outputPath) {
+			// TODO Auto-generated method stub
+
+			File dir = new File(outputPath);
+
+			File spaceDir = new File(outputPath + "//indoor enviroment");
+
+			if (!dir.exists() && !dir.isDirectory()) {
+				dir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			if (!spaceDir.exists() && !spaceDir.isDirectory()) {
+				spaceDir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			return spaceDir.getPath();
+
+		}
+
+		private String createStationOutputDir(String outputPath) {
+			// TODO Auto-generated method stub
+
+			File dir = new File(outputPath);
+
+			File stationDir = new File(outputPath + "//indoor devices");
+
+			if (!dir.exists() && !dir.isDirectory()) {
+				dir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			if (!stationDir.exists() && !stationDir.isDirectory()) {
+				stationDir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			return stationDir.getPath();
+
+		}
+
+		private void createMovingObjectOutputDir(String outputPath) {
+			// TODO Auto-generated method stub
+
+			Date date = new Date(System.currentTimeMillis());
+			String time = IdrObjsUtility.dir_sdf.format(date);
+
+			File dir = new File(outputPath);
+
+			File rssiDir = new File(outputPath + "//raw rssi");
+			File trajDir = new File(outputPath + "//raw trajectory");
+
+			if (!dir.exists() && !dir.isDirectory()) {
+				dir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			IdrObjsUtility.outputDir = outputPath;
+			IdrObjsUtility.rssiDir = rssiDir.getPath() + "//" + time;
+			IdrObjsUtility.trajDir = trajDir.getPath() + "//" + time;
+			exportMovingPatternsConfiguration(rssiDir.getPath(), time);
+
+			if (!rssiDir.exists() && !rssiDir.isDirectory() && chckbxTracking.isSelected()) {
+				rssiDir.mkdirs();
+			}
+			File cur_rssiDir = new File(IdrObjsUtility.rssiDir);
+			if (!cur_rssiDir.exists() && !cur_rssiDir.isDirectory() && chckbxTracking.isSelected()) {
+				cur_rssiDir.mkdirs();
+			}
+
+			if (!trajDir.exists() && !trajDir.isDirectory() && chckbxTrajectory.isSelected()) {
+				trajDir.mkdirs();
+				new File(IdrObjsUtility.trajDir).mkdirs();
+			}
+			File cur_trajDir = new File(IdrObjsUtility.trajDir);
+			if (!cur_trajDir.exists() && !cur_trajDir.isDirectory() && chckbxTracking.isSelected()) {
+				cur_trajDir.mkdirs();
+			}
+
+			return;
+
+		}
+
+		private String createPositioningOutputDir(String outputPath) {
+			// TODO Auto-generated method stub
+
+			Date date = new Date(System.currentTimeMillis());
+			String time = IdrObjsUtility.dir_sdf.format(date);
+
+			File dir = new File(outputPath);
+
+			File positionDir = new File(outputPath + "//indoor positioning data");
+
+			if (!dir.exists() && !dir.isDirectory()) {
+				dir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			positionDir.mkdirs();
+
+			if (!positionDir.exists() && !positionDir.isDirectory() && chckbxPositiongData.isSelected()) {
+				positionDir.mkdirs();
+			}
+			File cur_positionDir = new File(positionDir.getPath() + "//" + time);
+			if (!cur_positionDir.exists() && !cur_positionDir.isDirectory() && chckbxTracking.isSelected()) {
+				cur_positionDir.mkdirs();
+			}
+
+			return cur_positionDir.getPath();
+
+		}
+
+		private void createSnapshotOutputDir(String outputPath) {
+			// TODO Auto-generated method stub
+
+			File dir = new File(outputPath);
+
+			File snapshotDir = new File(outputPath + "//snapshot");
+
+			if (!dir.exists() && !dir.isDirectory()) {
+				dir.mkdirs();
+			} else {
+				System.out.println("Dir already exists");
+			}
+
+			snapshotDir.mkdirs();
+
+			IdrObjsUtility.snapshotDir = snapshotDir.getPath();
+			//
+			// new File(IdrObjsUtility.snapshotDir).mkdirs();
+
+			// positionDir.mkdirs();
+
+			return;
+
+		}
+
+		private void generateMovingObjs() {
+			movingObjs.clear();
+			IndoorObjsFactory initlizer = new IndoorObjsFactory();
+			for (Floor floor : DB_WrapperLoad.floorT) {
+				initlizer.generateMovingObjsOnFloor(floor, movingObjs);
+			}
+			// PropLoader propLoader = new PropLoader();
+			// propLoader.loadProp("conf/factory.properties");
+			// movingObjs = (ArrayList)DB_WrapperLoad.floorT
+			// .stream()
+			// .map(floor ->
+			// IndoorObjectFactory.createMovingObjectsOnFloor(floor,
+			// propLoader.getMovingObjDistributerType()))
+			// .flatMap(Collection::stream)
+			// .collect(Collectors.toList());
+			setMovingObjsInitTime();
+		}
+
+		private void setMovingObjsInitTime() {
+			movingObjs.forEach(movingObj -> {
+				movingObj.setInitMovingTime(calGaussianTime());
+			});
+		}
+
+		private long calGaussianTime() {
+			Random random = new Random();
+			try {
+				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
+						? IdrObjsUtility.sdf.parse(txtStartTime.getText()) : startCalendar.getTime();
+				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
+						? IdrObjsUtility.sdf.parse(txtEndTime.getText()) : endCalendar.getTime();
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			long startTime = IdrObjsUtility.objectGenerateStartTime.getTime();
+			long endTime = IdrObjsUtility.objectGenerateEndTime.getTime();
+			long middle = (long) ((endTime - startTime) / 2.0 + startTime);
+			long error = (long) ((endTime - startTime) * 0.5);
+			long gaussianTime = (long) (middle + random.nextGaussian() * error);
+			if (gaussianTime < startTime) {
+				return startTime;
+			} else if (gaussianTime > endTime) {
+				return endTime;
+			} else {
+				return gaussianTime;
+			}
+		}
+
+		private void snapShot(ArrayList<MovingObj> movingObjs) {
+
+			try {
+
+				String time = IdrObjsUtility.dir_sdf.format(new Date(IdrObjsUtility.objectGenerateStartTime.getTime()
+						+ (System.currentTimeMillis() - IdrObjsUtility.startClickedTime.getTime())));
+
+				// create snap shot file
+				File file = new File(IdrObjsUtility.snapshotDir + "//snapshot_" + time + ".txt");
+				file.createNewFile();
+				FileOutputStream outStr = new FileOutputStream(file);
+				BufferedOutputStream buff = new BufferedOutputStream(outStr);
+
+				// record snap shot data
+				for (MovingObj movingObj : movingObjs) {
+					buff.write((movingObj.getId() + "\t").getBytes());
+					buff.write((movingObj.getCurrentLocation().getX() + "\t" + movingObj.getCurrentLocation().getY()
+							+ "\n").getBytes());
+					int packIndex = 1;
+					movingObj.calRSSI();
+					ArrayList<Pack> packs = movingObj.getPackages();
+					for (Pack pack : packs) {
+						String packInfo = packIndex + "\t" + pack.toString() + "\n";
+						buff.write(packInfo.getBytes());
+						packIndex++;
+					}
+					buff.write("\n".getBytes());
+				}
+
+				buff.flush();
+				buff.close();
+				JOptionPane.showMessageDialog(this, "Extracting snapshot is done!", "Information",
+						JOptionPane.INFORMATION_MESSAGE);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void storePropFromGUI(String propName) {
+			Properties props = new Properties();
+
+			String stationTypeSimple = stationTypeComboBox.getSelectedItem().toString();
+			String stationType = stationTypeMap.get(stationTypeSimple);
+			props.setProperty("stationType", stationType);
+			String stationDistributerTypeSimple = stationDistriTypeComboBox.getSelectedItem().toString();
+			String stationDistributerType = stationInitMap.get(stationDistributerTypeSimple);
+			props.setProperty("stationDistributerType", stationDistributerType);
+			String stationMaxNumInPart = txtStationMaxNumInPart.getText();
+			props.setProperty("stationMaxNumInPart", stationMaxNumInPart);
+
+			String stationNumArea = txtStationMaxNumInArea.getText();
+			props.setProperty("stationNumArea", stationNumArea);
+			String scanRange = txtScanRange.getText();
+			props.setProperty("stationScanRange", scanRange);
+			String stationScanRate = txtScanRate.getText();
+			props.setProperty("stationScanRate", stationScanRate);
+
+			Station.setScanRange(Double.parseDouble(scanRange));
+			Station.setScanRate(Integer.parseInt(stationScanRate));
+
+			String movingObjTypeSimple = movingObjectTypeComboBox.getSelectedItem().toString();
+			String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
+			props.setProperty("movingObjType", movingObjType);
+			String movObjDistriTypeSimple = movObjDistributerTypeComboBox.getSelectedItem().toString();
+			String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
+			props.setProperty("movingObjDistributerType", movObjDistriType);
+			String maxMovingNumInPart = txtMaxMovObjNumInPart.getText();
+			props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
+			String maxStepLength = txtMaxStepLength.getText();
+			props.setProperty("movingObjMaxStepLength", maxStepLength);
+			String moveRate = txtMoveRate.getText();
+			props.setProperty("movingObjMoveRate", moveRate);
+			String movingObjMaxLifeSpan = txtMaximumLifeSpan.getText();
+			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
+
+			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+			String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
+			props.setProperty("positionAlgorithm", posAlgType);
+
+			MovingObj.setScanRange(Double.parseDouble(scanRange));
+			MovingObj.setMaxStepLength(Double.parseDouble(maxStepLength));
+			MovingObj.setMoveRate(Integer.parseInt(moveRate));
+			MovingObj.setMaxSpeed(Double.parseDouble(maxStepLength) / ((Integer.parseInt(moveRate) + 0.0) / 1000));
+
+			try {
+				FileOutputStream out = new FileOutputStream(propName);
+				props.store(out, null);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void startIndoorObj() {
+			// IdrObjsUtility.createOutputDir();
+			IdrObjsUtility.movingObjsTest(movingObjs);
+
+			destMovingObjs.clear();
+			Floor floor1 = DB_WrapperLoad.floorT.get(2);
+			Floor floor2 = DB_WrapperLoad.floorT.get(2);
+			IdrObjsUtility.DestMovingObjTest2(floor1, floor2, destMovingObjs);
+		}
+
+		private void stopIndoorObj() {
+			for (MovingObj movingObj : movingObjs) {
+				movingObj.setArrived(true);
+				if (movingObj instanceof RegularMultiDestCustomer) {
+					((RegularMultiDestCustomer) movingObj).setFinished(true);
+				}
+			}
+			for (MovingObj destMoving : destMovingObjs) {
+				DstMovingObj destMovingObj = (DstMovingObj) destMoving;
+				destMovingObj.setArrived(true);
+			}
+			movingObjs.clear();
+			destMovingObjs.clear();
+
+			for (Floor floor : DB_WrapperLoad.floorT) {
+				floor.getStations().clear();
+			}
+
+			JOptionPane.showMessageDialog(this, "Generating Moving Object Data is done!", "Information",
+					JOptionPane.INFORMATION_MESSAGE);
+
+		}
+
+		private void pauseIndoorObj() {
+			for (MovingObj movingObj : movingObjs) {
+
+				movingObj.changeFlag();
+				// pauseBut.setText("resume");
+				if (movingObj.getPauseFlag() == false) {
+					movingObj.resumeThread();
+					// pauseBut.setText("pause");
+				}
+			}
+
+			for (MovingObj movingObj : destMovingObjs) {
+				DstMovingObj destMovingObj = (DstMovingObj) movingObj;
+				destMovingObj.changeFlag();
+				if (destMovingObj.getPauseFlag() == false) {
+					destMovingObj.resumeThread();
+				}
+			}
+		}
+
+		private void loadPropFromFile(String propName) {
+
+			Properties props = new Properties();
+			FileInputStream in;
+			try {
+				in = new FileInputStream(propName);
+				props.load(in);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			String stationMaxNumInPart = props.getProperty("stationMaxNumInPart");
+			txtStationMaxNumInPart.setText(stationMaxNumInPart);
+			String stationNumArea = props.getProperty("stationNumArea");
+			txtStationMaxNumInArea.setText(stationNumArea);
+			String scanRange = props.getProperty("stationScanRange");
+			txtScanRange.setText(scanRange);
+			String stationScanRate = props.getProperty("stationScanRate");
+			txtScanRate.setText(stationScanRate);
+
+			String maxMovingNumInPartition = props.getProperty("movingObjMaxNumInPart");
+			txtMaxMovObjNumInPart.setText(maxMovingNumInPartition);
+			String maxStepLength = props.getProperty("movingObjMaxStepLength");
+			txtMaxStepLength.setText(maxStepLength);
+			String moveRate = props.getProperty("movingObjMoveRate");
+			txtMoveRate.setText(moveRate);
+			String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
+			txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
+
+			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
+			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
+		}
+
+		private class MovingAdapter extends MouseAdapter {
+			private Point startDrag;
+
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				previousX = e.getX();
+				previousY = e.getY();
+				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+					incrementZoom(1.0 * (double) e.getWheelRotation());
+				}
+			}
+
+			public void mousePressed(MouseEvent e) {
+				previousX = e.getX();
+				previousY = e.getY();
+
+				startDrag = new Point(e.getX(), e.getY()); // First point
+				if (!empty) {
+					txtselectedNameField.setText("");
+					selectedPart = null;
+					selectedAP = null;
+
+					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedPart = mapping.getValue();
+							selectedAP = null;
+							selectedCon = null;
+							break;
+						}
+					}
+
+					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedAP = mapping.getValue();
+							selectedPart = null;
+							selectedCon = null;
+							break;
+						}
+					}
+
+					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
+						if (mapping.getKey().contains(startDrag)) {
+							selectedCon = mapping.getValue();
+							selectedPart = null;
+							selectedAP = null;
+							break;
+						}
+					}
+
+					connectedPartsModel.clear();
+					updateSelectPartsList();
+
+					// possibleConnectedPartsList.clear();
+					// updatePossibleConnectedPartsList();
+				}
+				repaint();
+			}
+
+			public void mouseDragged(MouseEvent e) {
+
+				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
+				Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
+
+				double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
+				double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
+
+				previousX = e.getX();
+				previousY = e.getY();
+
+				currentX += newX;
+				currentY += newY;
+
+				repaint();
+			}
+
+			public void mouseReleased(MouseEvent e) {
+			}
+		}
+	}
+	
+	// Visual Map Class
+	private class MapVisualPainter extends JPanel {
+
+		private MovingAdapter ma = new MovingAdapter();
+		private int fileIDX;
+		private boolean stationsGen = false;
+		private boolean movingObjsGen = false;
+
+		MapVisualPainter(int fileID) {
+			fileIDX = fileID;
+			setSize(800, 800);
+			setPreferredSize(new Dimension(800, 800));
+
+			btnObjectStart.setEnabled(false);
+			btnObjectStop.setEnabled(false);
+			btnSnapShot.setEnabled(false);
+
+			loadFloorChooser();
+
+			clearMapPainterActionListener();
+			addMapPainterActionListener();
+
+			initUCLComboBox();
+//			loadPropFromFile("conf/pattern.properties");
+
+			addMouseMotionListener(ma);
+			addMouseWheelListener(ma);
+			addMouseListener(ma);
+
+			setDoubleBuffered(true);
+			setBorder(BorderFactory.createLineBorder(Color.black));
+			setOpaque(true);
+			setBackground(Color.white);
+
+			D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
+					DB_WrapperLoad.accessPointConnectorT);
+			// BuildingD2DGrpah buildingD2D = new BuildingD2DGrpah();
+			// BuildingD2DGrpah.partitions =
+			// DB_WrapperLoad.partitionDecomposedT;
+			// BuildingD2DGrpah.accessPoints =
+			// DB_WrapperLoad.accessPointConnectorT;
+			// BuildingD2DGrpah.connectors = DB_WrapperLoad.connectorT;
+			buildingD2D.generateD2DDistance();
+			for (Floor floor : DB_WrapperLoad.floorT) {
+				floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
+				floor.setD2dGraph(buildingD2D);
+			}
+
+		}
+
+		private void addMapPainterActionListener() {
+			floorCombobox.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					chosenFloor = (Floor) floorCombobox.getSelectedItem();
+					selectedPart = null;
+					selectedAP = null;
+					selectedCon = null;
+				}
+
+			});
+
+			btnDecompAll.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
+							"Are you sure you want to decompose the selected file?", "Confirmation",
+							JOptionPane.YES_NO_OPTION);
+					if (n == JOptionPane.YES_OPTION) {
+						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
+						clearIllegal();
+
+						System.out.println(
+								"\nBefore decomposed partitions " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
+						try {
+							DB_Import.decompose(con);
+							DB_WrapperLoad.loadALL(con, fileIDX);
+							con.close();
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+
+						D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
+								DB_WrapperLoad.accessPointConnectorT);
+						// BuildingD2DGrpah.partitions =
+						// DB_WrapperLoad.partitionDecomposedT;
+						// BuildingD2DGrpah.accessPoints =
+						// DB_WrapperLoad.accessPointConnectorT;
+						// BuildingD2DGrpah buildingD2D = new
+						// BuildingD2DGrpah();
+						buildingD2D.generateD2DDistance();
+
+						for (Floor floor : DB_WrapperLoad.floorT) {
+							floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
+							floor.setD2dGraph(buildingD2D);
+							System.out.println(
+									floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
+
+						}
+
+						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
+						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Decomposing File is done!", "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
+						selectedAP = null;
+						selectedPart = null;
+						loadFloorChooser();
+						updateSelectPartsList();
+						repaint();
+					} else if (n == JOptionPane.NO_OPTION) {
+						// Nothing
+					} else {
+						// Nothing
+					}
+
+				}
+			});
+
+			btnDeleteEntity.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
+							"Are you sure you want to delete the selected entity?", "Confirmation",
+							JOptionPane.YES_NO_OPTION);
+					if (n == JOptionPane.YES_OPTION) {
+						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
+						try {
+							if (selectedPart != null) {
+								DB_WrapperDelete.deletePartition(con, selectedPart);
+							} else if (selectedAP != null) {
+								DB_WrapperDelete.deleteAccessPoint(con, selectedAP);
+							}
+							DB_WrapperLoad.loadALL(con, fileIDX);
+							con.close();
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Deleting Entity is done!", "Information",
+								JOptionPane.INFORMATION_MESSAGE);
+						loadFloorChooser();
+						repaint();
+					} else if (n == JOptionPane.NO_OPTION) {
+						// Nothing
+					} else {
+						// Nothing
+					}
+
+				}
+
+			});
+
+			connectedPartsList.addListSelectionListener(new ListSelectionListener() {
+
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					repaint();
+				}
+			});
+
+		}
+
+		/**
+		 * illegal element --> self-intersection partitions, isolated access
+		 * points warning element --> isolated partitions print all the
+		 * isolation partitions and access points get all the self-intersection
+		 * partition, and delete them all, because they can caught an exception
+		 * when decompose delete all the isolation access points, try to fix
+		 * isolate partitions remember to reload all the space object, because
+		 * some partitions may have benn deleted
+		 */
+		private void clearIllegal() {
+			PrintIsolatedObject.printAllIsolation(DB_WrapperLoad.partitionDecomposedT,
+					DB_WrapperLoad.accessPointConnectorT);
+
+			List<Partition> intersectionPartitions = ClearIllegal
+					.calIntersectionPartitions(DB_WrapperLoad.partitionDecomposedT);
+			System.out.println(intersectionPartitions);
+			List<AccessPoint> isolatedAccessPoints = ClearIllegal
+					.calIsolatedAccessPoints(DB_WrapperLoad.accessPointConnectorT);
+			System.out.println(isolatedAccessPoints);
+
+			Connection connection = DB_Connection.connectToDatabase("conf/moovework.properties");
+
+			try {
+				for (Partition intersectionPartition : intersectionPartitions) {
+					System.out.println("delete " + intersectionPartition);
+					DB_WrapperDelete.deletePartition(connection, intersectionPartition);
+				}
+
+				for (AccessPoint isolatedAccessPoint : isolatedAccessPoints) {
+					System.out.println("delete " + isolatedAccessPoint);
+					DB_WrapperDelete.deleteAccessPoint(connection, isolatedAccessPoint);
+				}
+
+				DB_WrapperLoad.loadALL(connection, fileChosen.getUploadId());
+				for (Floor floor : DB_WrapperLoad.floorT) {
+					floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
+				}
+
+				List<Partition> isolatedPartitions = ClearIllegal
+						.calIsolatedPartitions(DB_WrapperLoad.partitionDecomposedT);
+				for (Partition isolatedPartition : isolatedPartitions) {
+					ClearIllegal.connectPossiblePartitons(isolatedPartition);
+				}
+
+				DB_WrapperLoad.loadALL(connection, fileChosen.getUploadId());
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void updateAlgProps() {
+			// IdrObjsUtility.changeAllAlgInputPath();
+			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+			loadAlgorithmProp(algorithmType);
+		}
+
+		private void loadAlgorithmProp(String algorithmType) {
+			if (algorithmType.equals("Trilateration")) {
+				loadAlgPropToGUI("conf/trilateration.properties");
+			}
+			if (algorithmType.equals("Fingerprinting")) {
+				loadAlgPropToGUI("conf/fingerprint.properties");
+			}
+			if (algorithmType.equals("Proximity_Analysis")) {
+				loadAlgPropToGUI("conf/proximity.properties");
+			}
+		}
+
+		private void loadAlgPropToGUI(String algPropName) {
+			System.out.println(algPropName);
+			positionPropertiesArea.setText("");
+			try {
+				FileReader fileReader = new FileReader(algPropName);
+				BufferedReader buff = new BufferedReader(fileReader);
+				String line = null;
+				while ((line = buff.readLine()) != null) {
+					positionPropertiesArea.append(line + "\n");
+				}
+				fileReader.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void storeAlgProp() {
+			String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
+			String outputFileName = null;
+			System.out.println(algorithmType);
+			if (algorithmType.equals("Trilateration")) {
+				outputFileName = "conf/trilateration.properties";
+			}
+			if (algorithmType.equals("Fingerprinting")) {
+				outputFileName = "conf/fingerprint.properties";
+			}
+			if (algorithmType.equals("Proximity_Analysis")) {
+				outputFileName = "conf/proximity.properties";
+			}
+
+			try {
+				FileWriter writer = new FileWriter(outputFileName);
+				String positionPropsTxt = positionPropertiesArea.getText();
+
+				boolean dateFlag = true;
+				String[] lines = positionPropsTxt.split("\n");
+				for (String line : lines) {
+					System.out.println(line);
+					// update the time-stamp for properties file
+					if (dateFlag && "#".equals(line.substring(0, 1))) {
+						dateFlag = false;
+						writer.write("#" + new Date(System.currentTimeMillis()).toString() + "\n");
+					} else
+						writer.write(line + "\n");
+				}
+
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void clearMapPainterActionListener() {
+			for (ActionListener al : floorCombobox.getActionListeners()) {
+				floorCombobox.removeActionListener(al);
+			}
+
+			for (ActionListener al : btnDecompAll.getActionListeners()) {
+				btnDecompAll.removeActionListener(al);
+			}
+
+			for (ActionListener al : btnDeleteEntity.getActionListeners()) {
+				btnDeleteEntity.removeActionListener(al);
+			}
+
+			for (ListSelectionListener al : connectedPartsList.getListSelectionListeners()) {
+				connectedPartsList.removeListSelectionListener(al);
+			}
+		}
+
+		private void initUCLComboBox() {
+			initAlgorithmMap();
+		}
+
+		private void initAlgorithmMap() {
+			try {
+				FileReader fileReader = new FileReader("conf/algorithmTypeMap.properties");
+				BufferedReader buff = new BufferedReader(fileReader);
+				String line;
+				positionAlgorithmMap.clear();
+				for (int i = 0; i < positionAlgorithmComboBox.getItemCount(); i++) {
+					System.out.println("--" + positionAlgorithmComboBox.getItemAt(i));
+				}
+				positionAlgorithmComboBox.removeAllItems();
+				while ((line = buff.readLine()) != null) {
+					String[] splitedString = new String[2];
+					splitedString = line.split("=");
+					positionAlgorithmMap.put(splitedString[0], splitedString[1]);
+					positionAlgorithmComboBox.addItem(splitedString[0]);
 				}
 				fileReader.close();
 				buff.close();

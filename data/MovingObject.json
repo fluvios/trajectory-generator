@@ -1,0 +1,53 @@
+[
+	{
+		"objectId"	: "student_1",
+		"gender" : "male",
+		"age"	: 22,
+		"job"	: "student",
+		"movementType"	: "normal",
+		"movingObjectType"	: "Destination",
+		"initialDistribution"	: "Uniform",
+		"objectNumber"	: 5,
+		"lifeSpan"	: 3600,
+		"stepLength"	: 0.03,
+		"moveRate"	: 100,
+		"startTime"	: "19/05/06 13:33:15",
+		"endTime"	: "19/05/06 13:43:15",
+		"rooms"	: [
+			{
+				"name"	: "class",
+				"schedules"	: [
+					{
+						"day"	: "monday",
+						"startTime"	: "06:00",
+						"endTime"		: "18:00",				
+						"prob"	: 0.5
+					},
+					{
+						"day"	: "tuesday",
+						"startTime"	: "06:00",
+						"endTime"		: "18:00",				
+						"prob"	: 0.4
+					},
+					{
+						"day"	: "wednesday",
+						"startTime"	: "06:00",
+						"endTime"		: "18:00",				
+						"prob"	: 0.6
+					}
+				]
+			},
+			{
+				"name"	: "men_toilet",
+				"schedules"	: [
+					{
+						"day"	: "monday",
+						"startTime"	: "09:00",
+						"endTime"		: "09:05",				
+						"prob"	: 0.2
+					}
+				]		
+			}
+		]
+	}
+]

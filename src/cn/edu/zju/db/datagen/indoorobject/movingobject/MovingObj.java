@@ -12,15 +12,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-abstract public class MovingObj extends IndoorObject implements Runnable {
+public abstract class MovingObj extends IndoorObject implements Runnable {
 
 	// Basic Information
 	private String objectId;
-	private int gender;
+	private String gender;
 	private int age;
 	private String job;
 	private String moveType;
-	private ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+	private ArrayList<Room> rooms = new ArrayList<Room>();
 	
 	// Movement properties
     public static double scanRange = 20;
@@ -57,11 +57,11 @@ abstract public class MovingObj extends IndoorObject implements Runnable {
 		this.objectId = objectId;
 	}
 
-	public int getGender() {
+	public String getGender() {
 		return gender;
 	}
 
-	public void setGender(int gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 
@@ -87,6 +87,14 @@ abstract public class MovingObj extends IndoorObject implements Runnable {
 
 	public void setMoveType(String moveType) {
 		this.moveType = moveType;
+	}
+	
+	public ArrayList<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(ArrayList<Room> rooms) {
+		this.rooms = rooms;
 	}
 
 	public static double getScanRange() {
