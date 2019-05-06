@@ -14,6 +14,15 @@ import java.util.Date;
 
 abstract public class MovingObj extends IndoorObject implements Runnable {
 
+	// Basic Information
+	private String objectId;
+	private int gender;
+	private int age;
+	private String job;
+	private String moveType;
+	private ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+	
+	// Movement properties
     public static double scanRange = 20;
     protected static int scanRate = 1000;
     protected static double maxStepLength = 0.03;
@@ -39,8 +48,48 @@ abstract public class MovingObj extends IndoorObject implements Runnable {
     public MovingObj() {
 
     }
+    
+    public String getObjectId() {
+		return objectId;
+	}
 
-    public static double getScanRange() {
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
+	public int getGender() {
+		return gender;
+	}
+
+	public void setGender(int gender) {
+		this.gender = gender;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getJob() {
+		return job;
+	}
+
+	public void setJob(String job) {
+		this.job = job;
+	}
+	
+    public String getMoveType() {
+		return moveType;
+	}
+
+	public void setMoveType(String moveType) {
+		this.moveType = moveType;
+	}
+
+	public static double getScanRange() {
         return scanRange;
     }
 
@@ -190,7 +239,7 @@ abstract public class MovingObj extends IndoorObject implements Runnable {
         }
     }
 
-    protected void createFile() {
+	protected void createFile() {
         try {
             File file = new File(getFileName());
             if (!file.exists()) {

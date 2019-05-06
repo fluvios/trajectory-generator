@@ -80,6 +80,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import com.google.gson.stream.JsonReader;
+
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.FPT;
 import cn.edu.zju.db.datagen.algorithm.PXM;
@@ -139,7 +141,8 @@ public class Home extends JApplet {
 	private JButton btnSnapShot;
 	private JButton btnPositionGenerate;
 	private JButton btnMachineUpload;
-
+	private JButton btnMovingObjUpload;
+	
 	private JPanel filePanel;
 	private JPanel mapPanel;
 	private JPanel mapVisualPanel;
@@ -546,9 +549,9 @@ public class Home extends JApplet {
 		btnObjectStop.setBounds(635, 621, 97, 23);
 		panel_1.add(btnObjectStop);
 		
-		JButton btnUpload_1 = new JButton("Upload");
-		btnUpload_1.setBounds(557, 412, 97, 23);
-		panel_1.add(btnUpload_1);
+		btnMovingObjUpload = new JButton("Upload");
+		btnMovingObjUpload.setBounds(557, 412, 97, 23);
+		panel_1.add(btnMovingObjUpload);
 		
 		chckbxTrajectory = new JCheckBox("Trajectory");
 		chckbxTrajectory.setBounds(516, 588, 105, 23);
@@ -832,44 +835,44 @@ public class Home extends JApplet {
 
 		});
 
-//		txtRssiInputPath.addMouseListener(new MouseListener() {
-//
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				String previousPath = txtRssiInputPath.getText();
-//				String inputPath = decideOutputPath();
-//				if (inputPath != null) {
-//					txtRssiInputPath.setText(inputPath);
-//				} else {
-//					txtRssiInputPath.setText(previousPath);
-//				}
-//
-//				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
-//					btnPositionGenerate.setEnabled(true);
-//				}
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//
-//			}
-//
-//		});
+		txtRssiInputPath.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String previousPath = txtRssiInputPath.getText();
+				String inputPath = decideOutputPath();
+				if (inputPath != null) {
+					txtRssiInputPath.setText(inputPath);
+				} else {
+					txtRssiInputPath.setText(previousPath);
+				}
+
+				if ((!txtRssiInputPath.getText().equals("")) && (txtRssiInputPath.getText() != null)) {
+					btnPositionGenerate.setEnabled(true);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+
+		});
 
 	}
 
@@ -879,7 +882,7 @@ public class Home extends JApplet {
 		btnStationGenerate.setEnabled(state);
 		btnObjectInit.setEnabled(state);
 		toggleMovingObjectGenerationBtns(false);
-//		btnPositionGenerate.setEnabled(state);
+		btnPositionGenerate.setEnabled(state);
 	}
 
 	private void toggleMovingObjectGenerationBtns(boolean state) {
@@ -946,6 +949,12 @@ public class Home extends JApplet {
 	private void addActionListeners() {
 		
 		btnMachineUpload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				uploadFile();
+			}
+		});
+		
+		btnMovingObjUpload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				uploadFile();
 			}
@@ -1064,6 +1073,100 @@ public class Home extends JApplet {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
+	}
+	
+	private void uploadConfigFile() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
+			}
+
+			public String getDescription() {
+				return "Ifc Files";
+			}
+		};
+		chooser.setFileFilter(filter);
+
+		int result = chooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			UploadObject object = new UploadObject();
+			object.setFilename(file.getName());
+			object.setFile_type("IFC");
+			object.setFile_size((int) file.length());
+			object.setDescription("");
+			if (isFileExisted(object) == true) {
+				System.out.println("File already existed!");
+				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
+//				txtConsoleArea.append("File Already Existed! PASS\n");
+				return;
+			}
+			
+			// load moving objects
+		}
+	}
+	
+	private void uploadObjectFile() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
+			}
+
+			public String getDescription() {
+				return "Json Files";
+			}
+		};
+		chooser.setFileFilter(filter);
+
+		int result = chooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			UploadObject object = new UploadObject();
+			object.setFilename(file.getName());
+			object.setFile_type("JSON");
+			object.setFile_size((int) file.length());
+			object.setDescription("");
+			if (isFileExisted(object) == true) {
+				System.out.println("File already existed!");
+				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
+//				txtConsoleArea.append("File Already Existed! PASS\n");
+				return;
+			}
+
+			// load moving objects
+			try {
+				JsonReader jsonReader = new JsonReader(new FileReader(file));
+				
+			    jsonReader.beginObject();
+
+			    while (jsonReader.hasNext()) {
+
+			    String name = jsonReader.nextName();
+			        if (name.equals("descriptor")) {
+			             readApp(jsonReader);
+			        }
+			    }
+
+			   jsonReader.endObject();
+			   jsonReader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// Show the file in panel
+		}
+	}
+	
+	public static void readApp(JsonReader jsonReader) throws IOException{
+	    jsonReader.beginObject();
+	     while (jsonReader.hasNext()) {
+	         String name = jsonReader.nextName();
+	         System.out.println(name);
+	     }
+	     jsonReader.endObject();
 	}
 
 	private boolean isFileExisted(UploadObject uploadFile) {
