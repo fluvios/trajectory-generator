@@ -220,6 +220,8 @@ public class Home extends JApplet {
 	private JComboBox<String> movObjDistributerTypeComboBox;
 	private JComboBox<String> positionAlgorithmComboBox;
 	private JComboBox<UploadObject> fileComboBox;
+	private JComboBox<UploadObject> objectComboBox;
+	private JComboBox<UploadObject> machineComboBox;
 	private JComboBox<Floor> floorCombobox;
 	private Calendar startCalendar;
 	private Calendar endCalendar;
@@ -425,9 +427,9 @@ public class Home extends JApplet {
 		label_5.setBounds(504, 64, 113, 23);
 		panel.add(label_5);
 		
-		JComboBox<UploadObject> comboBox_1 = new JComboBox<UploadObject>();
-		comboBox_1.setBounds(619, 45, 203, 23);
-		panel.add(comboBox_1);
+		machineComboBox = new JComboBox<UploadObject>();
+		machineComboBox.setBounds(619, 45, 203, 23);
+		panel.add(machineComboBox);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Generator", null, panel_1, null);
@@ -494,17 +496,17 @@ public class Home extends JApplet {
 		lblNumber.setBounds(567, 222, 95, 23);
 		panel_1.add(lblNumber);
 		
-		textField_3 = new JTextField();
-		textField_3.setToolTipText("Maximum for each room");
-		textField_3.setColumns(10);
-		textField_3.setBounds(670, 193, 237, 21);
-		panel_1.add(textField_3);
+		txtStationMaxNumInPart = new JTextField();
+		txtStationMaxNumInPart.setToolTipText("Maximum for each room");
+		txtStationMaxNumInPart.setColumns(10);
+		txtStationMaxNumInPart.setBounds(670, 193, 237, 21);
+		panel_1.add(txtStationMaxNumInPart);
 		
-		textField_4 = new JTextField();
-		textField_4.setToolTipText("Maximum for each 100 meter square");
-		textField_4.setColumns(10);
-		textField_4.setBounds(670, 224, 237, 21);
-		panel_1.add(textField_4);
+		txtStationMaxNumInArea = new JTextField();
+		txtStationMaxNumInArea.setToolTipText("Maximum for each 100 meter square");
+		txtStationMaxNumInArea.setColumns(10);
+		txtStationMaxNumInArea.setBounds(670, 224, 237, 21);
+		panel_1.add(txtStationMaxNumInArea);
 		
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -516,10 +518,10 @@ public class Home extends JApplet {
 		lblRange.setBounds(567, 276, 95, 23);
 		panel_1.add(lblRange);
 		
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
-		textField_5.setBounds(670, 269, 237, 21);
-		panel_1.add(textField_5);
+		txtScanRange = new JTextField();
+		txtScanRange.setColumns(10);
+		txtScanRange.setBounds(670, 269, 237, 21);
+		panel_1.add(txtScanRange);
 		
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -531,10 +533,10 @@ public class Home extends JApplet {
 		lblFrequency.setBounds(567, 330, 95, 23);
 		panel_1.add(lblFrequency);
 		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		textField_6.setBounds(670, 323, 237, 21);
-		panel_1.add(textField_6);
+		txtScanRate = new JTextField();
+		txtScanRate.setColumns(10);
+		txtScanRate.setBounds(670, 323, 237, 21);
+		panel_1.add(txtScanRate);
 		
 		btnStationGenerate = new JButton("Generate");
 		btnStationGenerate.setBounds(810, 354, 97, 23);
@@ -592,9 +594,9 @@ public class Home extends JApplet {
 		label.setBounds(567, 629, 91, 23);
 		panel_1.add(label);
 		
-		JComboBox<UploadObject> comboBox = new JComboBox<UploadObject>();
-		comboBox.setBounds(682, 420, 225, 23);
-		panel_1.add(comboBox);
+		objectComboBox = new JComboBox<UploadObject>();
+		objectComboBox.setBounds(682, 420, 225, 23);
+		panel_1.add(objectComboBox);
 		
 		JLabel lblConfiguration = new JLabel("Configuration");
 		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -1250,8 +1252,8 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-//			mapPainter = new MapPainter(fileChosen.getUploadId());
-//			mapPanel.add(mapPainter);
+			mapPainter = new MapPainter(fileChosen.getUploadId());
+			mapPanel.add(mapPainter);
 			mapVisualPainter = new MapVisualPainter(fileChosen.getUploadId());
 			mapVisualPanel.add(mapVisualPainter);
 			
@@ -1360,7 +1362,7 @@ public class Home extends JApplet {
 			addMapPainterActionListener();
 
 			initUCLComboBox();
-//			loadPropFromFile("conf/pattern.properties");
+			loadPropFromFile("conf/pattern.properties");
 
 			addMouseMotionListener(ma);
 			addMouseWheelListener(ma);
@@ -1388,117 +1390,6 @@ public class Home extends JApplet {
 		}
 
 		private void addMapPainterActionListener() {
-			floorCombobox.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					chosenFloor = (Floor) floorCombobox.getSelectedItem();
-					selectedPart = null;
-					selectedAP = null;
-					selectedCon = null;
-				}
-
-			});
-
-			btnDecompAll.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
-							"Are you sure you want to decompose the selected file?", "Confirmation",
-							JOptionPane.YES_NO_OPTION);
-					if (n == JOptionPane.YES_OPTION) {
-						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-						clearIllegal();
-
-						System.out.println(
-								"\nBefore decomposed partitions " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
-						try {
-							DB_Import.decompose(con);
-							DB_WrapperLoad.loadALL(con, fileIDX);
-							con.close();
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-
-						D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
-								DB_WrapperLoad.accessPointConnectorT);
-						// BuildingD2DGrpah.partitions =
-						// DB_WrapperLoad.partitionDecomposedT;
-						// BuildingD2DGrpah.accessPoints =
-						// DB_WrapperLoad.accessPointConnectorT;
-						// BuildingD2DGrpah buildingD2D = new
-						// BuildingD2DGrpah();
-						buildingD2D.generateD2DDistance();
-
-						for (Floor floor : DB_WrapperLoad.floorT) {
-							floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
-							floor.setD2dGraph(buildingD2D);
-							System.out.println(
-									floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
-
-						}
-
-						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
-						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Decomposing File is done!", "Information",
-								JOptionPane.INFORMATION_MESSAGE);
-						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
-						selectedAP = null;
-						selectedPart = null;
-						loadFloorChooser();
-						updateSelectPartsList();
-						repaint();
-					} else if (n == JOptionPane.NO_OPTION) {
-						// Nothing
-					} else {
-						// Nothing
-					}
-
-				}
-			});
-
-			btnDeleteEntity.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
-							"Are you sure you want to delete the selected entity?", "Confirmation",
-							JOptionPane.YES_NO_OPTION);
-					if (n == JOptionPane.YES_OPTION) {
-						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-						try {
-							if (selectedPart != null) {
-								DB_WrapperDelete.deletePartition(con, selectedPart);
-							} else if (selectedAP != null) {
-								DB_WrapperDelete.deleteAccessPoint(con, selectedAP);
-							}
-							DB_WrapperLoad.loadALL(con, fileIDX);
-							con.close();
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Deleting Entity is done!", "Information",
-								JOptionPane.INFORMATION_MESSAGE);
-						loadFloorChooser();
-						repaint();
-					} else if (n == JOptionPane.NO_OPTION) {
-						// Nothing
-					} else {
-						// Nothing
-					}
-
-				}
-
-			});
-
-			connectedPartsList.addListSelectionListener(new ListSelectionListener() {
-
-				@Override
-				public void valueChanged(ListSelectionEvent e) {
-					repaint();
-				}
-			});
-
 			btnStationGenerate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 
@@ -1627,74 +1518,6 @@ public class Home extends JApplet {
 
 				}
 			});
-
-			positionAlgorithmComboBox.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					if (positionAlgorithmComboBox.getSelectedItem() != null) {
-						String algorithmType = positionAlgorithmComboBox.getSelectedItem().toString();
-						loadAlgorithmProp(algorithmType);
-					}
-				}
-			});
-
-//			chckbxPositiongData.addActionListener(new ActionListener() {
-//
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					if (chckbxPositiongData.isSelected() == true) {
-//						Algorithm.exportFlag = true;
-//					} else {
-//						Algorithm.exportFlag = false;
-//					}
-//				}
-//			});
-
-			btnPositionGenerate.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					if (chckbxPositiongData.isSelected()) {
-						String outputPath = decideOutputPath();
-						if (outputPath != null) {
-							String postioningOutputPath = createPositioningOutputDir(outputPath);
-							storeAlgProp();
-							String selected_algorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-
-							ExecutorService threadPool = Executors.newCachedThreadPool();
-
-							if ("Trilateration".equals(selected_algorithm)) {
-								TRI tri = new TRI("conf/trilateration.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								tri.calAlgorithmForAll(threadPool);
-							} else if ("Fingerprinting".equals(selected_algorithm)) {
-								FPT fpt = new FPT("conf/fingerprint.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								fpt.calAlgorithmForAll(threadPool);
-							} else {
-								PXM pxm = new PXM("conf/proximity.properties", txtRssiInputPath.getText(),
-										postioningOutputPath);
-								pxm.calAlgorithmForAll(threadPool);
-							}
-							exportPositioningConfiguration(postioningOutputPath);
-
-							threadPool.shutdown();
-
-							try {
-								threadPool.awaitTermination(50, TimeUnit.SECONDS);
-							} catch (InterruptedException e) {
-								//
-								e.printStackTrace();
-							}
-
-							// JOptionPane.showMessageDialog(this, "Generating Indoor Positioning Data is done!",
-							//		"Information", JOptionPane.INFORMATION_MESSAGE);
-						}
-					}
-				}
-			});
-
 		}
 
 		/**
@@ -1704,7 +1527,7 @@ public class Home extends JApplet {
 		 * partition, and delete them all, because they can caught an exception
 		 * when decompose delete all the isolation access points, try to fix
 		 * isolate partitions remember to reload all the space object, because
-		 * some partitions may have benn deleted
+		 * some partitions may have been deleted
 		 */
 		private void clearIllegal() {
 			PrintIsolatedObject.printAllIsolation(DB_WrapperLoad.partitionDecomposedT,
@@ -1862,22 +1685,6 @@ public class Home extends JApplet {
 		}
 
 		private void clearMapPainterActionListener() {
-			for (ActionListener al : floorCombobox.getActionListeners()) {
-				floorCombobox.removeActionListener(al);
-			}
-
-			for (ActionListener al : btnDecompAll.getActionListeners()) {
-				btnDecompAll.removeActionListener(al);
-			}
-
-			for (ActionListener al : btnDeleteEntity.getActionListeners()) {
-				btnDeleteEntity.removeActionListener(al);
-			}
-
-			for (ListSelectionListener al : connectedPartsList.getListSelectionListeners()) {
-				connectedPartsList.removeListSelectionListener(al);
-			}
-
 			for (ActionListener al : btnStationGenerate.getActionListeners()) {
 				btnStationGenerate.removeActionListener(al);
 			}
@@ -1908,7 +1715,6 @@ public class Home extends JApplet {
 			initStationInitMap();
 //			initMovingObjTypeMap();
 //			initMovObjInitMap();
-//			initAlgorithmMap();
 		}
 
 		private void initStationTypeMap() {
@@ -2959,17 +2765,17 @@ public class Home extends JApplet {
 			String stationScanRate = props.getProperty("stationScanRate");
 			txtScanRate.setText(stationScanRate);
 
-			String maxMovingNumInPartition = props.getProperty("movingObjMaxNumInPart");
-			txtMaxMovObjNumInPart.setText(maxMovingNumInPartition);
-			String maxStepLength = props.getProperty("movingObjMaxStepLength");
-			txtMaxStepLength.setText(maxStepLength);
-			String moveRate = props.getProperty("movingObjMoveRate");
-			txtMoveRate.setText(moveRate);
-			String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
-			txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
-
-			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
-			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
+//			String maxMovingNumInPartition = props.getProperty("movingObjMaxNumInPart");
+//			txtMaxMovObjNumInPart.setText(maxMovingNumInPartition);
+//			String maxStepLength = props.getProperty("movingObjMaxStepLength");
+//			txtMaxStepLength.setText(maxStepLength);
+//			String moveRate = props.getProperty("movingObjMoveRate");
+//			txtMoveRate.setText(moveRate);
+//			String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
+//			txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
+//
+//			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
+//			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
 		}
 
 		private class MovingAdapter extends MouseAdapter {
@@ -3056,17 +2862,11 @@ public class Home extends JApplet {
 
 		private MovingAdapter ma = new MovingAdapter();
 		private int fileIDX;
-		private boolean stationsGen = false;
-		private boolean movingObjsGen = false;
 
 		MapVisualPainter(int fileID) {
 			fileIDX = fileID;
 			setSize(800, 800);
 			setPreferredSize(new Dimension(800, 800));
-
-			btnObjectStart.setEnabled(false);
-			btnObjectStop.setEnabled(false);
-			btnSnapShot.setEnabled(false);
 
 			loadFloorChooser();
 
@@ -3695,149 +3495,6 @@ public class Home extends JApplet {
 			}
 		}
 
-		private void generateStations() {
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				floor.getStations().clear();
-			}
-			IndoorObjsFactory initlizer = new IndoorObjsFactory();
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				ArrayList<Station> stations = new ArrayList<Station>();
-				initlizer.generateStationsOnFloor(floor, stations);
-				floor.setStations(stations);
-				floor.setStationsRTree(IdrObjsUtility.generateStationRTree(floor.getStations()));
-			}
-		}
-
-		private void exportEnvironment(String envDir) {
-
-			Date date = new Date(System.currentTimeMillis());
-			String time = IdrObjsUtility.dir_sdf.format(date);
-
-			String currentPath = envDir + "//" + time;
-			new File(currentPath).mkdirs();
-
-			File file = null;
-			FileOutputStream outStr = null;
-			BufferedOutputStream buff = null;
-
-			String floor_outputPath = currentPath + "//Floors" + ".txt";
-			try {
-				file = new File(floor_outputPath);
-				file.createNewFile();
-				outStr = new FileOutputStream(file);
-				buff = new BufferedOutputStream(outStr);
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					buff.write((floor.toString() + "\n").getBytes());
-				}
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			String accessPoint_outputPath = currentPath + "//Access Points" + ".txt";
-			try {
-				file = new File(accessPoint_outputPath);
-				file.createNewFile();
-				outStr = new FileOutputStream(file);
-				buff = new BufferedOutputStream(outStr);
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					for (AccessPoint ap : floor.getAccessPoints())
-						buff.write((ap.toString() + "\n").getBytes());
-				}
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			String parition_outputPath = currentPath + "//Partitions" + ".txt";
-			try {
-				file = new File(parition_outputPath);
-				file.createNewFile();
-				outStr = new FileOutputStream(file);
-				buff = new BufferedOutputStream(outStr);
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					for (Partition par : floor.getPartitions())
-						buff.write((par.toString2() + "\n").getBytes());
-				}
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			String connector_outputPath = currentPath + "//Connectors" + ".txt";
-			try {
-				file = new File(connector_outputPath);
-				file.createNewFile();
-				outStr = new FileOutputStream(file);
-				buff = new BufferedOutputStream(outStr);
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					for (Connector connector : floor.getConnectors())
-						buff.write((connector.toString() + "\n").getBytes());
-				}
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			String connectivity_outputPath = currentPath + "//Connectivity" + ".txt";
-			try {
-				file = new File(connectivity_outputPath);
-				file.createNewFile();
-				outStr = new FileOutputStream(file);
-				buff = new BufferedOutputStream(outStr);
-				for (Connectivity connectivity : DB_WrapperLoad.connectivityT) {
-					buff.write((connectivity.toString() + "\n").getBytes());
-				}
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		private void exportMovingPatternsConfiguration(String outputPath, String time) {
-
-			// System.out.println(outputPath);
-			String mo_configuration_outputPath = outputPath + "//Moving_Object_Configuration_" + time + ".txt";
-			// System.out.println(mo_configuration_outputPath);
-			try {
-				File file = new File(mo_configuration_outputPath);
-				if (!file.exists()) {
-					file.getParentFile().mkdirs();
-					file.createNewFile();
-				}
-				FileOutputStream outStr = new FileOutputStream(file);
-				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-				String configure = "Moving Object Type=" + movingObjectTypeComboBox.getSelectedItem().toString() + "\n";
-				configure = configure + "Initial Distribution="
-						+ movObjDistributerTypeComboBox.getSelectedItem().toString() + "\n";
-				configure = configure + "Maximum Object Number in a Partition=" + txtMaxMovObjNumInPart.getText()
-						+ "\n";
-				configure = configure + "Maximum Life Span(s)=" + txtMaximumLifeSpan.getText() + "\n";
-				configure = configure + "Maximum Step Length(m)=" + txtMaxStepLength.getText() + "\n";
-				configure = configure + "Move Rate(ms)=" + txtMoveRate.getText() + "\n";
-				configure = configure + "Generation Period=" + txtStartTime.getText() + "-" + txtEndTime.getText()
-						+ "\n";
-				buff.write(configure.getBytes());
-				buff.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-
 		private void exportPositioningConfiguration(String outputPath) {
 
 			System.out.println(outputPath);
@@ -3864,153 +3521,6 @@ public class Home extends JApplet {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-		}
-
-		private void exportStations(String stationDir) {
-
-			Date date = new Date(System.currentTimeMillis());
-			String time = IdrObjsUtility.dir_sdf.format(date);
-
-			// IdrObjsUtility.createOutputDir();
-
-			String station_outputPath = stationDir + "//Devices_" + time + ".txt";
-			String station_configuration_outputPath = stationDir + "//Device_Configuration_" + time + ".txt";
-			try {
-				File file = new File(station_outputPath);
-				file.createNewFile();
-				FileOutputStream outStr = new FileOutputStream(file);
-				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-				String comments = "deviceId" + "\t" + "floorId" + "\t" + "partitionId" + "\t" + "location_x" + "\t"
-						+ "location_y" + "\n";
-				buff.write(comments.getBytes());
-				boolean flag = false;
-				Station sampled_station = null;
-				IdrObjsUtility.allStations = new Hashtable<Integer, Station>();
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					for (Station station : floor.getStations()) {
-						IdrObjsUtility.allStations.put(station.getId(), station);
-						if (!flag) {
-							sampled_station = station;
-							flag = true;
-						}
-						buff.write(station.toString().getBytes());
-					}
-				}
-				buff.close();
-
-				if (sampled_station != null) {
-					file = new File(station_configuration_outputPath);
-					file.createNewFile();
-					outStr = new FileOutputStream(file);
-					buff = new BufferedOutputStream(outStr);
-					String configure = "Device Type=" + stationTypeComboBox.getSelectedItem().toString() + "\n";
-					configure = configure + "Deployment Model=" + stationDistriTypeComboBox.getSelectedItem().toString()
-							+ "\n";
-					configure = configure + "Maximum Device Number in a Partition=" + txtStationMaxNumInPart.getText()
-							+ "\n";
-					configure = configure + "Maximum Device Number in 100 m^2=" + txtStationMaxNumInArea.getText()
-							+ "\n";
-					configure = configure + "Detection Range(m)=" + txtScanRange.getText() + "\n";
-					configure = configure + "Detection Frequency(ms)=" + txtScanRate.getText() + "\n";
-					buff.write(configure.getBytes());
-					buff.close();
-				}
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		private String createEnvironmentOutputDir(String outputPath) {
-			// TODO Auto-generated method stub
-
-			File dir = new File(outputPath);
-
-			File spaceDir = new File(outputPath + "//indoor enviroment");
-
-			if (!dir.exists() && !dir.isDirectory()) {
-				dir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			if (!spaceDir.exists() && !spaceDir.isDirectory()) {
-				spaceDir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			return spaceDir.getPath();
-
-		}
-
-		private String createStationOutputDir(String outputPath) {
-			// TODO Auto-generated method stub
-
-			File dir = new File(outputPath);
-
-			File stationDir = new File(outputPath + "//indoor devices");
-
-			if (!dir.exists() && !dir.isDirectory()) {
-				dir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			if (!stationDir.exists() && !stationDir.isDirectory()) {
-				stationDir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			return stationDir.getPath();
-
-		}
-
-		private void createMovingObjectOutputDir(String outputPath) {
-			// TODO Auto-generated method stub
-
-			Date date = new Date(System.currentTimeMillis());
-			String time = IdrObjsUtility.dir_sdf.format(date);
-
-			File dir = new File(outputPath);
-
-			File rssiDir = new File(outputPath + "//raw rssi");
-			File trajDir = new File(outputPath + "//raw trajectory");
-
-			if (!dir.exists() && !dir.isDirectory()) {
-				dir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			IdrObjsUtility.outputDir = outputPath;
-			IdrObjsUtility.rssiDir = rssiDir.getPath() + "//" + time;
-			IdrObjsUtility.trajDir = trajDir.getPath() + "//" + time;
-			exportMovingPatternsConfiguration(rssiDir.getPath(), time);
-
-			if (!rssiDir.exists() && !rssiDir.isDirectory() && chckbxTracking.isSelected()) {
-				rssiDir.mkdirs();
-			}
-			File cur_rssiDir = new File(IdrObjsUtility.rssiDir);
-			if (!cur_rssiDir.exists() && !cur_rssiDir.isDirectory() && chckbxTracking.isSelected()) {
-				cur_rssiDir.mkdirs();
-			}
-
-			if (!trajDir.exists() && !trajDir.isDirectory() && chckbxTrajectory.isSelected()) {
-				trajDir.mkdirs();
-				new File(IdrObjsUtility.trajDir).mkdirs();
-			}
-			File cur_trajDir = new File(IdrObjsUtility.trajDir);
-			if (!cur_trajDir.exists() && !cur_trajDir.isDirectory() && chckbxTracking.isSelected()) {
-				cur_trajDir.mkdirs();
-			}
-
-			return;
 
 		}
 
@@ -4042,265 +3552,6 @@ public class Home extends JApplet {
 
 			return cur_positionDir.getPath();
 
-		}
-
-		private void createSnapshotOutputDir(String outputPath) {
-			// TODO Auto-generated method stub
-
-			File dir = new File(outputPath);
-
-			File snapshotDir = new File(outputPath + "//snapshot");
-
-			if (!dir.exists() && !dir.isDirectory()) {
-				dir.mkdirs();
-			} else {
-				System.out.println("Dir already exists");
-			}
-
-			snapshotDir.mkdirs();
-
-			IdrObjsUtility.snapshotDir = snapshotDir.getPath();
-			//
-			// new File(IdrObjsUtility.snapshotDir).mkdirs();
-
-			// positionDir.mkdirs();
-
-			return;
-
-		}
-
-		private void generateMovingObjs() {
-			movingObjs.clear();
-			IndoorObjsFactory initlizer = new IndoorObjsFactory();
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				initlizer.generateMovingObjsOnFloor(floor, movingObjs);
-			}
-			// PropLoader propLoader = new PropLoader();
-			// propLoader.loadProp("conf/factory.properties");
-			// movingObjs = (ArrayList)DB_WrapperLoad.floorT
-			// .stream()
-			// .map(floor ->
-			// IndoorObjectFactory.createMovingObjectsOnFloor(floor,
-			// propLoader.getMovingObjDistributerType()))
-			// .flatMap(Collection::stream)
-			// .collect(Collectors.toList());
-			setMovingObjsInitTime();
-		}
-
-		private void setMovingObjsInitTime() {
-			movingObjs.forEach(movingObj -> {
-				movingObj.setInitMovingTime(calGaussianTime());
-			});
-		}
-
-		private long calGaussianTime() {
-			Random random = new Random();
-			try {
-				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(txtStartTime.getText()) : startCalendar.getTime();
-				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(txtEndTime.getText()) : endCalendar.getTime();
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
-			long startTime = IdrObjsUtility.objectGenerateStartTime.getTime();
-			long endTime = IdrObjsUtility.objectGenerateEndTime.getTime();
-			long middle = (long) ((endTime - startTime) / 2.0 + startTime);
-			long error = (long) ((endTime - startTime) * 0.5);
-			long gaussianTime = (long) (middle + random.nextGaussian() * error);
-			if (gaussianTime < startTime) {
-				return startTime;
-			} else if (gaussianTime > endTime) {
-				return endTime;
-			} else {
-				return gaussianTime;
-			}
-		}
-
-		private void snapShot(ArrayList<MovingObj> movingObjs) {
-
-			try {
-
-				String time = IdrObjsUtility.dir_sdf.format(new Date(IdrObjsUtility.objectGenerateStartTime.getTime()
-						+ (System.currentTimeMillis() - IdrObjsUtility.startClickedTime.getTime())));
-
-				// create snap shot file
-				File file = new File(IdrObjsUtility.snapshotDir + "//snapshot_" + time + ".txt");
-				file.createNewFile();
-				FileOutputStream outStr = new FileOutputStream(file);
-				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-
-				// record snap shot data
-				for (MovingObj movingObj : movingObjs) {
-					buff.write((movingObj.getId() + "\t").getBytes());
-					buff.write((movingObj.getCurrentLocation().getX() + "\t" + movingObj.getCurrentLocation().getY()
-							+ "\n").getBytes());
-					int packIndex = 1;
-					movingObj.calRSSI();
-					ArrayList<Pack> packs = movingObj.getPackages();
-					for (Pack pack : packs) {
-						String packInfo = packIndex + "\t" + pack.toString() + "\n";
-						buff.write(packInfo.getBytes());
-						packIndex++;
-					}
-					buff.write("\n".getBytes());
-				}
-
-				buff.flush();
-				buff.close();
-				JOptionPane.showMessageDialog(this, "Extracting snapshot is done!", "Information",
-						JOptionPane.INFORMATION_MESSAGE);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		private void storePropFromGUI(String propName) {
-			Properties props = new Properties();
-
-			String stationTypeSimple = stationTypeComboBox.getSelectedItem().toString();
-			String stationType = stationTypeMap.get(stationTypeSimple);
-			props.setProperty("stationType", stationType);
-			String stationDistributerTypeSimple = stationDistriTypeComboBox.getSelectedItem().toString();
-			String stationDistributerType = stationInitMap.get(stationDistributerTypeSimple);
-			props.setProperty("stationDistributerType", stationDistributerType);
-			String stationMaxNumInPart = txtStationMaxNumInPart.getText();
-			props.setProperty("stationMaxNumInPart", stationMaxNumInPart);
-
-			String stationNumArea = txtStationMaxNumInArea.getText();
-			props.setProperty("stationNumArea", stationNumArea);
-			String scanRange = txtScanRange.getText();
-			props.setProperty("stationScanRange", scanRange);
-			String stationScanRate = txtScanRate.getText();
-			props.setProperty("stationScanRate", stationScanRate);
-
-			Station.setScanRange(Double.parseDouble(scanRange));
-			Station.setScanRate(Integer.parseInt(stationScanRate));
-
-			String movingObjTypeSimple = movingObjectTypeComboBox.getSelectedItem().toString();
-			String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
-			props.setProperty("movingObjType", movingObjType);
-			String movObjDistriTypeSimple = movObjDistributerTypeComboBox.getSelectedItem().toString();
-			String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
-			props.setProperty("movingObjDistributerType", movObjDistriType);
-			String maxMovingNumInPart = txtMaxMovObjNumInPart.getText();
-			props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
-			String maxStepLength = txtMaxStepLength.getText();
-			props.setProperty("movingObjMaxStepLength", maxStepLength);
-			String moveRate = txtMoveRate.getText();
-			props.setProperty("movingObjMoveRate", moveRate);
-			String movingObjMaxLifeSpan = txtMaximumLifeSpan.getText();
-			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
-
-			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-			String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
-			props.setProperty("positionAlgorithm", posAlgType);
-
-			MovingObj.setScanRange(Double.parseDouble(scanRange));
-			MovingObj.setMaxStepLength(Double.parseDouble(maxStepLength));
-			MovingObj.setMoveRate(Integer.parseInt(moveRate));
-			MovingObj.setMaxSpeed(Double.parseDouble(maxStepLength) / ((Integer.parseInt(moveRate) + 0.0) / 1000));
-
-			try {
-				FileOutputStream out = new FileOutputStream(propName);
-				props.store(out, null);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		private void startIndoorObj() {
-			// IdrObjsUtility.createOutputDir();
-			IdrObjsUtility.movingObjsTest(movingObjs);
-
-			destMovingObjs.clear();
-			Floor floor1 = DB_WrapperLoad.floorT.get(2);
-			Floor floor2 = DB_WrapperLoad.floorT.get(2);
-			IdrObjsUtility.DestMovingObjTest2(floor1, floor2, destMovingObjs);
-		}
-
-		private void stopIndoorObj() {
-			for (MovingObj movingObj : movingObjs) {
-				movingObj.setArrived(true);
-				if (movingObj instanceof RegularMultiDestCustomer) {
-					((RegularMultiDestCustomer) movingObj).setFinished(true);
-				}
-			}
-			for (MovingObj destMoving : destMovingObjs) {
-				DstMovingObj destMovingObj = (DstMovingObj) destMoving;
-				destMovingObj.setArrived(true);
-			}
-			movingObjs.clear();
-			destMovingObjs.clear();
-
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				floor.getStations().clear();
-			}
-
-			JOptionPane.showMessageDialog(this, "Generating Moving Object Data is done!", "Information",
-					JOptionPane.INFORMATION_MESSAGE);
-
-		}
-
-		private void pauseIndoorObj() {
-			for (MovingObj movingObj : movingObjs) {
-
-				movingObj.changeFlag();
-				// pauseBut.setText("resume");
-				if (movingObj.getPauseFlag() == false) {
-					movingObj.resumeThread();
-					// pauseBut.setText("pause");
-				}
-			}
-
-			for (MovingObj movingObj : destMovingObjs) {
-				DstMovingObj destMovingObj = (DstMovingObj) movingObj;
-				destMovingObj.changeFlag();
-				if (destMovingObj.getPauseFlag() == false) {
-					destMovingObj.resumeThread();
-				}
-			}
-		}
-
-		private void loadPropFromFile(String propName) {
-
-			Properties props = new Properties();
-			FileInputStream in;
-			try {
-				in = new FileInputStream(propName);
-				props.load(in);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			String stationMaxNumInPart = props.getProperty("stationMaxNumInPart");
-			txtStationMaxNumInPart.setText(stationMaxNumInPart);
-			String stationNumArea = props.getProperty("stationNumArea");
-			txtStationMaxNumInArea.setText(stationNumArea);
-			String scanRange = props.getProperty("stationScanRange");
-			txtScanRange.setText(scanRange);
-			String stationScanRate = props.getProperty("stationScanRate");
-			txtScanRate.setText(stationScanRate);
-
-			String maxMovingNumInPartition = props.getProperty("movingObjMaxNumInPart");
-			txtMaxMovObjNumInPart.setText(maxMovingNumInPartition);
-			String maxStepLength = props.getProperty("movingObjMaxStepLength");
-			txtMaxStepLength.setText(maxStepLength);
-			String moveRate = props.getProperty("movingObjMoveRate");
-			txtMoveRate.setText(moveRate);
-			String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
-			txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
-
-			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
-			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
 		}
 
 		private class MovingAdapter extends MouseAdapter {
