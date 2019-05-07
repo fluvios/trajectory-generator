@@ -239,6 +239,7 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
+	private MovingObjResponse[] response;
 
 	private boolean empty = false;
 	private double zoom = 1;
@@ -450,13 +451,13 @@ public class Home extends JApplet {
 		lblExport.setBounds(567, 50, 95, 23);
 		panel_1.add(lblExport);
 		
-		JCheckBox chckbxEnvironment = new JCheckBox("Environment");
+		chckbxEnvironment = new JCheckBox("Environment");
 		chckbxEnvironment.setBounds(670, 53, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
-		JCheckBox chckbxDevicePosition = new JCheckBox("Device Position");
-		chckbxDevicePosition.setBounds(790, 53, 121, 23);
-		panel_1.add(chckbxDevicePosition);
+		chckbxPositioningDevice = new JCheckBox("Device Position");
+		chckbxPositioningDevice.setBounds(790, 53, 121, 23);
+		panel_1.add(chckbxPositioningDevice);
 		
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -566,10 +567,6 @@ public class Home extends JApplet {
 		panel_1.add(btnObjectInit);
 		
 		btnObjectStart = new JButton("Start");
-		btnObjectStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
 		btnObjectStart.setBounds(810, 661, 97, 23);
 		panel_1.add(btnObjectStart);
 		
@@ -791,7 +788,7 @@ public class Home extends JApplet {
 	
 	private void toggleBtnObjectStart() {
 		// TODO Auto-generated method stub
-		if (btnObjectInit.isEnabled() && (!txtStartTime.getText().equals("")) && !txtEndTime.getText().equals(""))
+		if (btnObjectInit.isEnabled() && (!response[0].getStartTime().equals("")) && !response[0].getEndTime().equals(""))
 			btnObjectStart.setEnabled(true);
 	}
 
@@ -847,7 +844,7 @@ public class Home extends JApplet {
 				System.out.println(endCalendar.getTime().toString());
 
 				try {
-					Date selectedStartTime = IdrObjsUtility.sdf.parse(txtStartTime.getText());
+					Date selectedStartTime = IdrObjsUtility.sdf.parse(response[0].getStartTime());
 					if (endCalendar.getTime().before(selectedStartTime)) {
 						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "The end time should be later than start time!",
 								"Error", JOptionPane.ERROR_MESSAGE);
@@ -1197,8 +1194,11 @@ public class Home extends JApplet {
 				JsonReader reader = new JsonReader(new FileReader(file));
 				reader.setLenient(true);
 				MovingObjResponse[] objects = gson.fromJson(reader, MovingObjResponse[].class);
-				System.out.println(objects[0].getAge());
+				response = objects;
+				System.out.println(response[0].getInitialDistribution());
 				// Show the file in panel
+				objectComboBox.removeAllItems();
+				objectComboBox.addItem(object);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1577,13 +1577,13 @@ public class Home extends JApplet {
 
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(txtStartTime.getText()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(response[0].getStartTime()) : startCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
 			try {
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(txtEndTime.getText()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(response[0].getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -1713,8 +1713,8 @@ public class Home extends JApplet {
 		private void initUCLComboBox() {
 			initStationTypeMap();
 			initStationInitMap();
-//			initMovingObjTypeMap();
-//			initMovObjInitMap();
+			initMovingObjTypeMap();
+			initMovObjInitMap();
 		}
 
 		private void initStationTypeMap() {
@@ -1769,12 +1769,12 @@ public class Home extends JApplet {
 				BufferedReader buff = new BufferedReader(fileReader);
 				String line;
 				movObjInitMap.clear();
-				movObjDistributerTypeComboBox.removeAllItems();
+//				movObjDistributerTypeComboBox.removeAllItems();
 				while ((line = buff.readLine()) != null) {
 					String[] splitedString = new String[2];
 					splitedString = line.split("=");
 					movObjInitMap.put(splitedString[0], splitedString[1]);
-					movObjDistributerTypeComboBox.addItem(splitedString[0]);
+//					movObjDistributerTypeComboBox.addItem(splitedString[0]);
 				}
 				fileReader.close();
 				buff.close();
@@ -2293,15 +2293,15 @@ public class Home extends JApplet {
 				}
 				FileOutputStream outStr = new FileOutputStream(file);
 				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-				String configure = "Moving Object Type=" + movingObjectTypeComboBox.getSelectedItem().toString() + "\n";
+				String configure = "Moving Object Type=" + response[0].getMovingObjectType() + "\n";
 				configure = configure + "Initial Distribution="
-						+ movObjDistributerTypeComboBox.getSelectedItem().toString() + "\n";
-				configure = configure + "Maximum Object Number in a Partition=" + txtMaxMovObjNumInPart.getText()
+						+ response[0].getInitialDistribution() + "\n";
+				configure = configure + "Maximum Object Number in a Partition=" + response[0].getObjectNumber()
 						+ "\n";
-				configure = configure + "Maximum Life Span(s)=" + txtMaximumLifeSpan.getText() + "\n";
-				configure = configure + "Maximum Step Length(m)=" + txtMaxStepLength.getText() + "\n";
-				configure = configure + "Move Rate(ms)=" + txtMoveRate.getText() + "\n";
-				configure = configure + "Generation Period=" + txtStartTime.getText() + "-" + txtEndTime.getText()
+				configure = configure + "Maximum Life Span(s)=" + response[0].getLifeSpan() + "\n";
+				configure = configure + "Maximum Step Length(m)=" + response[0].getMaxStepLength() + "\n";
+				configure = configure + "Move Rate(ms)=" + response[0].getMoveRate() + "\n";
+				configure = configure + "Generation Period=" + response[0].getStartTime() + "-" + response[0].getEndTime()
 						+ "\n";
 				buff.write(configure.getBytes());
 				buff.close();
@@ -2572,9 +2572,9 @@ public class Home extends JApplet {
 			Random random = new Random();
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(txtStartTime.getText()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(response[0].getStartTime()) : startCalendar.getTime();
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(txtEndTime.getText()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(response[0].getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -2655,19 +2655,19 @@ public class Home extends JApplet {
 			Station.setScanRange(Double.parseDouble(scanRange));
 			Station.setScanRate(Integer.parseInt(stationScanRate));
 
-			String movingObjTypeSimple = movingObjectTypeComboBox.getSelectedItem().toString();
+			String movingObjTypeSimple = response[0].getMovingObjectType();
 			String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
 			props.setProperty("movingObjType", movingObjType);
-			String movObjDistriTypeSimple = movObjDistributerTypeComboBox.getSelectedItem().toString();
+			String movObjDistriTypeSimple = response[0].getInitialDistribution();
 			String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
 			props.setProperty("movingObjDistributerType", movObjDistriType);
-			String maxMovingNumInPart = txtMaxMovObjNumInPart.getText();
+			String maxMovingNumInPart = Integer.toString(response[0].getObjectNumber());
 			props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
-			String maxStepLength = txtMaxStepLength.getText();
+			String maxStepLength = Double.toString(response[0].getMaxStepLength());
 			props.setProperty("movingObjMaxStepLength", maxStepLength);
-			String moveRate = txtMoveRate.getText();
+			String moveRate = Integer.toString(response[0].getMoveRate());
 			props.setProperty("movingObjMoveRate", moveRate);
-			String movingObjMaxLifeSpan = txtMaximumLifeSpan.getText();
+			String movingObjMaxLifeSpan = Integer.toString(response[0].getLifeSpan());
 			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
 
 			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
@@ -2675,10 +2675,11 @@ public class Home extends JApplet {
 			props.setProperty("positionAlgorithm", posAlgType);
 
 			MovingObj.setScanRange(Double.parseDouble(scanRange));
-			MovingObj.setMaxStepLength(Double.parseDouble(maxStepLength));
-			MovingObj.setMoveRate(Integer.parseInt(moveRate));
-			MovingObj.setMaxSpeed(Double.parseDouble(maxStepLength) / ((Integer.parseInt(moveRate) + 0.0) / 1000));
-
+			MovingObj.setMaxStepLength(response[0].getMaxStepLength());
+			MovingObj.setMoveRate(response[0].getMoveRate());
+			MovingObj.setMaxSpeed(response[0].getMaxStepLength() / ((response[0].getMoveRate() + 0.0) / 1000));
+			
+			
 			try {
 				FileOutputStream out = new FileOutputStream(propName);
 				props.store(out, null);

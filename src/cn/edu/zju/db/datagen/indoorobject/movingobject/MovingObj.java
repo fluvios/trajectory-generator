@@ -19,7 +19,12 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
 	private String gender;
 	private int age;
 	private String job;
-	private String moveType;
+	private String movementType;
+	private String movingObjectType;	
+	private String initialDistribution;
+	private int objectNumber;
+	private String startTime;
+	private String endTime;
 	private ArrayList<Room> rooms = new ArrayList<Room>();
 	
 	// Movement properties
@@ -81,14 +86,54 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
 		this.job = job;
 	}
 	
-    public String getMoveType() {
-		return moveType;
+	public String getMovementType() {
+		return movementType;
 	}
 
-	public void setMoveType(String moveType) {
-		this.moveType = moveType;
+	public void setMovementType(String movementType) {
+		this.movementType = movementType;
+	}
+
+	public String getMovingObjectType() {
+		return movingObjectType;
+	}
+
+	public void setMovingObjectType(String movingObjectType) {
+		this.movingObjectType = movingObjectType;
+	}
+		
+	public String getInitialDistribution() {
+		return initialDistribution;
+	}
+
+	public void setInitialDistribution(String initialDistribution) {
+		this.initialDistribution = initialDistribution;
+	}
+
+	public int getObjectNumber() {
+		return objectNumber;
+	}
+
+	public void setObjectNumber(int objectNumber) {
+		this.objectNumber = objectNumber;
 	}
 	
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
 	public ArrayList<Room> getRooms() {
 		return rooms;
 	}
@@ -97,7 +142,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
 		this.rooms = rooms;
 	}
 
-	public static double getScanRange() {
+	public double getScanRange() {
         return scanRange;
     }
 
@@ -105,7 +150,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
         scanRange = range;
     }
 
-    public static double getMaxStepLength() {
+    public double getMaxStepLength() {
         return maxStepLength;
     }
 
@@ -114,7 +159,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
         maxSpeed = maxStepLength / (moveRate / 1000);
     }
 
-    public static int getMoveRate() {
+    public int getMoveRate() {
         return moveRate;
     }
 
