@@ -113,6 +113,7 @@ import cn.edu.zju.db.datagen.indoorobject.utility.IdrObjsUtility;
 import cn.edu.zju.db.datagen.json.DateSerializer;
 import cn.edu.zju.db.datagen.json.TimeDeserializer;
 import cn.edu.zju.db.datagen.json.TimeSerializer;
+import cn.edu.zju.db.datagen.machine.Machine;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import diva.util.java2d.Polygon2D;
 import javax.swing.ListModel;
@@ -149,6 +150,7 @@ public class Home extends JApplet {
 	private JButton btnPositionGenerate;
 	private JButton btnMachineUpload;
 	private JButton btnMovingObjUpload;
+	private JButton btnShow;
 	
 	private JPanel filePanel;
 	private JPanel mapPanel;
@@ -239,7 +241,8 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
-	private MovingObjResponse[] response;
+	private MovingObjResponse[] persons;
+	private Machine[] machines;
 
 	private boolean empty = false;
 	private double zoom = 1;
@@ -354,12 +357,12 @@ public class Home extends JApplet {
 				panel.main(null);
 			}
 		});
-		btnMachineClear.setBounds(725, 78, 97, 23);
+		btnMachineClear.setBounds(810, 76, 97, 23);
 		panel.add(btnMachineClear);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBackground(Color.LIGHT_GRAY);
-		panel_3.setBounds(504, 109, 318, 105);
+		panel_3.setBounds(504, 109, 403, 105);
 		panel.add(panel_3);
 		
 		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
@@ -376,7 +379,7 @@ public class Home extends JApplet {
 		panel.add(btnClear);
 		
 		JButton btnTrain = new JButton("Train");
-		btnTrain.setBounds(725, 375, 97, 23);
+		btnTrain.setBounds(810, 375, 97, 23);
 		panel.add(btnTrain);
 		
 		txtConsoleArea = new JTextArea();
@@ -396,7 +399,7 @@ public class Home extends JApplet {
 		panel.add(label_2);
 		
 		textField_7 = new JComboBox();
-		textField_7.setBounds(629, 324, 193, 21);
+		textField_7.setBounds(629, 324, 278, 21);
 		panel.add(textField_7);
 		
 		JLabel lblTraining = new JLabel("Training");
@@ -411,11 +414,11 @@ public class Home extends JApplet {
 		
 		textField = new JTextField();
 		textField.setColumns(10);
-		textField.setBounds(629, 271, 193, 21);
+		textField.setBounds(629, 271, 278, 21);
 		panel.add(textField);
 		
 		btnMachineUpload = new JButton("Upload");
-		btnMachineUpload.setBounds(616, 78, 97, 23);
+		btnMachineUpload.setBounds(701, 76, 97, 23);
 		panel.add(btnMachineUpload);
 		
 		JLabel label_4 = new JLabel("Configuration");
@@ -429,7 +432,7 @@ public class Home extends JApplet {
 		panel.add(label_5);
 		
 		machineComboBox = new JComboBox<UploadObject>();
-		machineComboBox.setBounds(619, 45, 203, 23);
+		machineComboBox.setBounds(619, 45, 288, 23);
 		panel.add(machineComboBox);
 		
 		JPanel panel_1 = new JPanel();
@@ -624,7 +627,7 @@ public class Home extends JApplet {
 		panel_2.add(lblBuildingDetails);
 		
 		floorCombobox = new JComboBox();
-		floorCombobox.setBounds(668, 45, 190, 23);
+		floorCombobox.setBounds(668, 45, 239, 23);
 		panel_2.add(floorCombobox);
 		
 		JLabel lblFloor = new JLabel("Floor:");
@@ -638,7 +641,7 @@ public class Home extends JApplet {
 		panel_2.add(lblDetails);
 		
 		scrollPanePart = new JScrollPane();
-		scrollPanePart.setBounds(668, 177, 190, 65);
+		scrollPanePart.setBounds(668, 177, 239, 88);
 		panel_2.add(scrollPanePart);
 		
 		connectedPartsModel = new DefaultListModel<Partition>();
@@ -662,7 +665,7 @@ public class Home extends JApplet {
 		txtselectedNameField = new JTextField();
 		txtselectedNameField.setEditable(false);
 		txtselectedNameField.setColumns(10);
-		txtselectedNameField.setBounds(668, 111, 190, 21);
+		txtselectedNameField.setBounds(668, 111, 239, 21);
 		panel_2.add(txtselectedNameField);
 		
 		JLabel lblMovementPatterns = new JLabel("Movement Patterns");
@@ -677,7 +680,7 @@ public class Home extends JApplet {
 		
 		txtStartTime = new JTextField();
 		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(668, 308, 190, 21);
+		txtStartTime.setBounds(668, 308, 239, 21);
 		panel_2.add(txtStartTime);
 		
 		JLabel lblEndDate = new JLabel("End Date:");
@@ -687,19 +690,19 @@ public class Home extends JApplet {
 		
 		txtEndTime = new JTextField();
 		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(668, 341, 190, 21);
+		txtEndTime.setBounds(668, 341, 239, 21);
 		panel_2.add(txtEndTime);
 		
-		JButton btnShow = new JButton("Show");
-		btnShow.setBounds(761, 372, 97, 23);
+		btnShow = new JButton("Show");
+		btnShow.setBounds(810, 372, 97, 23);
 		panel_2.add(btnShow);
 		
 		btnDeleteFloor = new JButton("Clear");
-		btnDeleteFloor.setBounds(785, 78, 73, 23);
+		btnDeleteFloor.setBounds(834, 78, 73, 23);
 		panel_2.add(btnDeleteFloor);
 		
 		btnDeleteEntity = new JButton("Clear");
-		btnDeleteEntity.setBounds(785, 142, 73, 23);
+		btnDeleteEntity.setBounds(834, 142, 73, 23);
 		panel_2.add(btnDeleteEntity);
 		
 		JLabel lblPositioning = new JLabel("Positioning");
@@ -727,7 +730,7 @@ public class Home extends JApplet {
 		panel_2.add(lblAlgorithm);
 		
 		positionAlgorithmComboBox = new JComboBox();
-		positionAlgorithmComboBox.setBounds(668, 494, 190, 21);
+		positionAlgorithmComboBox.setBounds(668, 494, 239, 21);
 		panel_2.add(positionAlgorithmComboBox);
 		
 		JLabel lblRssi = new JLabel("RSSI");
@@ -742,7 +745,7 @@ public class Home extends JApplet {
 		
 		txtRssiInputPath = new JTextField();
 		txtRssiInputPath.setColumns(10);
-		txtRssiInputPath.setBounds(668, 548, 190, 21);
+		txtRssiInputPath.setBounds(668, 548, 239, 21);
 		panel_2.add(txtRssiInputPath);
 		
 		JLabel label_3 = new JLabel("Details:");
@@ -788,8 +791,8 @@ public class Home extends JApplet {
 	
 	private void toggleBtnObjectStart() {
 		// TODO Auto-generated method stub
-		if (btnObjectInit.isEnabled() && (!response[0].getStartTime().equals("")) && !response[0].getEndTime().equals(""))
-			btnObjectStart.setEnabled(true);
+//		if (btnObjectInit.isEnabled() && (!persons[0].getStartTime().equals("")) && !persons[0].getEndTime().equals(""))
+//			btnObjectStart.setEnabled(true);
 	}
 
 	private void addFocusListeners() {
@@ -844,7 +847,7 @@ public class Home extends JApplet {
 				System.out.println(endCalendar.getTime().toString());
 
 				try {
-					Date selectedStartTime = IdrObjsUtility.sdf.parse(response[0].getStartTime());
+					Date selectedStartTime = IdrObjsUtility.sdf.parse(txtStartTime.getText());
 					if (endCalendar.getTime().before(selectedStartTime)) {
 						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "The end time should be later than start time!",
 								"Error", JOptionPane.ERROR_MESSAGE);
@@ -997,7 +1000,7 @@ public class Home extends JApplet {
 		
 		btnMachineUpload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				uploadFile();
+				uploadConfigFile();
 			}
 		});
 		
@@ -1130,7 +1133,7 @@ public class Home extends JApplet {
 			}
 
 			public String getDescription() {
-				return "Ifc Files";
+				return "Json Files";
 			}
 		};
 		chooser.setFileFilter(filter);
@@ -1140,17 +1143,29 @@ public class Home extends JApplet {
 			File file = chooser.getSelectedFile();
 			UploadObject object = new UploadObject();
 			object.setFilename(file.getName());
-			object.setFile_type("IFC");
+			object.setFile_type("JSON");
 			object.setFile_size((int) file.length());
 			object.setDescription("");
 			if (isFileExisted(object) == true) {
 				System.out.println("File already existed!");
 				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-//				txtConsoleArea.append("File Already Existed! PASS\n");
+				txtConsoleArea.append("File Already Existed! PASS\n");
 				return;
 			}
-			
-			// load moving objects
+
+			// load machine objects
+			try {
+				Gson gson = new Gson();
+				JsonReader reader = new JsonReader(new FileReader(file));
+				reader.setLenient(true);
+				machines = gson.fromJson(reader, Machine[].class);
+				// Show the file in panel
+				machineComboBox.removeAllItems();
+				machineComboBox.addItem(object);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -1178,7 +1193,7 @@ public class Home extends JApplet {
 			if (isFileExisted(object) == true) {
 				System.out.println("File already existed!");
 				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-//				txtConsoleArea.append("File Already Existed! PASS\n");
+				txtConsoleArea.append("File Already Existed! PASS\n");
 				return;
 			}
 
@@ -1193,9 +1208,7 @@ public class Home extends JApplet {
 						.create();
 				JsonReader reader = new JsonReader(new FileReader(file));
 				reader.setLenient(true);
-				MovingObjResponse[] objects = gson.fromJson(reader, MovingObjResponse[].class);
-				response = objects;
-				System.out.println(response[0].getInitialDistribution());
+				persons = gson.fromJson(reader, MovingObjResponse[].class);
 				// Show the file in panel
 				objectComboBox.removeAllItems();
 				objectComboBox.addItem(object);
@@ -1577,13 +1590,13 @@ public class Home extends JApplet {
 
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(response[0].getStartTime()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(persons[0].getStartTime()) : startCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
 			try {
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(response[0].getEndTime()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(persons[0].getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -2293,15 +2306,15 @@ public class Home extends JApplet {
 				}
 				FileOutputStream outStr = new FileOutputStream(file);
 				BufferedOutputStream buff = new BufferedOutputStream(outStr);
-				String configure = "Moving Object Type=" + response[0].getMovingObjectType() + "\n";
+				String configure = "Moving Object Type=" + persons[0].getMovingObjectType() + "\n";
 				configure = configure + "Initial Distribution="
-						+ response[0].getInitialDistribution() + "\n";
-				configure = configure + "Maximum Object Number in a Partition=" + response[0].getObjectNumber()
+						+ persons[0].getInitialDistribution() + "\n";
+				configure = configure + "Maximum Object Number in a Partition=" + persons[0].getObjectNumber()
 						+ "\n";
-				configure = configure + "Maximum Life Span(s)=" + response[0].getLifeSpan() + "\n";
-				configure = configure + "Maximum Step Length(m)=" + response[0].getMaxStepLength() + "\n";
-				configure = configure + "Move Rate(ms)=" + response[0].getMoveRate() + "\n";
-				configure = configure + "Generation Period=" + response[0].getStartTime() + "-" + response[0].getEndTime()
+				configure = configure + "Maximum Life Span(s)=" + persons[0].getLifeSpan() + "\n";
+				configure = configure + "Maximum Step Length(m)=" + persons[0].getMaxStepLength() + "\n";
+				configure = configure + "Move Rate(ms)=" + persons[0].getMoveRate() + "\n";
+				configure = configure + "Generation Period=" + persons[0].getStartTime() + "-" + persons[0].getEndTime()
 						+ "\n";
 				buff.write(configure.getBytes());
 				buff.close();
@@ -2572,9 +2585,9 @@ public class Home extends JApplet {
 			Random random = new Random();
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(response[0].getStartTime()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(persons[0].getStartTime()) : startCalendar.getTime();
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(response[0].getEndTime()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(persons[0].getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -2655,19 +2668,19 @@ public class Home extends JApplet {
 			Station.setScanRange(Double.parseDouble(scanRange));
 			Station.setScanRate(Integer.parseInt(stationScanRate));
 
-			String movingObjTypeSimple = response[0].getMovingObjectType();
+			String movingObjTypeSimple = persons[0].getMovingObjectType();
 			String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
 			props.setProperty("movingObjType", movingObjType);
-			String movObjDistriTypeSimple = response[0].getInitialDistribution();
+			String movObjDistriTypeSimple = persons[0].getInitialDistribution();
 			String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
 			props.setProperty("movingObjDistributerType", movObjDistriType);
-			String maxMovingNumInPart = Integer.toString(response[0].getObjectNumber());
+			String maxMovingNumInPart = Integer.toString(persons[0].getObjectNumber());
 			props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
-			String maxStepLength = Double.toString(response[0].getMaxStepLength());
+			String maxStepLength = Double.toString(persons[0].getMaxStepLength());
 			props.setProperty("movingObjMaxStepLength", maxStepLength);
-			String moveRate = Integer.toString(response[0].getMoveRate());
+			String moveRate = Integer.toString(persons[0].getMoveRate());
 			props.setProperty("movingObjMoveRate", moveRate);
-			String movingObjMaxLifeSpan = Integer.toString(response[0].getLifeSpan());
+			String movingObjMaxLifeSpan = Integer.toString(persons[0].getLifeSpan());
 			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
 
 			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
@@ -2675,9 +2688,9 @@ public class Home extends JApplet {
 			props.setProperty("positionAlgorithm", posAlgType);
 
 			MovingObj.setScanRange(Double.parseDouble(scanRange));
-			MovingObj.setMaxStepLength(response[0].getMaxStepLength());
-			MovingObj.setMoveRate(response[0].getMoveRate());
-			MovingObj.setMaxSpeed(response[0].getMaxStepLength() / ((response[0].getMoveRate() + 0.0) / 1000));
+			MovingObj.setMaxStepLength(persons[0].getMaxStepLength());
+			MovingObj.setMoveRate(persons[0].getMoveRate());
+			MovingObj.setMaxSpeed(persons[0].getMaxStepLength() / ((persons[0].getMoveRate() + 0.0) / 1000));
 			
 			
 			try {
@@ -2774,9 +2787,9 @@ public class Home extends JApplet {
 //			txtMoveRate.setText(moveRate);
 //			String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
 //			txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
-//
-//			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
-//			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
+
+			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
+			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
 		}
 
 		private class MovingAdapter extends MouseAdapter {
@@ -3014,6 +3027,13 @@ public class Home extends JApplet {
 				}
 			});
 
+			btnShow.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					paintHeatMap();
+				}
+			});
 		}
 
 		/**
@@ -3155,6 +3175,10 @@ public class Home extends JApplet {
 			for (ListSelectionListener al : connectedPartsList.getListSelectionListeners()) {
 				connectedPartsList.removeListSelectionListener(al);
 			}
+			
+			for (ActionListener al : btnShow.getActionListeners()) {
+				btnShow.removeActionListener(al);
+			}			
 		}
 
 		private void initUCLComboBox() {
@@ -3417,6 +3441,13 @@ public class Home extends JApplet {
 					g2.draw(newRect);
 				}
 			}
+		}
+		
+		private void paintHeatMap(){
+			String outputPath = decideOutputPath();
+			System.out.println(outputPath);
+			
+			repaint();
 		}
 
 		private void updateSelectPartsList() {
