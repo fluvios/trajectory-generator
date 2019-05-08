@@ -694,7 +694,7 @@ public class Home extends JApplet {
 		panel_2.add(txtEndTime);
 		
 		btnShow = new JButton("Show");
-		btnShow.setBounds(810, 372, 97, 23);
+		btnShow.setBounds(810, 409, 97, 23);
 		panel_2.add(btnShow);
 		
 		btnDeleteFloor = new JButton("Clear");
@@ -707,54 +707,54 @@ public class Home extends JApplet {
 		
 		JLabel lblPositioning = new JLabel("Positioning");
 		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblPositioning.setBounds(543, 418, 186, 23);
+		lblPositioning.setBounds(543, 442, 186, 23);
 		panel_2.add(lblPositioning);
 		
 		JLabel label_1 = new JLabel("Export:");
 		label_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_1.setBounds(543, 447, 87, 23);
+		label_1.setBounds(543, 471, 87, 23);
 		panel_2.add(label_1);
 		
 		JCheckBox chckbxPositioningData = new JCheckBox("Positioning Data");
-		chckbxPositioningData.setBounds(668, 448, 123, 23);
+		chckbxPositioningData.setBounds(668, 472, 123, 23);
 		panel_2.add(chckbxPositioningData);
 		
 		JLabel lblPositioning_1 = new JLabel("Positioning");
 		lblPositioning_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPositioning_1.setBounds(543, 480, 113, 23);
+		lblPositioning_1.setBounds(543, 504, 113, 23);
 		panel_2.add(lblPositioning_1);
 		
 		JLabel lblAlgorithm = new JLabel("Algorithm:");
 		lblAlgorithm.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblAlgorithm.setBounds(543, 501, 113, 23);
+		lblAlgorithm.setBounds(543, 525, 113, 23);
 		panel_2.add(lblAlgorithm);
 		
 		positionAlgorithmComboBox = new JComboBox();
-		positionAlgorithmComboBox.setBounds(668, 494, 239, 21);
+		positionAlgorithmComboBox.setBounds(668, 518, 239, 21);
 		panel_2.add(positionAlgorithmComboBox);
 		
 		JLabel lblRssi = new JLabel("RSSI");
 		lblRssi.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRssi.setBounds(543, 534, 113, 23);
+		lblRssi.setBounds(543, 558, 113, 23);
 		panel_2.add(lblRssi);
 		
 		JLabel lblPath = new JLabel("Path:");
 		lblPath.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPath.setBounds(543, 555, 113, 23);
+		lblPath.setBounds(543, 579, 113, 23);
 		panel_2.add(lblPath);
 		
 		txtRssiInputPath = new JTextField();
 		txtRssiInputPath.setColumns(10);
-		txtRssiInputPath.setBounds(668, 548, 239, 21);
+		txtRssiInputPath.setBounds(668, 572, 239, 21);
 		panel_2.add(txtRssiInputPath);
 		
 		JLabel label_3 = new JLabel("Details:");
 		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_3.setBounds(543, 588, 113, 23);
+		label_3.setBounds(543, 612, 113, 23);
 		panel_2.add(label_3);
 		
 		positionPropertiesScrollPane = new JScrollPane();
-		positionPropertiesScrollPane.setBounds(668, 590, 239, 99);
+		positionPropertiesScrollPane.setBounds(668, 614, 239, 99);
 		panel_2.add(positionPropertiesScrollPane);
 		
 		positionPropertiesArea = new JTextArea();
@@ -768,8 +768,17 @@ public class Home extends JApplet {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnPositionGenerate.setBounds(810, 699, 97, 23);
+		btnPositionGenerate.setBounds(810, 723, 97, 23);
 		panel_2.add(btnPositionGenerate);
+		
+		JLabel label_6 = new JLabel("Floor:");
+		label_6.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_6.setBounds(543, 374, 113, 23);
+		panel_2.add(label_6);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(668, 376, 239, 23);
+		panel_2.add(comboBox);
 				
 		addActionListeners();
 		addFocusListeners();
