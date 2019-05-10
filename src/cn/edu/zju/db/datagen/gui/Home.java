@@ -233,6 +233,7 @@ public class Home extends JApplet {
 	private Connection connection = null;
 	private Floor chosenFloor = null;
 	private Partition selectedPart = null;
+	private Partition mapPart = null;
 	private AccessPoint selectedAP = null;
 	private Connector selectedCon = null;
 	private UploadObject fileChosen = null;
@@ -1942,6 +1943,7 @@ public class Home extends JApplet {
 				Path2D poNew = (Path2D) tx.createTransformedShape(po);
 				partitionsMap.put(poNew, r);
 
+				// Highlight color
 				if (r == selectedPart) {
 					g2.setColor(new Color(74, 144, 226));
 				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
@@ -1950,7 +1952,8 @@ public class Home extends JApplet {
 					g2.setColor(new Color(249, 248, 246));
 				}
 				g2.fill(poNew);
-
+				
+				// Background image
 				if (r == selectedPart) {
 					g2.setColor(new Color(173, 173, 173));
 					g2.setStroke(Pen1);
@@ -3279,6 +3282,7 @@ public class Home extends JApplet {
 				Path2D poNew = (Path2D) tx.createTransformedShape(po);
 				partitionsMap.put(poNew, r);
 
+				// Highlight color
 				if (r == selectedPart) {
 					g2.setColor(new Color(74, 144, 226));
 				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
@@ -3287,7 +3291,14 @@ public class Home extends JApplet {
 					g2.setColor(new Color(249, 248, 246));
 				}
 				g2.fill(poNew);
+				
+				// Heatmap color
+				if (r == mapPart) {
+					g2.setColor(new Color(245, 45, 10));
+				}
+				g2.fill(poNew);
 
+				// Background color
 				if (r == selectedPart) {
 					g2.setColor(new Color(173, 173, 173));
 					g2.setStroke(Pen1);
@@ -3455,6 +3466,9 @@ public class Home extends JApplet {
 		private void paintHeatMap(){
 			String outputPath = decideOutputPath();
 			System.out.println(outputPath);
+			
+			mapPart = null;
+			mapPart = selectedPart;
 			
 			repaint();
 		}
