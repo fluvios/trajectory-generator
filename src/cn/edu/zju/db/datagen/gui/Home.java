@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -3294,7 +3295,12 @@ public class Home extends JApplet {
 				
 				// Heatmap color
 				if (r == mapPart) {
-					g2.setColor(new Color(245, 45, 10));
+			        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			        Color color1 = Color.RED;
+			        Color color2 = Color.GREEN;
+			        GradientPaint gp = new GradientPaint(0, 0, color1, 0, 10, color2);
+			        
+			        g2.setPaint(gp);
 				}
 				g2.fill(poNew);
 
@@ -3468,7 +3474,7 @@ public class Home extends JApplet {
 			System.out.println(outputPath);
 			
 			mapPart = null;
-			mapPart = selectedPart;
+			mapPart = chosenFloor.getPartsAfterDecomposed().get(new Random().nextInt(chosenFloor.getPartsAfterDecomposed().size()));
 			
 			repaint();
 		}
