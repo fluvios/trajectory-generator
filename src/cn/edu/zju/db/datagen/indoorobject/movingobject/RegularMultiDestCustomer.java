@@ -187,12 +187,6 @@ public class RegularMultiDestCustomer extends DstMovingObj {
 
     }
 
-
-    /*
-        在timer中模拟移动每一步，如果当前的stay count还没有结束，那么就在原点附近区域移动，等待计时结束
-        如果当前是在移动状态，那么有0.02的可能性会在该点停留random个30个单位时间
-        否则按照路线移动moveInLine
-        */
     @Override
     public void moveOneStep() {
 

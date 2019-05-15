@@ -39,6 +39,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -85,6 +92,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.FPT;
@@ -116,6 +125,7 @@ import cn.edu.zju.db.datagen.json.TimeDeserializer;
 import cn.edu.zju.db.datagen.json.TimeSerializer;
 import cn.edu.zju.db.datagen.machine.Machine;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
+import cn.edu.zju.db.datagen.trajectory.Trajectory;
 import diva.util.java2d.Polygon2D;
 import javax.swing.ListModel;
 
@@ -141,6 +151,7 @@ public class Home extends JApplet {
 	private JButton btnDeleteFile;
 	private JButton btnView;
 	private JButton btnDecompAll;
+	private JButton btnDeleteNav;
 	private JButton btnDeleteFloor;
 	private JButton btnDeleteEntity;
 	private JButton btnStationGenerate;
@@ -228,6 +239,7 @@ public class Home extends JApplet {
 	private JComboBox<UploadObject> objectComboBox;
 	private JComboBox<UploadObject> machineComboBox;
 	private JComboBox<Floor> floorCombobox;
+	private JComboBox<Floor> navCombobox;
 	private Calendar startCalendar;
 	private Calendar endCalendar;
 
@@ -245,6 +257,7 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
+	private ArrayList<Trajectory> trajectories;
 	private MovingObjResponse[] persons;
 	private Machine[] machines;
 
@@ -480,121 +493,121 @@ public class Home extends JApplet {
 		
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblDeviceConfiguration.setBounds(567, 20, 186, 23);
+		lblDeviceConfiguration.setBounds(569, 117, 186, 23);
 		panel_1.add(lblDeviceConfiguration);
 		
 		JLabel lblExport = new JLabel("Export:");
 		lblExport.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblExport.setBounds(567, 50, 95, 23);
+		lblExport.setBounds(569, 147, 95, 23);
 		panel_1.add(lblExport);
 		
 		chckbxEnvironment = new JCheckBox("Environment");
 		chckbxEnvironment.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxEnvironment.setBounds(670, 53, 105, 23);
+		chckbxEnvironment.setBounds(672, 150, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
 		chckbxPositioningDevice = new JCheckBox("Device Position");
 		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxPositioningDevice.setBounds(790, 53, 121, 23);
+		chckbxPositioningDevice.setBounds(792, 150, 121, 23);
 		panel_1.add(chckbxPositioningDevice);
 		
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice.setBounds(567, 83, 95, 23);
+		lblDevice.setBounds(569, 180, 95, 23);
 		panel_1.add(lblDevice);
 		
 		JLabel lblType = new JLabel("Type:");
 		lblType.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblType.setBounds(567, 104, 95, 23);
+		lblType.setBounds(569, 201, 95, 23);
 		panel_1.add(lblType);
 		
 		stationTypeComboBox = new JComboBox();
 		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationTypeComboBox.setBackground(Color.WHITE);
-		stationTypeComboBox.setBounds(670, 97, 237, 21);
+		stationTypeComboBox.setBounds(672, 194, 237, 21);
 		panel_1.add(stationTypeComboBox);
 		
 		stationDistriTypeComboBox = new JComboBox();
 		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationDistriTypeComboBox.setBackground(Color.WHITE);
-		stationDistriTypeComboBox.setBounds(670, 151, 237, 21);
+		stationDistriTypeComboBox.setBounds(672, 248, 237, 21);
 		panel_1.add(stationDistriTypeComboBox);
 		
 		JLabel lblDeployment = new JLabel("Deployment");
 		lblDeployment.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDeployment.setBounds(567, 137, 95, 23);
+		lblDeployment.setBounds(569, 234, 95, 23);
 		panel_1.add(lblDeployment);
 		
 		JLabel lblModel_1 = new JLabel("Model:");
 		lblModel_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblModel_1.setBounds(567, 158, 95, 23);
+		lblModel_1.setBounds(569, 255, 95, 23);
 		panel_1.add(lblModel_1);
 		
 		JLabel lblDevice_1 = new JLabel("Device");
 		lblDevice_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice_1.setBounds(567, 201, 95, 23);
+		lblDevice_1.setBounds(569, 298, 95, 23);
 		panel_1.add(lblDevice_1);
 		
 		JLabel lblNumber = new JLabel("Number:");
 		lblNumber.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNumber.setBounds(567, 222, 95, 23);
+		lblNumber.setBounds(569, 319, 95, 23);
 		panel_1.add(lblNumber);
 		
 		txtStationMaxNumInPart = new JTextField();
 		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInPart.setToolTipText("Maximum for each room");
 		txtStationMaxNumInPart.setColumns(10);
-		txtStationMaxNumInPart.setBounds(670, 193, 237, 21);
+		txtStationMaxNumInPart.setBounds(672, 290, 237, 21);
 		panel_1.add(txtStationMaxNumInPart);
 		
 		txtStationMaxNumInArea = new JTextField();
 		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInArea.setToolTipText("Maximum for each 100 meter square");
 		txtStationMaxNumInArea.setColumns(10);
-		txtStationMaxNumInArea.setBounds(670, 224, 237, 21);
+		txtStationMaxNumInArea.setBounds(672, 321, 237, 21);
 		panel_1.add(txtStationMaxNumInArea);
 		
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection.setBounds(567, 255, 95, 23);
+		lblDetection.setBounds(569, 352, 95, 23);
 		panel_1.add(lblDetection);
 		
 		JLabel lblRange = new JLabel("Range:");
 		lblRange.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRange.setBounds(567, 276, 95, 23);
+		lblRange.setBounds(569, 373, 95, 23);
 		panel_1.add(lblRange);
 		
 		txtScanRange = new JTextField();
 		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRange.setColumns(10);
-		txtScanRange.setBounds(670, 269, 237, 21);
+		txtScanRange.setBounds(672, 366, 237, 21);
 		panel_1.add(txtScanRange);
 		
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection_1.setBounds(567, 309, 95, 23);
+		lblDetection_1.setBounds(569, 406, 95, 23);
 		panel_1.add(lblDetection_1);
 		
 		JLabel lblFrequency = new JLabel("Frequency:");
 		lblFrequency.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFrequency.setBounds(567, 330, 95, 23);
+		lblFrequency.setBounds(569, 427, 95, 23);
 		panel_1.add(lblFrequency);
 		
 		txtScanRate = new JTextField();
 		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRate.setColumns(10);
-		txtScanRate.setBounds(670, 323, 237, 21);
+		txtScanRate.setBounds(672, 420, 237, 21);
 		panel_1.add(txtScanRate);
 		
 		btnStationGenerate = new JButton("Generate");
 		btnStationGenerate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnStationGenerate.setBackground(Color.WHITE);
-		btnStationGenerate.setBounds(810, 354, 97, 23);
+		btnStationGenerate.setBounds(812, 451, 97, 23);
 		panel_1.add(btnStationGenerate);
 		
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovingObjectConfiguration.setBounds(567, 387, 237, 23);
+		lblMovingObjectConfiguration.setBounds(569, 484, 237, 23);
 		panel_1.add(lblMovingObjectConfiguration);
 		
 		JButton btnClear_1 = new JButton("Clear");
@@ -605,12 +618,12 @@ public class Home extends JApplet {
 				new MovingObjectsWindow().main(null);
 			}
 		});
-		btnClear_1.setBounds(810, 453, 97, 23);
+		btnClear_1.setBounds(812, 550, 97, 23);
 		panel_1.add(btnClear_1);
 		
 		movingObjectPanel = new JPanel();
 		movingObjectPanel.setBackground(Color.LIGHT_GRAY);
-		movingObjectPanel.setBounds(567, 486, 340, 119);
+		movingObjectPanel.setBounds(569, 583, 340, 119);
 		panel_1.add(movingObjectPanel);
 		
 		movingObjectScroll = new JScrollPane();
@@ -620,60 +633,82 @@ public class Home extends JApplet {
 		
 		btnObjectInit = new JButton("Init");
 		btnObjectInit.setBackground(Color.WHITE);
-		btnObjectInit.setBounds(705, 661, 97, 23);
+		btnObjectInit.setBounds(707, 758, 97, 23);
 		panel_1.add(btnObjectInit);
 		
 		btnObjectStart = new JButton("Start");
 		btnObjectStart.setBackground(Color.WHITE);
-		btnObjectStart.setBounds(810, 661, 97, 23);
+		btnObjectStart.setBounds(812, 758, 97, 23);
 		panel_1.add(btnObjectStart);
 		
 		btnObjectStop = new JButton("Stop");
 		btnObjectStop.setBackground(Color.WHITE);
-		btnObjectStop.setBounds(707, 694, 97, 23);
+		btnObjectStop.setBounds(709, 791, 97, 23);
 		panel_1.add(btnObjectStop);
 		
 		btnMovingObjUpload = new JButton("Upload");
 		btnMovingObjUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMovingObjUpload.setBackground(Color.WHITE);
-		btnMovingObjUpload.setBounds(707, 453, 97, 23);
+		btnMovingObjUpload.setBounds(709, 550, 97, 23);
 		panel_1.add(btnMovingObjUpload);
 		
 		chckbxTrajectory = new JCheckBox("Trajectory");
 		chckbxTrajectory.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxTrajectory.setBounds(666, 617, 105, 23);
+		chckbxTrajectory.setBounds(668, 714, 105, 23);
 		panel_1.add(chckbxTrajectory);
 		
 		chckbxTracking = new JCheckBox("Raw RSSI");
 		chckbxTracking.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxTracking.setBounds(786, 617, 121, 23);
+		chckbxTracking.setBounds(788, 714, 121, 23);
 		panel_1.add(chckbxTracking);
 		
 		JLabel label = new JLabel("Export:");
 		label.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label.setBounds(567, 614, 91, 23);
+		label.setBounds(569, 711, 91, 23);
 		panel_1.add(label);
 		
 		objectComboBox = new JComboBox<UploadObject>();
 		objectComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		objectComboBox.setBackground(Color.WHITE);
-		objectComboBox.setBounds(682, 420, 225, 23);
+		objectComboBox.setBounds(684, 517, 225, 23);
 		panel_1.add(objectComboBox);
 		
 		JLabel lblConfiguration = new JLabel("Configuration");
 		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblConfiguration.setBounds(567, 418, 113, 23);
+		lblConfiguration.setBounds(569, 515, 113, 23);
 		panel_1.add(lblConfiguration);
 		
 		JLabel lblFiles = new JLabel("Files:");
 		lblFiles.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFiles.setBounds(567, 439, 113, 23);
+		lblFiles.setBounds(569, 536, 113, 23);
 		panel_1.add(lblFiles);
 		
 		btnSnapShot = new JButton("Capture");
 		btnSnapShot.setBackground(Color.WHITE);
-		btnSnapShot.setBounds(810, 694, 97, 23);
+		btnSnapShot.setBounds(812, 791, 97, 23);
 		panel_1.add(btnSnapShot);
+		
+		JLabel lblNavigation = new JLabel("Navigation");
+		lblNavigation.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblNavigation.setBounds(569, 10, 186, 23);
+		panel_1.add(lblNavigation);
+		
+		JLabel label_7 = new JLabel("Floor:");
+		label_7.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_7.setBounds(569, 43, 113, 23);
+		panel_1.add(label_7);
+		
+		navCombobox = new JComboBox();
+		navCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
+		navCombobox.setBackground(Color.WHITE);
+		navCombobox.setBounds(694, 45, 215, 23);
+		panel_1.add(navCombobox);
+		
+		btnDeleteNav = new JButton("Clear");
+		btnDeleteNav.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnDeleteNav.setBackground(Color.WHITE);
+		btnDeleteNav.setBounds(836, 80, 73, 23);
+		panel_1.add(btnDeleteNav);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -1494,6 +1529,18 @@ public class Home extends JApplet {
 		}
 
 		private void addMapPainterActionListener() {
+			navCombobox.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					chosenFloor = (Floor) navCombobox.getSelectedItem();
+					selectedPart = null;
+					selectedAP = null;
+					selectedCon = null;
+				}
+
+			});
+			
 			btnStationGenerate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 
@@ -1789,6 +1836,9 @@ public class Home extends JApplet {
 		}
 
 		private void clearMapPainterActionListener() {
+			for (ActionListener al : navCombobox.getActionListeners()) {
+				navCombobox.removeActionListener(al);
+			}
 			for (ActionListener al : btnStationGenerate.getActionListeners()) {
 				btnStationGenerate.removeActionListener(al);
 			}
@@ -1966,7 +2016,7 @@ public class Home extends JApplet {
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			chosenFloor = (Floor) floorCombobox.getSelectedItem();
+			chosenFloor = (Floor) navCombobox.getSelectedItem();
 
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -2257,19 +2307,19 @@ public class Home extends JApplet {
 
 		private void loadFloorChooser() {
 			String floor_globalid = null;
-			if (floorCombobox.getSelectedItem() != null) {
-				Floor f = (Floor) floorCombobox.getSelectedItem();
+			if (navCombobox.getSelectedItem() != null) {
+				Floor f = (Floor) navCombobox.getSelectedItem();
 				floor_globalid = f.getGlobalID();
 			}
-			floorCombobox.removeAllItems();
+			navCombobox.removeAllItems();
 			for (int i = 0; i < DB_WrapperLoad.floorT.size(); i++) {
 				Floor f = DB_WrapperLoad.floorT.get(i);
-				floorCombobox.addItem(f);
+				navCombobox.addItem(f);
 			}
 			if (floor_globalid != null) {
-				for (int i = 0; i < floorCombobox.getModel().getSize(); i++) {
-					if (floorCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
-						floorCombobox.setSelectedItem(floorCombobox.getModel().getElementAt(i));
+				for (int i = 0; i < navCombobox.getModel().getSize(); i++) {
+					if (navCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
+						navCombobox.setSelectedItem(navCombobox.getModel().getElementAt(i));
 						break;
 					}
 				}
@@ -3124,7 +3174,12 @@ public class Home extends JApplet {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					paintHeatMap();
+					try {
+						paintHeatMap();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			});
 		}
@@ -3323,6 +3378,9 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
+			if (trajectories != null) {
+				IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(245, 166, 35, 120));				
+			}
 
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
 			// DstMovingObj dstMovingObj = new
@@ -3374,17 +3432,22 @@ public class Home extends JApplet {
 				g2.fill(poNew);
 				
 				// Heatmap color
-				if (r == mapPart) {
-			        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			        Color color1 = Color.RED;
-			        Color color2 = Color.GREEN;
-			        GradientPaint gp = new GradientPaint(
-			        		(int) poNew.getBounds2D().getMinX(), (int) poNew.getBounds2D().getMinY(), color1, 
-			        		(int) poNew.getBounds2D().getMaxX(), (int) poNew.getBounds2D().getMaxY(), color2);
-			        
-			        g2.setPaint(gp);
-				}
-				g2.fill(poNew);
+//				if (r == mapPart) {
+//			        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//			        Color color1 = Color.RED;
+//			        Color color2 = Color.GREEN;
+//			        GradientPaint gp = new GradientPaint(
+//			        		(int) poNew.getBounds2D().getMinX(), (int) poNew.getBounds2D().getMinY(), color1, 
+//			        		(int) poNew.getBounds2D().getMaxX(), (int) poNew.getBounds2D().getMaxY(), color2);
+//			        
+//			        g2.setPaint(gp);
+//				}
+//				g2.fill(poNew);
+//				for (Trajectory t : trajectories) {
+//					if (t.getRoomId() == r.getItemID()) {
+//						// add the points
+//					}
+//				}
 
 				// Background color
 				if (r == selectedPart) {
@@ -3551,14 +3614,59 @@ public class Home extends JApplet {
 			}
 		}
 		
-		private void paintHeatMap(){
+		private void paintHeatMap() throws ParseException{
 			String outputPath = decideOutputPath();
-			System.out.println(outputPath);
+			File folder = new File(outputPath);
+			File[] listOfFiles = folder.listFiles();
+			trajectories = new ArrayList<Trajectory>();
 			
-			mapPart = null;
-			mapPart = chosenFloor.getPartsAfterDecomposed().get(new Random().nextInt(chosenFloor.getPartsAfterDecomposed().size()));
+			// Read all files
+			for (File file : listOfFiles) {
+//				System.out.println("---" + file.getName() + "---");
+				try {
+					// Create an object of file reader class
+					// with CSV file as a parameter.
+					FileReader filereader = new FileReader(file);
+
+					// create csvReader object
+					// and skip first Line
+					CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+					List<String[]> allData = csvReader.readAll();
+
+					// print Data
+					for (String[] row : allData) {
+						Trajectory traject = new Trajectory(
+								Integer.parseInt(row[0]), 
+								Integer.parseInt(row[1]), 
+								Double.parseDouble(row[2]), 
+								Double.parseDouble(row[3]), 
+								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[4]));
+						if(isWithinRange(traject.getTimestamp())) {
+							trajectories.add(traject);							
+						}
+//						 for (String cell : row) {
+//						 System.out.print(cell + "\t");
+//						 }
+//						 System.out.println();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+//			System.out.println(trajectories.size());
+//			mapPart = null;
+//			mapPart = chosenFloor.getPartsAfterDecomposed().get(new Random().nextInt(chosenFloor.getPartsAfterDecomposed().size()));
 			
 			repaint();
+		}
+		
+		private boolean isWithinRange(Date testDate) throws ParseException {
+			Date startDate = new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(txtStartTime.getText());
+			Date endDate = new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(txtEndTime.getText());
+			
+		    return testDate.getTime() >= startDate.getTime() &&
+		             testDate.getTime() <= endDate.getTime();
 		}
 
 		private void updateSelectPartsList() {

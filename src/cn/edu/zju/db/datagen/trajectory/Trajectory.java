@@ -5,10 +5,19 @@ import java.util.Date;
 public class Trajectory {
 	private int userId;
 	private int floorId;
-	private int RoomId;
+	private int partitionId;
 	private double axis;
 	private double oordinat;
 	private Date timestamp;
+	
+	public Trajectory(int floorId, int partitionId, double axis, double oordinat, Date timestamp) {
+		super();
+		this.floorId = floorId;
+		this.partitionId = partitionId;
+		this.axis = axis;
+		this.oordinat = oordinat;
+		this.timestamp = timestamp;
+	}
 
 	public int getUserId() {
 		return userId;
@@ -27,11 +36,11 @@ public class Trajectory {
 	}
 
 	public int getRoomId() {
-		return RoomId;
+		return partitionId;
 	}
 
 	public void setRoomId(int roomId) {
-		RoomId = roomId;
+		partitionId = roomId;
 	}
 
 	public double getAxis() {
