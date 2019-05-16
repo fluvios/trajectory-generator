@@ -3407,8 +3407,8 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (trajectories != null) {
 				if(chckbxPath.isSelected()) {
-					System.out.println("Path");
-					IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));									
+//					System.out.println("Path");
+//					IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));									
 				} else {
 					System.out.println("Heat Map");
 					IdrObjsUtility.paintHeatTrajectories(chosenFloor, g2, tx, Pen1, trajectories);													
