@@ -152,6 +152,24 @@ public class IdrObjsUtility {
         	}
         }
     }
+    
+    public static void paintHeatTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1, 
+    		ArrayList<Trajectory> trajectories) {
+
+        g2.setStroke(pen1);
+        for (Trajectory t : trajectories) {
+        	if(t.getFloorId() == floor.getItemID()) {
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 1.5, 1.5);
+                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+                // g2.draw(ellipseNew);
+                g2.fill(ellipseNew);
+
+                Color borderColor = new Color(200, 29, 37);
+                g2.setColor(borderColor);
+                g2.draw(ellipseNew);        		
+        	}
+        }
+    }
 
     public static void DestMovingObjTest2(Floor floor1, Floor floor2, ArrayList<MovingObj> movingObjs) {
         System.out.println(floor1);

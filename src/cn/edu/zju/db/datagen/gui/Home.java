@@ -65,6 +65,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
@@ -128,6 +129,7 @@ import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import cn.edu.zju.db.datagen.trajectory.Trajectory;
 import diva.util.java2d.Polygon2D;
 import javax.swing.ListModel;
+import javax.swing.JRadioButton;
 
 public class Home extends JApplet {
 
@@ -221,6 +223,11 @@ public class Home extends JApplet {
 	private JCheckBox chckbxTracking;
 	private JCheckBox chckbxPositioningDevice;
 	private JCheckBox chckbxEnvironment;
+	
+	private ButtonGroup visualButtonGroup;
+	
+	private JRadioButton chckbxPath;
+	private JRadioButton chckbxHeatMap;
 
 	private JScrollPane scrollPaneConsole;
 	private JScrollPane positionPropertiesScrollPane;
@@ -776,30 +783,30 @@ public class Home extends JApplet {
 		
 		JLabel lblStartDate = new JLabel("Start Date:");
 		lblStartDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblStartDate.setBounds(541, 320, 95, 23);
+		lblStartDate.setBounds(541, 343, 95, 23);
 		panel_2.add(lblStartDate);
 		
 		txtStartTime = new JTextField();
 		txtStartTime.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(666, 320, 239, 21);
+		txtStartTime.setBounds(666, 343, 239, 21);
 		panel_2.add(txtStartTime);
 		
 		JLabel lblEndDate = new JLabel("End Date:");
 		lblEndDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblEndDate.setBounds(541, 353, 95, 23);
+		lblEndDate.setBounds(541, 376, 95, 23);
 		panel_2.add(lblEndDate);
 		
 		txtEndTime = new JTextField();
 		txtEndTime.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(666, 353, 239, 21);
+		txtEndTime.setBounds(666, 376, 239, 21);
 		panel_2.add(txtEndTime);
 		
 		btnShow = new JButton("Show");
 		btnShow.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnShow.setBackground(Color.WHITE);
-		btnShow.setBounds(808, 385, 97, 23);
+		btnShow.setBounds(808, 408, 97, 23);
 		panel_2.add(btnShow);
 		
 		btnDeleteFloor = new JButton("Clear");
@@ -816,58 +823,58 @@ public class Home extends JApplet {
 		
 		JLabel lblPositioning = new JLabel("Positioning");
 		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblPositioning.setBounds(543, 442, 186, 23);
+		lblPositioning.setBounds(541, 470, 186, 23);
 		panel_2.add(lblPositioning);
 		
 		JLabel label_1 = new JLabel("Export:");
 		label_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_1.setBounds(543, 471, 87, 23);
+		label_1.setBounds(541, 499, 87, 23);
 		panel_2.add(label_1);
 		
 		JCheckBox chckbxPositioningData = new JCheckBox("Positioning Data");
 		chckbxPositioningData.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxPositioningData.setBounds(668, 472, 123, 23);
+		chckbxPositioningData.setBounds(666, 500, 123, 23);
 		panel_2.add(chckbxPositioningData);
 		
 		JLabel lblPositioning_1 = new JLabel("Positioning");
 		lblPositioning_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPositioning_1.setBounds(543, 504, 113, 23);
+		lblPositioning_1.setBounds(541, 532, 113, 23);
 		panel_2.add(lblPositioning_1);
 		
 		JLabel lblAlgorithm = new JLabel("Algorithm:");
 		lblAlgorithm.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblAlgorithm.setBounds(543, 525, 113, 23);
+		lblAlgorithm.setBounds(541, 553, 113, 23);
 		panel_2.add(lblAlgorithm);
 		
 		positionAlgorithmComboBox = new JComboBox();
 		positionAlgorithmComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		positionAlgorithmComboBox.setBackground(Color.WHITE);
-		positionAlgorithmComboBox.setBounds(668, 518, 239, 21);
+		positionAlgorithmComboBox.setBounds(666, 546, 239, 21);
 		panel_2.add(positionAlgorithmComboBox);
 		
 		JLabel lblRssi = new JLabel("RSSI");
 		lblRssi.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRssi.setBounds(543, 558, 113, 23);
+		lblRssi.setBounds(541, 586, 113, 23);
 		panel_2.add(lblRssi);
 		
 		JLabel lblPath = new JLabel("Path:");
 		lblPath.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblPath.setBounds(543, 579, 113, 23);
+		lblPath.setBounds(541, 607, 113, 23);
 		panel_2.add(lblPath);
 		
 		txtRssiInputPath = new JTextField();
 		txtRssiInputPath.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtRssiInputPath.setColumns(10);
-		txtRssiInputPath.setBounds(668, 572, 239, 21);
+		txtRssiInputPath.setBounds(666, 600, 239, 21);
 		panel_2.add(txtRssiInputPath);
 		
 		JLabel label_3 = new JLabel("Details:");
 		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_3.setBounds(543, 612, 113, 23);
+		label_3.setBounds(541, 640, 113, 23);
 		panel_2.add(label_3);
 		
 		positionPropertiesScrollPane = new JScrollPane();
-		positionPropertiesScrollPane.setBounds(668, 614, 239, 99);
+		positionPropertiesScrollPane.setBounds(666, 642, 239, 99);
 		panel_2.add(positionPropertiesScrollPane);
 		
 		positionPropertiesArea = new JTextArea();
@@ -883,8 +890,24 @@ public class Home extends JApplet {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnPositionGenerate.setBounds(810, 723, 97, 23);
+		btnPositionGenerate.setBounds(808, 751, 97, 23);
 		panel_2.add(btnPositionGenerate);
+		
+		chckbxPath = new JRadioButton("Path");
+		chckbxPath.setFont(new Font("Dialog", Font.PLAIN, 11));
+		chckbxPath.setBounds(668, 313, 105, 23);
+		chckbxPath.setSelected(true);
+		panel_2.add(chckbxPath);
+		
+		chckbxHeatMap = new JRadioButton("Heatmap");
+		chckbxHeatMap.setFont(new Font("Dialog", Font.PLAIN, 11));
+		chckbxHeatMap.setBounds(788, 313, 121, 23);
+		panel_2.add(chckbxHeatMap);
+		
+		JLabel lblShow = new JLabel("Display:");
+		lblShow.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblShow.setBounds(541, 313, 95, 23);
+		panel_2.add(lblShow);
 				
 		addActionListeners();
 		addFocusListeners();
@@ -3182,6 +3205,10 @@ public class Home extends JApplet {
 					}
 				}
 			});
+			
+			visualButtonGroup = new ButtonGroup();
+			visualButtonGroup.add(chckbxPath);
+			visualButtonGroup.add(chckbxHeatMap);
 		}
 
 		/**
@@ -3379,9 +3406,15 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (trajectories != null) {
-				IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));				
+				if(chckbxPath.isSelected()) {
+					System.out.println("Path");
+					IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));									
+				} else {
+					System.out.println("Heat Map");
+					IdrObjsUtility.paintHeatTrajectories(chosenFloor, g2, tx, Pen1, trajectories);													
+				}
 			}
-
+			
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
 			// DstMovingObj dstMovingObj = new
 			// DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
