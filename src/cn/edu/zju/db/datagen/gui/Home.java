@@ -3379,7 +3379,7 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (trajectories != null) {
-				IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(245, 166, 35, 120));				
+				IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));				
 			}
 
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
@@ -3614,7 +3614,7 @@ public class Home extends JApplet {
 			}
 		}
 		
-		private void paintHeatMap() throws ParseException{
+		private void paintHeatMap() throws ParseException {
 			String outputPath = decideOutputPath();
 			File folder = new File(outputPath);
 			File[] listOfFiles = folder.listFiles();

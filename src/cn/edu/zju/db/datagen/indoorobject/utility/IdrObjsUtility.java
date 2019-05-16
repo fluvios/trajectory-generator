@@ -139,15 +139,17 @@ public class IdrObjsUtility {
 
         g2.setStroke(pen1);
         for (Trajectory t : trajectories) {
-            Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
-            Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-            // g2.draw(ellipseNew);
-            g2.setColor(color);
-            g2.fill(ellipseNew);
+        	if(t.getFloorId() == floor.getItemID()) {
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
+                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+                // g2.draw(ellipseNew);
+                g2.setColor(color);
+                g2.fill(ellipseNew);
 
-            Color borderColor = new Color(245, 166, 35);
-            g2.setColor(borderColor);
-            g2.draw(ellipseNew);
+                Color borderColor = new Color(200, 29, 37);
+                g2.setColor(borderColor);
+                g2.draw(ellipseNew);        		
+        	}
         }
     }
 
