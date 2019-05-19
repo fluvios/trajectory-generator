@@ -98,6 +98,7 @@ import com.opencsv.CSVReaderBuilder;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.FPT;
+import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import cn.edu.zju.db.datagen.algorithm.PXM;
 import cn.edu.zju.db.datagen.algorithm.TRI;
 import cn.edu.zju.db.datagen.database.DB_Connection;
@@ -165,6 +166,7 @@ public class Home extends JApplet {
 	private JButton btnMachineUpload;
 	private JButton btnMovingObjUpload;
 	private JButton btnShow;
+	private JButton btnTrain;
 	
 	private JPanel filePanel;
 	private JPanel mapPanel;
@@ -388,12 +390,6 @@ public class Home extends JApplet {
 		JButton btnMachineClear = new JButton("Clear");
 		btnMachineClear.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMachineClear.setBackground(Color.WHITE);
-		btnMachineClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				MachinesWindow panel = new MachinesWindow();
-				panel.main(null);
-			}
-		});
 		btnMachineClear.setBounds(810, 76, 97, 23);
 		panel.add(btnMachineClear);
 		
@@ -424,7 +420,7 @@ public class Home extends JApplet {
 		btnClear.setBounds(613, 399, 97, 23);
 		panel.add(btnClear);
 		
-		JButton btnTrain = new JButton("Train");
+		btnTrain = new JButton("Train");
 		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnTrain.setBackground(Color.WHITE);
 		btnTrain.setBounds(810, 399, 97, 23);
@@ -620,11 +616,6 @@ public class Home extends JApplet {
 		JButton btnClear_1 = new JButton("Clear");
 		btnClear_1.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnClear_1.setBackground(Color.WHITE);
-		btnClear_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new MovingObjectsWindow().main(null);
-			}
-		});
 		btnClear_1.setBounds(812, 550, 97, 23);
 		panel_1.add(btnClear_1);
 		
@@ -886,10 +877,6 @@ public class Home extends JApplet {
 		btnPositionGenerate = new JButton("Generate");
 		btnPositionGenerate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnPositionGenerate.setBackground(Color.WHITE);
-		btnPositionGenerate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
 		btnPositionGenerate.setBounds(808, 751, 97, 23);
 		panel_2.add(btnPositionGenerate);
 		
@@ -1196,6 +1183,16 @@ public class Home extends JApplet {
 				deleteFile();
 			}
 
+		});
+		
+		btnTrain.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String outputPath = decideOutputPath();
+				NeuralNetwork net = new NeuralNetwork();
+				net.test(outputPath);
+			}
 		});
 
 	}

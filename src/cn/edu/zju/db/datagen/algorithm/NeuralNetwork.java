@@ -94,12 +94,19 @@ public class NeuralNetwork {
 		// read all trajectory data from folder
 		File folder = new File(location);
 		File[] listOfFiles = folder.listFiles();
+		
+		// We'll use Spark local to handle our data
+		SparkConf conf = new SparkConf();
+		conf.setMaster("local[*]");
+		conf.setAppName("Trajectory-LSTM");
+
+		JavaSparkContext sc = new JavaSparkContext(conf);
 
 		for (File file : listOfFiles) {
 			System.out.println("---" + file.getName() + "---");
 			try {
 				// read(file);
-				transform(file);
+				transform(file, sc);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -173,7 +180,7 @@ public class NeuralNetwork {
 		// We'll use Spark local to handle our data
 		SparkConf conf = new SparkConf();
 		conf.setMaster("local[*]");
-		conf.setAppName("D-Vita");
+		conf.setAppName("Trajectory-LSTM");
 
 		JavaSparkContext sc = new JavaSparkContext(conf);
 
@@ -195,7 +202,7 @@ public class NeuralNetwork {
 		return records;
 	}
 
-	public void transform(File file) throws Exception {
+	public void transform(File file, JavaSparkContext sc) throws Exception {
 
 		// =====================================================================
 		// Step 1: Define the input data schema
@@ -231,17 +238,6 @@ public class NeuralNetwork {
 		System.out.println("\n\n\nSchema after transforming data:");
 		System.out.println(outputSchema);
 
-		// =====================================================================
-		// Step 3: Load our data and execute the operations on Spark
-		// =====================================================================
-
-		// We'll use Spark local to handle our data
-		SparkConf conf = new SparkConf();
-		conf.setMaster("local[*]");
-		conf.setAppName("D-Vita");
-
-		JavaSparkContext sc = new JavaSparkContext(conf);
-
 		// Define the path to the data file. You could use a directory here if
 		String path = file.getAbsolutePath();
 		JavaRDD<String> data = sc.textFile(path);
@@ -259,7 +255,7 @@ public class NeuralNetwork {
 		// JavaRDD<String> processedAsString = records.map(new
 		// WritablesToStringFunction(","));
 		// records.saveAsTextFile("/Fachri/dvita/data/spark/" + System.currentTimeMillis());
-		SparkStorageUtils.saveMapFileSequences("/Fachri/dvita/data/spark/" + new Date(), records);
+		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark/" + new Date(), records);
 		
 		System.out.println("\n\nDONE");
 	}
