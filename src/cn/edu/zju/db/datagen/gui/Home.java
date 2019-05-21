@@ -267,7 +267,8 @@ public class Home extends JApplet {
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
 	private ArrayList<Trajectory> trajectories;
-	private MovingObjResponse[] persons;
+	private MovingObjResponse movingObj;
+	private MovingObj[] persons;
 	private Machine[] machines;
 
 	private boolean empty = false;
@@ -333,7 +334,7 @@ public class Home extends JApplet {
 	 */
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
-		frmTrajectoryGenerator.setTitle("Trajectory Generator");
+		frmTrajectoryGenerator.setTitle("IMDAGEN");
 		frmTrajectoryGenerator.setBounds(100, 100, 940, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
@@ -1348,12 +1349,13 @@ public class Home extends JApplet {
 						.create();
 				JsonReader reader = new JsonReader(new FileReader(file));
 				reader.setLenient(true);
-				persons = gson.fromJson(reader, MovingObjResponse[].class);
+				movingObj = gson.fromJson(reader, MovingObjResponse.class);
 				
 				// Show the file in panel
 				objectComboBox.removeAllItems();
 				objectComboBox.addItem(object);
-				for (MovingObjResponse person: persons) {
+				persons = movingObj.getMovingObject();
+				for (MovingObj person: persons) {
 					PersonView view = new PersonView(person, person.getObjectId());
 					movingObjectPanel.add(view);
 					repaint();
@@ -1748,13 +1750,13 @@ public class Home extends JApplet {
 
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(persons[0].getStartTime()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(movingObj.getStartTime()) : startCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
 			try {
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(persons[0].getEndTime()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(movingObj.getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -2477,7 +2479,7 @@ public class Home extends JApplet {
 				configure = configure + "Maximum Life Span(s)=" + persons[0].getLifeSpan() + "\n";
 				configure = configure + "Maximum Step Length(m)=" + persons[0].getMaxStepLength() + "\n";
 				configure = configure + "Move Rate(ms)=" + persons[0].getMoveRate() + "\n";
-				configure = configure + "Generation Period=" + persons[0].getStartTime() + "-" + persons[0].getEndTime()
+				configure = configure + "Generation Period=" + movingObj.getStartTime() + "-" + movingObj.getEndTime()
 						+ "\n";
 				buff.write(configure.getBytes());
 				buff.close();
@@ -2748,9 +2750,9 @@ public class Home extends JApplet {
 			Random random = new Random();
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(persons[0].getStartTime()) : startCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(movingObj.getStartTime()) : startCalendar.getTime();
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(persons[0].getEndTime()) : endCalendar.getTime();
+						? IdrObjsUtility.sdf.parse(movingObj.getEndTime()) : endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
