@@ -266,7 +266,8 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
-	private ArrayList<Trajectory> trajectories;
+	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
+	private ArrayList<Trajectory> heatTrajectories = new ArrayList<Trajectory>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
 	private Machine[] machines;
@@ -299,7 +300,6 @@ public class Home extends JApplet {
 	private JTextField textField_4;
 	private JTextField textField_5;
 	private JTextField textField_6;
-	private JComboBox textField_7;
 	private JTextField textField;
 	private JTextField textField_8;
 	private JTextField textField_9;
@@ -335,12 +335,12 @@ public class Home extends JApplet {
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("IMDAGEN");
-		frmTrajectoryGenerator.setBounds(100, 100, 940, 935);
+		frmTrajectoryGenerator.setBounds(100, 100, 1000, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
 		
 		JPanel filePanel = new JPanel();
-		filePanel.setBounds(0, 0, 924, 45);
+		filePanel.setBounds(0, 0, 984, 45);
 		frmTrajectoryGenerator.getContentPane().add(filePanel);
 		filePanel.setLayout(null);
 		
@@ -376,7 +376,7 @@ public class Home extends JApplet {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setFont(new Font("Dialog", Font.PLAIN, 11));
-		tabbedPane.setBounds(0, 43, 924, 853);
+		tabbedPane.setBounds(0, 43, 984, 853);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
@@ -409,22 +409,10 @@ public class Home extends JApplet {
 		lblTrainingConfiguration.setBounds(504, 248, 186, 23);
 		panel.add(lblTrainingConfiguration);
 		
-		JButton button = new JButton("Load");
-		button.setFont(new Font("Dialog", Font.PLAIN, 11));
-		button.setBackground(Color.WHITE);
-		button.setBounds(504, 399, 97, 23);
-		panel.add(button);
-		
-		JButton btnClear = new JButton("Clear");
-		btnClear.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnClear.setBackground(Color.WHITE);
-		btnClear.setBounds(613, 399, 97, 23);
-		panel.add(btnClear);
-		
 		btnTrain = new JButton("Train");
 		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnTrain.setBackground(Color.WHITE);
-		btnTrain.setBounds(810, 399, 97, 23);
+		btnTrain.setBounds(810, 327, 97, 23);
 		panel.add(btnTrain);
 		
 		txtConsoleArea = new JTextArea();
@@ -432,22 +420,6 @@ public class Home extends JApplet {
 		txtConsoleArea.setBackground(Color.WHITE);
 		txtConsoleArea.setBounds(12, 10, 480, 804);
 		panel.add(txtConsoleArea);
-		
-		JLabel lblNeuralNetwork = new JLabel("Neural Network");
-		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNeuralNetwork.setBounds(504, 334, 113, 23);
-		panel.add(lblNeuralNetwork);
-		
-		JLabel label_2 = new JLabel("Model:");
-		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_2.setBounds(504, 355, 113, 23);
-		panel.add(label_2);
-		
-		textField_7 = new JComboBox();
-		textField_7.setFont(new Font("Dialog", Font.PLAIN, 11));
-		textField_7.setBackground(Color.WHITE);
-		textField_7.setBounds(629, 348, 278, 21);
-		panel.add(textField_7);
 		
 		JLabel lblTraining = new JLabel("Training");
 		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -497,127 +469,127 @@ public class Home extends JApplet {
 		
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblDeviceConfiguration.setBounds(569, 117, 186, 23);
+		lblDeviceConfiguration.setBounds(569, 116, 186, 23);
 		panel_1.add(lblDeviceConfiguration);
 		
 		JLabel lblExport = new JLabel("Export:");
 		lblExport.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblExport.setBounds(569, 147, 95, 23);
+		lblExport.setBounds(569, 146, 95, 23);
 		panel_1.add(lblExport);
 		
 		chckbxEnvironment = new JCheckBox("Environment");
 		chckbxEnvironment.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxEnvironment.setBounds(672, 150, 105, 23);
+		chckbxEnvironment.setBounds(672, 149, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
 		chckbxPositioningDevice = new JCheckBox("Device Position");
 		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxPositioningDevice.setBounds(792, 150, 121, 23);
+		chckbxPositioningDevice.setBounds(792, 149, 121, 23);
 		panel_1.add(chckbxPositioningDevice);
 		
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice.setBounds(569, 180, 95, 23);
+		lblDevice.setBounds(569, 179, 95, 23);
 		panel_1.add(lblDevice);
 		
 		JLabel lblType = new JLabel("Type:");
 		lblType.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblType.setBounds(569, 201, 95, 23);
+		lblType.setBounds(569, 200, 95, 23);
 		panel_1.add(lblType);
 		
 		stationTypeComboBox = new JComboBox();
 		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationTypeComboBox.setBackground(Color.WHITE);
-		stationTypeComboBox.setBounds(672, 194, 237, 21);
+		stationTypeComboBox.setBounds(672, 193, 237, 21);
 		panel_1.add(stationTypeComboBox);
 		
 		stationDistriTypeComboBox = new JComboBox();
 		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationDistriTypeComboBox.setBackground(Color.WHITE);
-		stationDistriTypeComboBox.setBounds(672, 248, 237, 21);
+		stationDistriTypeComboBox.setBounds(672, 247, 237, 21);
 		panel_1.add(stationDistriTypeComboBox);
 		
 		JLabel lblDeployment = new JLabel("Deployment");
 		lblDeployment.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDeployment.setBounds(569, 234, 95, 23);
+		lblDeployment.setBounds(569, 233, 95, 23);
 		panel_1.add(lblDeployment);
 		
 		JLabel lblModel_1 = new JLabel("Model:");
 		lblModel_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblModel_1.setBounds(569, 255, 95, 23);
+		lblModel_1.setBounds(569, 254, 95, 23);
 		panel_1.add(lblModel_1);
 		
 		JLabel lblDevice_1 = new JLabel("Device");
 		lblDevice_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDevice_1.setBounds(569, 298, 95, 23);
+		lblDevice_1.setBounds(569, 297, 95, 23);
 		panel_1.add(lblDevice_1);
 		
 		JLabel lblNumber = new JLabel("Number:");
 		lblNumber.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNumber.setBounds(569, 319, 95, 23);
+		lblNumber.setBounds(569, 318, 95, 23);
 		panel_1.add(lblNumber);
 		
 		txtStationMaxNumInPart = new JTextField();
 		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInPart.setToolTipText("Maximum for each room");
 		txtStationMaxNumInPart.setColumns(10);
-		txtStationMaxNumInPart.setBounds(672, 290, 237, 21);
+		txtStationMaxNumInPart.setBounds(672, 289, 237, 21);
 		panel_1.add(txtStationMaxNumInPart);
 		
 		txtStationMaxNumInArea = new JTextField();
 		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInArea.setToolTipText("Maximum for each 100 meter square");
 		txtStationMaxNumInArea.setColumns(10);
-		txtStationMaxNumInArea.setBounds(672, 321, 237, 21);
+		txtStationMaxNumInArea.setBounds(672, 320, 237, 21);
 		panel_1.add(txtStationMaxNumInArea);
 		
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection.setBounds(569, 352, 95, 23);
+		lblDetection.setBounds(569, 351, 95, 23);
 		panel_1.add(lblDetection);
 		
 		JLabel lblRange = new JLabel("Range:");
 		lblRange.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRange.setBounds(569, 373, 95, 23);
+		lblRange.setBounds(569, 372, 95, 23);
 		panel_1.add(lblRange);
 		
 		txtScanRange = new JTextField();
 		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRange.setColumns(10);
-		txtScanRange.setBounds(672, 366, 237, 21);
+		txtScanRange.setBounds(672, 365, 237, 21);
 		panel_1.add(txtScanRange);
 		
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetection_1.setBounds(569, 406, 95, 23);
+		lblDetection_1.setBounds(569, 405, 95, 23);
 		panel_1.add(lblDetection_1);
 		
 		JLabel lblFrequency = new JLabel("Frequency:");
 		lblFrequency.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFrequency.setBounds(569, 427, 95, 23);
+		lblFrequency.setBounds(569, 426, 95, 23);
 		panel_1.add(lblFrequency);
 		
 		txtScanRate = new JTextField();
 		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRate.setColumns(10);
-		txtScanRate.setBounds(672, 420, 237, 21);
+		txtScanRate.setBounds(672, 419, 237, 21);
 		panel_1.add(txtScanRate);
 		
 		btnStationGenerate = new JButton("Generate");
 		btnStationGenerate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnStationGenerate.setBackground(Color.WHITE);
-		btnStationGenerate.setBounds(812, 451, 97, 23);
+		btnStationGenerate.setBounds(812, 450, 97, 23);
 		panel_1.add(btnStationGenerate);
 		
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovingObjectConfiguration.setBounds(569, 484, 237, 23);
+		lblMovingObjectConfiguration.setBounds(569, 483, 237, 23);
 		panel_1.add(lblMovingObjectConfiguration);
 		
 		JButton btnClear_1 = new JButton("Clear");
 		btnClear_1.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnClear_1.setBackground(Color.WHITE);
-		btnClear_1.setBounds(812, 550, 97, 23);
+		btnClear_1.setBounds(812, 549, 97, 23);
 		panel_1.add(btnClear_1);
 		
 		movingObjectPanel = new JPanel();
@@ -632,23 +604,23 @@ public class Home extends JApplet {
 		
 		btnObjectInit = new JButton("Init");
 		btnObjectInit.setBackground(Color.WHITE);
-		btnObjectInit.setBounds(707, 758, 97, 23);
+		btnObjectInit.setBounds(551, 790, 97, 23);
 		panel_1.add(btnObjectInit);
 		
 		btnObjectStart = new JButton("Start");
 		btnObjectStart.setBackground(Color.WHITE);
-		btnObjectStart.setBounds(812, 758, 97, 23);
+		btnObjectStart.setBounds(658, 790, 97, 23);
 		panel_1.add(btnObjectStart);
 		
 		btnObjectStop = new JButton("Stop");
 		btnObjectStop.setBackground(Color.WHITE);
-		btnObjectStop.setBounds(709, 791, 97, 23);
+		btnObjectStop.setBounds(765, 790, 97, 23);
 		panel_1.add(btnObjectStop);
 		
 		btnMovingObjUpload = new JButton("Upload");
 		btnMovingObjUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMovingObjUpload.setBackground(Color.WHITE);
-		btnMovingObjUpload.setBounds(709, 550, 97, 23);
+		btnMovingObjUpload.setBounds(709, 549, 97, 23);
 		panel_1.add(btnMovingObjUpload);
 		
 		chckbxTrajectory = new JCheckBox("Trajectory");
@@ -669,22 +641,22 @@ public class Home extends JApplet {
 		objectComboBox = new JComboBox<UploadObject>();
 		objectComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		objectComboBox.setBackground(Color.WHITE);
-		objectComboBox.setBounds(684, 517, 225, 23);
+		objectComboBox.setBounds(684, 516, 225, 23);
 		panel_1.add(objectComboBox);
 		
 		JLabel lblConfiguration = new JLabel("Configuration");
 		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblConfiguration.setBounds(569, 515, 113, 23);
+		lblConfiguration.setBounds(569, 514, 113, 23);
 		panel_1.add(lblConfiguration);
 		
 		JLabel lblFiles = new JLabel("Files:");
 		lblFiles.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFiles.setBounds(569, 536, 113, 23);
+		lblFiles.setBounds(569, 535, 113, 23);
 		panel_1.add(lblFiles);
 		
 		btnSnapShot = new JButton("Capture");
 		btnSnapShot.setBackground(Color.WHITE);
-		btnSnapShot.setBounds(812, 791, 97, 23);
+		btnSnapShot.setBounds(872, 790, 97, 23);
 		panel_1.add(btnSnapShot);
 		
 		JLabel lblNavigation = new JLabel("Navigation");
@@ -708,6 +680,22 @@ public class Home extends JApplet {
 		btnDeleteNav.setBackground(Color.WHITE);
 		btnDeleteNav.setBounds(836, 80, 73, 23);
 		panel_1.add(btnDeleteNav);
+		
+		JLabel lblMethod = new JLabel("Method:");
+		lblMethod.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblMethod.setBounds(569, 740, 95, 23);
+		panel_1.add(lblMethod);
+		
+		JRadioButton rdbtnScenario = new JRadioButton("Scenario");
+		rdbtnScenario.setSelected(true);
+		rdbtnScenario.setFont(new Font("Dialog", Font.PLAIN, 11));
+		rdbtnScenario.setBounds(672, 740, 105, 23);
+		panel_1.add(rdbtnScenario);
+		
+		JRadioButton rdbtnSociallstm = new JRadioButton("Social-LSTM");
+		rdbtnSociallstm.setFont(new Font("Dialog", Font.PLAIN, 11));
+		rdbtnSociallstm.setBounds(792, 740, 121, 23);
+		panel_1.add(rdbtnSociallstm);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -1192,7 +1180,7 @@ public class Home extends JApplet {
 			public void actionPerformed(ActionEvent e) {
 				String outputPath = decideOutputPath();
 				NeuralNetwork net = new NeuralNetwork();
-				net.test(outputPath);
+				net.read(outputPath);
 			}
 		});
 
@@ -3406,11 +3394,10 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (trajectories != null) {
 				if(chckbxPath.isSelected()) {
-//					System.out.println("Path");
-//					IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories, new Color(200, 29, 37));									
+					IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories);									
 				} else {
-					System.out.println("Heat Map");
-					IdrObjsUtility.paintHeatTrajectories(chosenFloor, g2, tx, Pen1, trajectories);													
+					paintBackgroundPartitions(g2, tx, Pen1, Pen2);
+					IdrObjsUtility.paintHeatTrajectories(chosenFloor, g2, tx, Pen1, heatTrajectories);
 				}
 			}
 			
@@ -3462,24 +3449,38 @@ public class Home extends JApplet {
 					g2.setColor(new Color(249, 248, 246));
 				}
 				g2.fill(poNew);
-				
-				// Heatmap color
-//				if (r == mapPart) {
-//			        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-//			        Color color1 = Color.RED;
-//			        Color color2 = Color.GREEN;
-//			        GradientPaint gp = new GradientPaint(
-//			        		(int) poNew.getBounds2D().getMinX(), (int) poNew.getBounds2D().getMinY(), color1, 
-//			        		(int) poNew.getBounds2D().getMaxX(), (int) poNew.getBounds2D().getMaxY(), color2);
-//			        
-//			        g2.setPaint(gp);
-//				}
-//				g2.fill(poNew);
-//				for (Trajectory t : trajectories) {
-//					if (t.getRoomId() == r.getItemID()) {
-//						// add the points
-//					}
-//				}
+
+				// Background color
+				if (r == selectedPart) {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				} else {
+					g2.setColor(new Color(173, 173, 173));
+					g2.setStroke(Pen1);
+				}
+				g2.draw(poNew);
+
+				paintNameOnPart(r, g2, poNew);
+			}
+			if (selectedPart != null) {
+				paintConnectedPartitions(g2, tx, Pen1, Pen2);
+			}
+		}
+		
+		private void paintBackgroundPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
+			partitionsMap.clear();
+			for (Partition r : chosenFloor.getPartsAfterDecomposed()) {
+				Polygon2D.Double po = r.getPolygon2D();
+
+				Path2D poNew = (Path2D) tx.createTransformedShape(po);
+				partitionsMap.put(poNew, r);
+
+				// Highlight color
+				g2.setColor(new Color(0, 0, 230));
+				g2.fill(poNew);
 
 				// Background color
 				if (r == selectedPart) {
@@ -3650,10 +3651,11 @@ public class Home extends JApplet {
 			String outputPath = decideOutputPath();
 			File folder = new File(outputPath);
 			File[] listOfFiles = folder.listFiles();
-			trajectories = new ArrayList<Trajectory>();
+			ArrayList<Trajectory> temp;
 			
 			// Read all files
 			for (File file : listOfFiles) {
+				temp = new ArrayList<Trajectory>();
 //				System.out.println("---" + file.getName() + "---");
 				try {
 					// Create an object of file reader class
@@ -3674,21 +3676,16 @@ public class Home extends JApplet {
 								Double.parseDouble(row[3]), 
 								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[4]));
 						if(isWithinRange(traject.getTimestamp())) {
-							trajectories.add(traject);							
+							temp.add(traject);
+							heatTrajectories.add(traject);
 						}
-//						 for (String cell : row) {
-//						 System.out.print(cell + "\t");
-//						 }
-//						 System.out.println();
 					}
+					trajectories.add(temp);
 				} catch (Exception e) {
 					e.printStackTrace();
+					continue;
 				}
 			}
-			
-//			System.out.println(trajectories.size());
-//			mapPart = null;
-//			mapPart = chosenFloor.getPartsAfterDecomposed().get(new Random().nextInt(chosenFloor.getPartsAfterDecomposed().size()));
 			
 			repaint();
 		}

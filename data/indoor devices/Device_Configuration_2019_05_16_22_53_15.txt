@@ -1,6 +1,0 @@
-Device Type=Bluetooth
-Deployment Model=Coverage
-Maximum Device Number in a Partition=5
-Maximum Device Number in 100 m^2=5
-Detection Range(m)=20
-Detection Frequency(ms)=55

@@ -89,8 +89,10 @@ public class NeuralNetwork {
 	 * The computation graph model.
 	 */
 	private ComputationGraph net;
-
-	public void test(String location) {
+	private JavaRDD<List<List<Writable>>> trainSequence;
+	private JavaRDD<List<List<Writable>>> testSequence;
+	
+	public void read(String location) {
 		// read all trajectory data from folder
 		File folder = new File(location);
 		File[] listOfFiles = folder.listFiles();
@@ -111,95 +113,6 @@ public class NeuralNetwork {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public static void read(File file) {
-		try {
-
-			// Create an object of filereader class
-			// with CSV file as a parameter.
-			FileReader filereader = new FileReader(file);
-
-			// create csvReader object
-			// and skip first Line
-			CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
-			List<String[]> allData = csvReader.readAll();
-
-			// print Data
-			for (String[] row : allData) {
-				// for (String cell : row) {
-				// System.out.print(cell + "\t");
-				// }
-				// System.out.println();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public JavaRDD<List<List<Writable>>> modifyToSequence(File file) throws Exception {
-
-		// =====================================================================
-		// Step 1: Define the input data schema
-		// =====================================================================
-
-		// Let's define the schema of the data that we want to import
-		Schema inputDataSchema = new Schema.Builder().addColumnInteger("floorId").addColumnInteger("partitionId")
-				.addColumnDouble("axisPos").addColumnDouble("ordinatePos").addColumnsString("Timestamp").build();
-
-		// Print out the schema:
-		System.out.println("Input data schema details:");
-		System.out.println(inputDataSchema);
-
-		System.out.println("\n\nOther information obtainable from schema:");
-		System.out.println("Number of columns: " + inputDataSchema.numColumns());
-		System.out.println("Column names: " + inputDataSchema.getColumnNames());
-		System.out.println("Column types: " + inputDataSchema.getColumnTypes());
-
-		// =====================================================================
-		// Step 2: Define the operations we want to do
-		// =====================================================================
-
-		// Lets define some operations to execute on the data...
-		TransformProcess tp = new TransformProcess.Builder(inputDataSchema)
-				// .stringToTimeTransform("Timestamp", "yyyy-MM-dd
-				// HH:mm:ss.SSS", DateTimeZone.UTC)
-				// .renameColumn("Timestamp", "DateTime")
-				// .removeColumns("DateTime")
-				.convertToSequence().build();
-
-		Schema outputSchema = tp.getFinalSchema();
-
-		System.out.println("\n\n\nSchema after transforming data:");
-		System.out.println(outputSchema);
-
-		// =====================================================================
-		// Step 3: Load our data and execute the operations on Spark
-		// =====================================================================
-
-		// We'll use Spark local to handle our data
-		SparkConf conf = new SparkConf();
-		conf.setMaster("local[*]");
-		conf.setAppName("Trajectory-LSTM");
-
-		JavaSparkContext sc = new JavaSparkContext(conf);
-
-		// Define the path to the data file. You could use a directory here if
-		String path = file.getAbsolutePath();
-		JavaRDD<String> data = sc.textFile(path);
-
-		// We first need to parse this format. It's comma-delimited (CSV)
-		// format, so let's parse it using CSVRecordReader:
-		RecordReader rr = new CSVRecordReader();
-		JavaRDD<List<Writable>> parsedInputData = data.map(new StringToWritablesFunction(rr));
-
-		// Now, let's execute the transforms we defined earlier:
-		JavaRDD<List<List<Writable>>> records = SparkTransformExecutor.executeToSequence(parsedInputData, tp);
-
-		// return transformation results		
-		System.out.println("\n\nDONE");
-
-		return records;
 	}
 
 	public void transform(File file, JavaSparkContext sc) throws Exception {
@@ -250,12 +163,20 @@ public class NeuralNetwork {
 		// Now, let's execute the transforms we defined earlier:
 		JavaRDD<List<List<Writable>>> records = SparkTransformExecutor.executeToSequence(parsedInputData, tp);
 
+		
+		double[] weights = {0.8,0.2};
+		JavaRDD<List<List<Writable>>>[] split = records.randomSplit(weights);	
+
+		trainSequence = split[0];
+		testSequence = split[1];
+		
 		// For the sake of this example, let's collect the data locally and
 		// print it:
 		// JavaRDD<String> processedAsString = records.map(new
 		// WritablesToStringFunction(","));
 		// records.saveAsTextFile("/Fachri/dvita/data/spark/" + System.currentTimeMillis());
-		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark/" + System.currentTimeMillis(), records);
+		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark-training/" + System.currentTimeMillis(), trainSequence);
+		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark-testing/" + System.currentTimeMillis(), testSequence);
 		
 		System.out.println("\n\nDONE");
 	}

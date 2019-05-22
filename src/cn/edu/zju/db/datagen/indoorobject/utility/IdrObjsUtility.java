@@ -12,6 +12,7 @@ import org.khelekore.prtree.PRTree;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 public class IdrObjsUtility {
 
@@ -135,21 +138,48 @@ public class IdrObjsUtility {
     }
 
     public static void paintTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1, 
-    		ArrayList<Trajectory> trajectories, Color color) {
-
+    		ArrayList<ArrayList<Trajectory>> trajectories) {
+    	
+    	BufferedImage iconeNave;
+    	
         g2.setStroke(pen1);
-        for (Trajectory t : trajectories) {
-        	if(t.getFloorId() == floor.getItemID()) {
-                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
-                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-                // g2.draw(ellipseNew);
-                g2.setColor(color);
-                g2.fill(ellipseNew);
+        for (ArrayList<Trajectory> temp : trajectories) {
+        	Random rand = new Random();
+        	// Java 'Color' class takes 3 floats, from 0 to 1.
+        	float r = rand.nextFloat();
+        	float g = rand.nextFloat();
+        	float b = rand.nextFloat();
+        	
+        	Color color = new Color(r, g, b);
 
-                Color borderColor = new Color(200, 29, 37);
-                g2.setColor(borderColor);
-                g2.draw(ellipseNew);        		
-        	}
+        	int i = 0;
+        	for (Trajectory t : temp) {            	
+            	if(t.getFloorId() == floor.getItemID()) {
+            		if(i == 0 || i == (temp.size()-1)) {
+                        Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 2, 2);
+                        Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+                        // g2.draw(ellipseNew);
+                        g2.setColor(new Color(0,0,0));
+                        g2.fill(ellipseNew);
+
+                        g2.setColor(color);
+                        g2.draw(ellipseNew);        		            		
+            		} else {
+                        Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
+                        Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);            			
+
+                        // g2.draw(ellipseNew);
+                        g2.setColor(color);
+                        g2.fill(ellipseNew);
+
+                        g2.setColor(color);
+                        g2.draw(ellipseNew);
+            		}
+            		
+            		i++;
+            	}
+            }        	
         }
     }
     
@@ -159,9 +189,11 @@ public class IdrObjsUtility {
         g2.setStroke(pen1);
         for (Trajectory t : trajectories) {
         	if(t.getFloorId() == floor.getItemID()) {
-                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 1.5, 1.5);
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 3, 3);
                 Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
                 // g2.draw(ellipseNew);
+                Color color = new Color(200, 29, 37);
+                g2.setColor(color);
                 g2.fill(ellipseNew);
 
                 Color borderColor = new Color(200, 29, 37);
