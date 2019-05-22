@@ -255,7 +255,7 @@ public class NeuralNetwork {
 		// JavaRDD<String> processedAsString = records.map(new
 		// WritablesToStringFunction(","));
 		// records.saveAsTextFile("/Fachri/dvita/data/spark/" + System.currentTimeMillis());
-		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark/" + new Date(), records);
+		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark/" + System.currentTimeMillis(), records);
 		
 		System.out.println("\n\nDONE");
 	}
