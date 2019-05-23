@@ -334,7 +334,7 @@ public class Home extends JApplet {
 	 */
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
-		frmTrajectoryGenerator.setTitle("IMDAGEN");
+		frmTrajectoryGenerator.setTitle("RIMDAG");
 		frmTrajectoryGenerator.setBounds(100, 100, 1000, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
@@ -378,85 +378,6 @@ public class Home extends JApplet {
 		tabbedPane.setFont(new Font("Dialog", Font.PLAIN, 11));
 		tabbedPane.setBounds(0, 43, 984, 853);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
-		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Training", null, panel, null);
-		panel.setLayout(null);
-		
-		JLabel lblMachineConfiguration = new JLabel("Machine Configuration");
-		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMachineConfiguration.setBounds(504, 10, 186, 23);
-		panel.add(lblMachineConfiguration);
-		
-		JButton btnMachineClear = new JButton("Clear");
-		btnMachineClear.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnMachineClear.setBackground(Color.WHITE);
-		btnMachineClear.setBounds(810, 76, 97, 23);
-		panel.add(btnMachineClear);
-		
-		stationPanel = new JPanel();
-		stationPanel.setBackground(Color.LIGHT_GRAY);
-		stationPanel.setBounds(504, 109, 403, 120);
-		panel.add(stationPanel);
-		
-		machineScroll = new JScrollPane();
-		machineScroll.setBackground(Color.LIGHT_GRAY);
-		machineScroll.setBounds(504, 109, 403, 105);
-		stationPanel.add(machineScroll);	
-		
-		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
-		lblTrainingConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblTrainingConfiguration.setBounds(504, 248, 186, 23);
-		panel.add(lblTrainingConfiguration);
-		
-		btnTrain = new JButton("Train");
-		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnTrain.setBackground(Color.WHITE);
-		btnTrain.setBounds(810, 327, 97, 23);
-		panel.add(btnTrain);
-		
-		txtConsoleArea = new JTextArea();
-		txtConsoleArea.setEditable(false);
-		txtConsoleArea.setBackground(Color.WHITE);
-		txtConsoleArea.setBounds(12, 10, 480, 804);
-		panel.add(txtConsoleArea);
-		
-		JLabel lblTraining = new JLabel("Training");
-		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblTraining.setBounds(504, 281, 113, 23);
-		panel.add(lblTraining);
-		
-		JLabel lblIteration = new JLabel("Iteration:");
-		lblIteration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblIteration.setBounds(504, 302, 113, 23);
-		panel.add(lblIteration);
-		
-		textField = new JTextField();
-		textField.setFont(new Font("Dialog", Font.PLAIN, 11));
-		textField.setColumns(10);
-		textField.setBounds(629, 295, 278, 21);
-		panel.add(textField);
-		
-		btnMachineUpload = new JButton("Upload");
-		btnMachineUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnMachineUpload.setBackground(Color.WHITE);
-		btnMachineUpload.setBounds(701, 76, 97, 23);
-		panel.add(btnMachineUpload);
-		
-		JLabel label_4 = new JLabel("Configuration");
-		label_4.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_4.setBounds(504, 43, 113, 23);
-		panel.add(label_4);
-		
-		JLabel label_5 = new JLabel("Files:");
-		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_5.setBounds(504, 64, 113, 23);
-		panel.add(label_5);
-		
-		machineComboBox = new JComboBox<UploadObject>();
-		machineComboBox.setBackground(Color.WHITE);
-		machineComboBox.setBounds(619, 45, 288, 23);
-		panel.add(machineComboBox);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Generator", null, panel_1, null);
@@ -689,13 +610,96 @@ public class Home extends JApplet {
 		JRadioButton rdbtnScenario = new JRadioButton("Scenario");
 		rdbtnScenario.setSelected(true);
 		rdbtnScenario.setFont(new Font("Dialog", Font.PLAIN, 11));
-		rdbtnScenario.setBounds(672, 740, 105, 23);
+		rdbtnScenario.setBounds(672, 741, 105, 23);
 		panel_1.add(rdbtnScenario);
 		
-		JRadioButton rdbtnSociallstm = new JRadioButton("Social-LSTM");
+		JRadioButton rdbtnSociallstm = new JRadioButton("Trajectory Social-LSTM");
 		rdbtnSociallstm.setFont(new Font("Dialog", Font.PLAIN, 11));
-		rdbtnSociallstm.setBounds(792, 740, 121, 23);
+		rdbtnSociallstm.setBounds(788, 740, 144, 23);
 		panel_1.add(rdbtnSociallstm);
+		
+		connectedPartsModel = new DefaultListModel<Partition>();
+
+		possibleConnectedPartsList = new ArrayList<>();
+		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("Training", null, panel, null);
+		panel.setLayout(null);
+		
+		JLabel lblMachineConfiguration = new JLabel("Machine Configuration");
+		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblMachineConfiguration.setBounds(504, 10, 186, 23);
+		panel.add(lblMachineConfiguration);
+		
+		JButton btnMachineClear = new JButton("Clear");
+		btnMachineClear.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnMachineClear.setBackground(Color.WHITE);
+		btnMachineClear.setBounds(810, 76, 97, 23);
+		panel.add(btnMachineClear);
+		
+		stationPanel = new JPanel();
+		stationPanel.setBackground(Color.LIGHT_GRAY);
+		stationPanel.setBounds(504, 109, 403, 120);
+		panel.add(stationPanel);
+		
+		machineScroll = new JScrollPane();
+		machineScroll.setBackground(Color.LIGHT_GRAY);
+		machineScroll.setBounds(504, 109, 403, 105);
+		stationPanel.add(machineScroll);	
+		
+		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
+		lblTrainingConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblTrainingConfiguration.setBounds(504, 248, 186, 23);
+		panel.add(lblTrainingConfiguration);
+		
+		btnTrain = new JButton("Train");
+		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnTrain.setBackground(Color.WHITE);
+		btnTrain.setBounds(810, 327, 97, 23);
+		panel.add(btnTrain);
+		
+		txtConsoleArea = new JTextArea();
+		txtConsoleArea.setEditable(false);
+		txtConsoleArea.setBackground(Color.WHITE);
+		txtConsoleArea.setBounds(12, 10, 480, 804);
+		panel.add(txtConsoleArea);
+		
+		JLabel lblTraining = new JLabel("Training");
+		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblTraining.setBounds(504, 281, 113, 23);
+		panel.add(lblTraining);
+		
+		JLabel lblIteration = new JLabel("Iteration:");
+		lblIteration.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblIteration.setBounds(504, 302, 113, 23);
+		panel.add(lblIteration);
+		
+		textField = new JTextField();
+		textField.setFont(new Font("Dialog", Font.PLAIN, 11));
+		textField.setColumns(10);
+		textField.setBounds(629, 295, 278, 21);
+		panel.add(textField);
+		
+		btnMachineUpload = new JButton("Upload");
+		btnMachineUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnMachineUpload.setBackground(Color.WHITE);
+		btnMachineUpload.setBounds(701, 76, 97, 23);
+		panel.add(btnMachineUpload);
+		
+		JLabel label_4 = new JLabel("Configuration");
+		label_4.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_4.setBounds(504, 43, 113, 23);
+		panel.add(label_4);
+		
+		JLabel label_5 = new JLabel("Files:");
+		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_5.setBounds(504, 64, 113, 23);
+		panel.add(label_5);
+		
+		machineComboBox = new JComboBox<UploadObject>();
+		machineComboBox.setBackground(Color.WHITE);
+		machineComboBox.setBounds(619, 45, 288, 23);
+		panel.add(machineComboBox);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -730,8 +734,6 @@ public class Home extends JApplet {
 		scrollPanePart = new JScrollPane();
 		scrollPanePart.setBounds(668, 177, 239, 88);
 		panel_2.add(scrollPanePart);
-		
-		connectedPartsModel = new DefaultListModel<Partition>();
 		connectedPartsList = new JList<Partition>(connectedPartsModel);
 		connectedPartsList.setBackground(Color.WHITE);
 		connectedPartsList.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -741,8 +743,6 @@ public class Home extends JApplet {
 		connectedPartsList.setLayoutOrientation(JList.VERTICAL);
 		connectedPartsList.setBounds(20, 20, 300, 70);
 		scrollPanePart.setViewportView(connectedPartsList);
-
-		possibleConnectedPartsList = new ArrayList<>();
 		
 		JLabel lblRoom = new JLabel("Room:");
 		lblRoom.setFont(new Font("Dialog", Font.PLAIN, 14));

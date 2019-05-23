@@ -16,12 +16,15 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.datavec.api.records.reader.RecordReader;
 import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
+import org.datavec.api.split.FileSplit;
 import org.datavec.api.transform.TransformProcess;
 import org.datavec.api.transform.schema.Schema;
 import org.datavec.api.writable.Writable;
+import org.datavec.hadoop.records.reader.mapfile.MapFileSequenceRecordReader;
 import org.datavec.spark.storage.SparkStorageUtils;
 import org.datavec.spark.transform.SparkTransformExecutor;
 import org.datavec.spark.transform.misc.StringToWritablesFunction;
+import org.deeplearning4j.datasets.datavec.RecordReaderMultiDataSetIterator;
 import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration.GraphBuilder;
 import org.deeplearning4j.nn.conf.GradientNormalization;
@@ -36,7 +39,9 @@ import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.util.ModelSerializer;
+import org.joda.time.DateTimeZone;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.RmsProp;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
@@ -64,8 +69,8 @@ public class NeuralNetwork {
 
 	private static final int HIDDEN_LAYER_WIDTH = 512;
 	private static final int EMBEDDING_WIDTH = 128;
-	private static final String MODEL_FILENAME = "/Fachri/dvita/data/deep-learning/rnn_train.zip";
-	private static final String BACKUP_MODEL_FILENAME = "/Fachri/dvita/data/deep-learning/rnn_train.bak.zip";
+	private static final String MODEL_FILENAME = "/Kerja/trajectory-generator/data/rnn_train.zip";
+	private static final String BACKUP_MODEL_FILENAME = "/Kerja/trajectory-generator/data/rnn_train.bak.zip";
 	private static final int MINIBATCH_SIZE = 32;
 	private static final Random rnd = new Random(new Date().getTime());
 	private static final long SAVE_EACH_MS = TimeUnit.MINUTES.toMillis(5);
@@ -91,8 +96,12 @@ public class NeuralNetwork {
 	private ComputationGraph net;
 	private JavaRDD<List<List<Writable>>> trainSequence;
 	private JavaRDD<List<List<Writable>>> testSequence;
+	private File trainFiles = new File("/Kerja/trajectory-generator/data/spark-training/");
+	private File testFiles = new File("/Kerja/trajectory-generator/data/spark-testing/");;
 	
 	public void read(String location) {
+		Nd4j.getMemoryManager().setAutoGcWindow(GC_WINDOW);
+		
 		// read all trajectory data from folder
 		File folder = new File(location);
 		File[] listOfFiles = folder.listFiles();
@@ -112,6 +121,20 @@ public class NeuralNetwork {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		
+		// Train the network
+		try {
+	        File networkFile = new File(toTempPath(MODEL_FILENAME));
+	        if (networkFile.exists()) {
+				train();	        		        	
+	        }else {
+	        	createComputationGraph();
+				train();	        	
+	        }
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -140,10 +163,10 @@ public class NeuralNetwork {
 
 		// Lets define some operations to execute on the data...
 		TransformProcess tp = new TransformProcess.Builder(inputDataSchema)
-				// .stringToTimeTransform("Timestamp", "yyyy-MM-dd
-				// HH:mm:ss.SSS", DateTimeZone.UTC)
-				// .renameColumn("Timestamp", "DateTime")
-				// .removeColumns("DateTime")
+				.removeAllColumnsExceptFor("Timestamp","axisPos","ordinatePos")
+//				.stringToTimeTransform("Timestamp", "yy/MM/dd HH:mm:ss", DateTimeZone.UTC)
+//				.renameColumn("Timestamp", "DateTime")
+//				.removeColumns("DateTime")
 				.convertToSequence().build();
 
 		Schema outputSchema = tp.getFinalSchema();
@@ -175,8 +198,9 @@ public class NeuralNetwork {
 		// JavaRDD<String> processedAsString = records.map(new
 		// WritablesToStringFunction(","));
 		// records.saveAsTextFile("/Fachri/dvita/data/spark/" + System.currentTimeMillis());
-		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark-training/" + System.currentTimeMillis(), trainSequence);
-		SparkStorageUtils.saveMapFileSequences("/Kerja/trajectory-generator/data/spark-testing/" + System.currentTimeMillis(), testSequence);
+		
+		if(!trainFiles.exists()) {SparkStorageUtils.saveMapFileSequences(trainFiles.getAbsolutePath(), trainSequence);}
+		if(!testFiles.exists()) {SparkStorageUtils.saveMapFileSequences(testFiles.getAbsolutePath(), testSequence);}
 		
 		System.out.println("\n\nDONE");
 	}
@@ -193,9 +217,9 @@ public class NeuralNetwork {
 		final GraphBuilder graphBuilder = builder.graphBuilder().pretrain(false).backprop(true)
 				.backpropType(BackpropType.Standard).tBPTTBackwardLength(TBPTT_SIZE).tBPTTForwardLength(TBPTT_SIZE)
 				.addInputs("inputLine", "decoderInput")
-				.setInputTypes(InputType.recurrent(dict.size()), InputType.recurrent(dict.size()))
+				.setInputTypes(InputType.recurrent(2), InputType.recurrent(3))
 				.addLayer("embeddingEncoder",
-						new EmbeddingLayer.Builder().nIn(dict.size()).nOut(EMBEDDING_WIDTH).build(), "inputLine")
+						new EmbeddingLayer.Builder().nIn(2).nOut(EMBEDDING_WIDTH).build(), "inputLine")
 				.addLayer("encoder",
 						new LSTM.Builder().nIn(EMBEDDING_WIDTH).nOut(HIDDEN_LAYER_WIDTH).activation(Activation.TANH)
 								.build(),
@@ -204,11 +228,11 @@ public class NeuralNetwork {
 				.addVertex("dup", new DuplicateToTimeSeriesVertex("decoderInput"), "thoughtVector")
 				.addVertex("merge", new MergeVertex(), "decoderInput", "dup")
 				.addLayer("decoder",
-						new LSTM.Builder().nIn(dict.size() + HIDDEN_LAYER_WIDTH).nOut(HIDDEN_LAYER_WIDTH)
+						new LSTM.Builder().nIn(3 + HIDDEN_LAYER_WIDTH).nOut(HIDDEN_LAYER_WIDTH)
 								.activation(Activation.TANH).build(),
 						"merge")
 				.addLayer("output",
-						new RnnOutputLayer.Builder().nIn(HIDDEN_LAYER_WIDTH).nOut(dict.size())
+						new RnnOutputLayer.Builder().nIn(HIDDEN_LAYER_WIDTH).nOut(3)
 								.activation(Activation.SOFTMAX).lossFunction(LossFunctions.LossFunction.MCXENT).build(),
 						"decoder")
 				.setOutputs("output");
@@ -217,37 +241,17 @@ public class NeuralNetwork {
 		net.init();
 	}
 
-	private void train(File networkFile, int offset) throws IOException {
-		long lastSaveTime = System.currentTimeMillis();
-		long lastTestTime = System.currentTimeMillis();
-		TrajectoryIterator logsIterator = new TrajectoryIterator(corpus, MINIBATCH_SIZE, MACROBATCH_SIZE, dict.size(),
-				ROW_SIZE);
+	private void train() throws IOException, InterruptedException {
+		MapFileSequenceRecordReader trainRR = new MapFileSequenceRecordReader();
+		trainRR.initialize(new FileSplit(trainFiles));
+		RecordReaderMultiDataSetIterator trainIter = new RecordReaderMultiDataSetIterator
+															.Builder(MINIBATCH_SIZE)
+															.addSequenceReader("records", trainRR)
+															.addInput("records")
+												            .build();
 		for (int epoch = 1; epoch < 10000; ++epoch) {
 			System.out.println("Epoch " + epoch);
-			if (epoch == 1) {
-				logsIterator.setCurrentBatch(offset);
-			} else {
-				logsIterator.reset();
-			}
-			int lastPerc = 0;
-			while (logsIterator.hasNextMacrobatch()) {
-				net.fit(logsIterator);
-				logsIterator.nextMacroBatch();
-				System.out.println("Batch = " + logsIterator.batch());
-				int newPerc = (logsIterator.batch() * 100 / logsIterator.totalBatches());
-				if (newPerc != lastPerc) {
-					System.out.println("Epoch complete: " + newPerc + "%");
-					lastPerc = newPerc;
-				}
-				if (System.currentTimeMillis() - lastSaveTime > SAVE_EACH_MS) {
-					saveModel(networkFile);
-					lastSaveTime = System.currentTimeMillis();
-				}
-				if (System.currentTimeMillis() - lastTestTime > TEST_EACH_MS) {
-					test();
-					lastTestTime = System.currentTimeMillis();
-				}
-			}
+			net.fit(trainIter);
 		}
 	}
 
