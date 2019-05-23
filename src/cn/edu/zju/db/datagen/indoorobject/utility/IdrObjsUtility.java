@@ -140,8 +140,6 @@ public class IdrObjsUtility {
     public static void paintTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1, 
     		ArrayList<ArrayList<Trajectory>> trajectories) {
     	
-    	BufferedImage iconeNave;
-    	
         g2.setStroke(pen1);
         for (ArrayList<Trajectory> temp : trajectories) {
         	Random rand = new Random();
@@ -192,12 +190,42 @@ public class IdrObjsUtility {
                 Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 3, 3);
                 Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
                 // g2.draw(ellipseNew);
+                Color color = new Color(51, 255, 51);
+                g2.setColor(color);
+                g2.fill(ellipseNew);
+
+//                Color borderColor = new Color(200, 29, 37);
+//                g2.setColor(borderColor);
+                g2.draw(ellipseNew);        		
+        	}
+        }
+        
+        for (Trajectory t : trajectories) {
+        	if(t.getFloorId() == floor.getItemID()) {
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 2, 2);
+                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+                // g2.draw(ellipseNew);
+                Color color = new Color(255, 255, 0);
+                g2.setColor(color);
+                g2.fill(ellipseNew);
+
+//                Color borderColor = new Color(200, 29, 37);
+//                g2.setColor(borderColor);
+                g2.draw(ellipseNew);        		
+        	}
+        }
+        
+        for (Trajectory t : trajectories) {
+        	if(t.getFloorId() == floor.getItemID()) {
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.5, 0.5);
+                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+                // g2.draw(ellipseNew);
                 Color color = new Color(200, 29, 37);
                 g2.setColor(color);
                 g2.fill(ellipseNew);
 
-                Color borderColor = new Color(200, 29, 37);
-                g2.setColor(borderColor);
+//                Color borderColor = new Color(200, 29, 37);
+//                g2.setColor(borderColor);
                 g2.draw(ellipseNew);        		
         	}
         }
