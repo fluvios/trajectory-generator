@@ -66,6 +66,10 @@ public class Partition extends FloorItem {
     public String toString2() {
         return this.itemID + "\t" + this.name + "\t" + this.polygon2D;
     }
+    
+    public String writePartition() {
+    	return "\"" + this.itemID + "\"" + "," + "\"" + this.name + "\"" + "," + "\"" + this.polygon2D.toString() + "\"" + "\n";
+    }    
 
     public ArrayList<Partition> getConParts() {
         ArrayList<Partition> heffer = new ArrayList<Partition>();

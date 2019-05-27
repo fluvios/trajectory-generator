@@ -50,5 +50,10 @@ public class Connectivity {
         return ap + "\t" + part1 + "\t" + part2 + "\t" + accRules;
     }
 
-
+    public String writeConnectivity() {
+    	return "\"" + this.ap.getItemID() + "\"" + "," + "\"" + this.ap.getGlobalID() + "\"" + "," + 
+    			"\"" + this.ap.getName() + "\"" + "," + "\"" + this.part1 + "\"" 
+    			+ "," + "\"" + this.part2 + "\"" + "," + "\"" + this.accRules.toString() + "\"" + "," + 
+    			"\"" + this.ap.getLocation2D().getX() + "\"" + "," + "\"" + this.ap.getLocation2D().getY() + "\"" + "\n";
+    }
 }

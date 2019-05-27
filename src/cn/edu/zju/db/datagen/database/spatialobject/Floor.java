@@ -113,6 +113,10 @@ public class Floor extends Item {
     public String toString() {
         return this.name;
     }
+    
+    public String writeFloor() {
+    	return "\"" + this.itemID + "\"" + "," + "\"" + this.globalID + "\"" + "," + "\"" + this.name + "\"" + "\n";
+    }
 
     public Partition getOutdoorPart() {
         for (Partition p : partitions) {

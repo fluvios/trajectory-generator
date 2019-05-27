@@ -2361,14 +2361,16 @@ public class Home extends JApplet {
 			FileOutputStream outStr = null;
 			BufferedOutputStream buff = null;
 
-			String floor_outputPath = currentPath + "//Floors" + ".txt";
+			String floor_outputPath = currentPath + "//Floors" + ".csv";
 			try {
 				file = new File(floor_outputPath);
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
+	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"floorName\"" + "\n";
+				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
-					buff.write((floor.toString() + "\n").getBytes());
+					buff.write((floor.writeFloor()).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {
@@ -2377,15 +2379,17 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-			String accessPoint_outputPath = currentPath + "//Access Points" + ".txt";
+			String accessPoint_outputPath = currentPath + "//AccessPoints" + ".csv";
 			try {
 				file = new File(accessPoint_outputPath);
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
+	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"x\"" + "," + "\"y\"" + "\n";
+				buff.write(header.getBytes());				
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (AccessPoint ap : floor.getAccessPoints())
-						buff.write((ap.toString() + "\n").getBytes());
+						buff.write((ap.writeAccessPoint()).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {
@@ -2394,15 +2398,17 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-			String parition_outputPath = currentPath + "//Partitions" + ".txt";
+			String parition_outputPath = currentPath + "//Partitions" + ".csv";
 			try {
 				file = new File(parition_outputPath);
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
+	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"position\"" + "\n";
+				buff.write(header.getBytes());	
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Partition par : floor.getPartitions())
-						buff.write((par.toString2() + "\n").getBytes());
+						buff.write((par.writePartition()).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {
@@ -2411,15 +2417,17 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-			String connector_outputPath = currentPath + "//Connectors" + ".txt";
+			String connector_outputPath = currentPath + "//Connectors" + ".csv";
 			try {
 				file = new File(connector_outputPath);
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
+	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"x\"" + "," + "\"y\"" + "\n";
+				buff.write(header.getBytes());					
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Connector connector : floor.getConnectors())
-						buff.write((connector.toString() + "\n").getBytes());
+						buff.write((connector.writeAccessPoint()).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {
@@ -2428,14 +2436,17 @@ public class Home extends JApplet {
 				e.printStackTrace();
 			}
 
-			String connectivity_outputPath = currentPath + "//Connectivity" + ".txt";
+			String connectivity_outputPath = currentPath + "//Connectivity" + ".csv";
 			try {
 				file = new File(connectivity_outputPath);
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
+	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"name\"" + "," + "\"firstPartitionGlobalId\"" + "," + "\"secondPartitionGlobalId \"" + "," + "\"accessRule\"" + ","
+	            		+ "\"x\"" + "," + "\"y\"" + "\n";
+				buff.write(header.getBytes());					
 				for (Connectivity connectivity : DB_WrapperLoad.connectivityT) {
-					buff.write((connectivity.toString() + "\n").getBytes());
+					buff.write((connectivity.writeConnectivity()).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {
