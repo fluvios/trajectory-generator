@@ -97,6 +97,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
+import cn.edu.zju.db.datagen.algorithm.Demo;
 import cn.edu.zju.db.datagen.algorithm.FPT;
 import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import cn.edu.zju.db.datagen.algorithm.PXM;
@@ -1181,9 +1182,17 @@ public class Home extends JApplet {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String outputPath = decideOutputPath();
-				NeuralNetwork net = new NeuralNetwork();
-				net.read(outputPath);
+//				String outputPath = decideOutputPath();
+//				NeuralNetwork net = new NeuralNetwork();
+//				net.read(outputPath);
+				
+				Demo train = new Demo();
+				try {
+					train.main(null, txtConsoleArea);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -1638,6 +1647,12 @@ public class Home extends JApplet {
 				public void actionPerformed(ActionEvent e) {
 					if (btnObjectStart.getText().equals("Start")) {
 						if (chckbxTrajectory.isSelected() || chckbxTracking.isSelected()) {
+							
+							// for Trajectory LSTM Case
+							if(chkbxLSTM.isSelected()) {
+								test();
+							}
+							
 							String outputPath = decideOutputPath();
 							if (outputPath != null) {
 								createMovingObjectOutputDir(outputPath);
@@ -1690,6 +1705,26 @@ public class Home extends JApplet {
 
 				}
 			});
+		}
+		
+		private void test() {
+			String default_path = System.getProperty("user.dir"); // + "//export
+			// files";
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new File(default_path));
+			
+			FileFilter filter = new FileFilter() {
+				public boolean accept(File f) {
+					return f.getName().toLowerCase().endsWith(".zip") || f.isDirectory();
+				}
+
+				public String getDescription() {
+					return "zip Files";
+				}
+			};
+			chooser.setFileFilter(filter);
+			
+			int result = chooser.showOpenDialog(this);		
 		}
 
 		/**
