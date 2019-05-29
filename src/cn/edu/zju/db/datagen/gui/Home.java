@@ -227,9 +227,12 @@ public class Home extends JApplet {
 	private JCheckBox chckbxEnvironment;
 	
 	private ButtonGroup visualButtonGroup;
+	private ButtonGroup generateButtonGroup;
 	
 	private JRadioButton chckbxPath;
 	private JRadioButton chckbxHeatMap;
+	private JRadioButton chkbxScenario;
+	private JRadioButton chkbxLSTM;	
 
 	private JScrollPane scrollPaneConsole;
 	private JScrollPane positionPropertiesScrollPane;
@@ -565,7 +568,7 @@ public class Home extends JApplet {
 		objectComboBox.setBounds(684, 516, 225, 23);
 		panel_1.add(objectComboBox);
 		
-		JLabel lblConfiguration = new JLabel("Configuration");
+		JLabel lblConfiguration = new JLabel("Scenario");
 		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblConfiguration.setBounds(569, 514, 113, 23);
 		panel_1.add(lblConfiguration);
@@ -607,16 +610,16 @@ public class Home extends JApplet {
 		lblMethod.setBounds(569, 740, 95, 23);
 		panel_1.add(lblMethod);
 		
-		JRadioButton rdbtnScenario = new JRadioButton("Scenario");
-		rdbtnScenario.setSelected(true);
-		rdbtnScenario.setFont(new Font("Dialog", Font.PLAIN, 11));
-		rdbtnScenario.setBounds(672, 741, 105, 23);
-		panel_1.add(rdbtnScenario);
+		chkbxScenario = new JRadioButton("Scenario");
+		chkbxScenario.setSelected(true);
+		chkbxScenario.setFont(new Font("Dialog", Font.PLAIN, 11));
+		chkbxScenario.setBounds(672, 741, 105, 23);
+		panel_1.add(chkbxScenario);
 		
-		JRadioButton rdbtnSociallstm = new JRadioButton("Trajectory Social-LSTM");
-		rdbtnSociallstm.setFont(new Font("Dialog", Font.PLAIN, 11));
-		rdbtnSociallstm.setBounds(788, 740, 144, 23);
-		panel_1.add(rdbtnSociallstm);
+		chkbxLSTM = new JRadioButton("Trajectory Social-LSTM");
+		chkbxLSTM.setFont(new Font("Dialog", Font.PLAIN, 11));
+		chkbxLSTM.setBounds(788, 740, 144, 23);
+		panel_1.add(chkbxLSTM);
 		
 		connectedPartsModel = new DefaultListModel<Partition>();
 
@@ -626,9 +629,9 @@ public class Home extends JApplet {
 		tabbedPane.addTab("Training", null, panel, null);
 		panel.setLayout(null);
 		
-		JLabel lblMachineConfiguration = new JLabel("Machine Configuration");
+		JLabel lblMachineConfiguration = new JLabel("Neural Netwok Configuration");
 		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMachineConfiguration.setBounds(504, 10, 186, 23);
+		lblMachineConfiguration.setBounds(504, 10, 236, 23);
 		panel.add(lblMachineConfiguration);
 		
 		JButton btnMachineClear = new JButton("Clear");
@@ -686,10 +689,10 @@ public class Home extends JApplet {
 		btnMachineUpload.setBounds(701, 76, 97, 23);
 		panel.add(btnMachineUpload);
 		
-		JLabel label_4 = new JLabel("Configuration");
-		label_4.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_4.setBounds(504, 43, 113, 23);
-		panel.add(label_4);
+		JLabel lblNeuralNetwork = new JLabel("Neural Network");
+		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblNeuralNetwork.setBounds(504, 43, 113, 23);
+		panel.add(lblNeuralNetwork);
 		
 		JLabel label_5 = new JLabel("Files:");
 		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
@@ -3217,6 +3220,10 @@ public class Home extends JApplet {
 			visualButtonGroup = new ButtonGroup();
 			visualButtonGroup.add(chckbxPath);
 			visualButtonGroup.add(chckbxHeatMap);
+			
+			generateButtonGroup = new ButtonGroup();
+			generateButtonGroup.add(chkbxScenario);
+			generateButtonGroup.add(chkbxLSTM);
 		}
 
 		/**
