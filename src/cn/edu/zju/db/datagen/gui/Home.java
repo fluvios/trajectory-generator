@@ -2840,31 +2840,33 @@ public class Home extends JApplet {
 			Station.setScanRange(Double.parseDouble(scanRange));
 			Station.setScanRate(Integer.parseInt(stationScanRate));
 
-			String movingObjTypeSimple = persons[0].getMovingObjectType();
-			String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
-			props.setProperty("movingObjType", movingObjType);
-			String movObjDistriTypeSimple = persons[0].getInitialDistribution();
-			String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
-			props.setProperty("movingObjDistributerType", movObjDistriType);
-			String maxMovingNumInPart = Integer.toString(persons[0].getObjectNumber());
-			props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
-			String maxStepLength = Double.toString(persons[0].getMaxStepLength());
-			props.setProperty("movingObjMaxStepLength", maxStepLength);
-			String moveRate = Integer.toString(persons[0].getMoveRate());
-			props.setProperty("movingObjMoveRate", moveRate);
-			String movingObjMaxLifeSpan = Integer.toString(persons[0].getLifeSpan());
-			props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
+			if(persons != null) {
 
-			String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
-			String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
-			props.setProperty("positionAlgorithm", posAlgType);
+				String movingObjTypeSimple = persons[0].getMovingObjectType();
+				String movingObjType = movingObjTypeMap.get(movingObjTypeSimple);
+				props.setProperty("movingObjType", movingObjType);
+				String movObjDistriTypeSimple = persons[0].getInitialDistribution();
+				String movObjDistriType = movObjInitMap.get(movObjDistriTypeSimple);
+				props.setProperty("movingObjDistributerType", movObjDistriType);
+				String maxMovingNumInPart = Integer.toString(persons[0].getObjectNumber());
+				props.setProperty("movingObjMaxNumInPart", maxMovingNumInPart);
+				String maxStepLength = Double.toString(persons[0].getMaxStepLength());
+				props.setProperty("movingObjMaxStepLength", maxStepLength);
+				String moveRate = Integer.toString(persons[0].getMoveRate());
+				props.setProperty("movingObjMoveRate", moveRate);
+				String movingObjMaxLifeSpan = Integer.toString(persons[0].getLifeSpan());
+				props.setProperty("movingObjMaxLifeSpan", movingObjMaxLifeSpan);
 
-			MovingObj.setScanRange(Double.parseDouble(scanRange));
-			MovingObj.setMaxStepLength(persons[0].getMaxStepLength());
-			MovingObj.setMoveRate(persons[0].getMoveRate());
-			MovingObj.setMaxSpeed(persons[0].getMaxStepLength() / ((persons[0].getMoveRate() + 0.0) / 1000));
-			
-			
+				String positionAlgorithm = positionAlgorithmComboBox.getSelectedItem().toString();
+				String posAlgType = positionAlgorithmMap.get(positionAlgorithm);
+				props.setProperty("positionAlgorithm", posAlgType);
+
+				MovingObj.setScanRange(Double.parseDouble(scanRange));
+				MovingObj.setMaxStepLength(persons[0].getMaxStepLength());
+				MovingObj.setMoveRate(persons[0].getMoveRate());
+				MovingObj.setMaxSpeed(persons[0].getMaxStepLength() / ((persons[0].getMoveRate() + 0.0) / 1000));				
+			}
+
 			try {
 				FileOutputStream out = new FileOutputStream(propName);
 				props.store(out, null);
