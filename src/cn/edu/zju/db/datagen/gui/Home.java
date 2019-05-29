@@ -1206,7 +1206,10 @@ public class Home extends JApplet {
 	}
 
 	private void uploadFile() {
+		String default_path = System.getProperty("user.dir"); // + "//export
+		// files";
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".ifc") || f.isDirectory();
@@ -1250,7 +1253,10 @@ public class Home extends JApplet {
 	}
 	
 	private void uploadConfigFile() {
+		String default_path = System.getProperty("user.dir"); // + "//export
+		// files";
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
@@ -1299,7 +1305,10 @@ public class Home extends JApplet {
 	}
 	
 	private void uploadObjectFile() {
+		String default_path = System.getProperty("user.dir"); // + "//export
+		// files";
 		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
@@ -1485,7 +1494,6 @@ public class Home extends JApplet {
 		} else {
 			return null;
 		}
-
 	}
 	
 	// Generator Map Class
