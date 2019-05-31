@@ -281,7 +281,8 @@ public class RegularMultiDestCustomer extends DstMovingObj {
                     System.out.println(id + " finished writing trajectory");
                     return;
                 } else {
-                    writeTrajectory();
+//                    writeTrajectory();
+                	writeTrainTrajectory();                	
                 }
             }
 

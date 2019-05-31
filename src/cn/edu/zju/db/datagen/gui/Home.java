@@ -99,7 +99,7 @@ import com.opencsv.CSVReaderBuilder;
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.Demo;
 import cn.edu.zju.db.datagen.algorithm.FPT;
-import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
+import cn.edu.zju.db.datagen.algorithm.Lstm;
 import cn.edu.zju.db.datagen.algorithm.PXM;
 import cn.edu.zju.db.datagen.algorithm.TRI;
 import cn.edu.zju.db.datagen.database.DB_Connection;
@@ -338,7 +338,7 @@ public class Home extends JApplet {
 	 */
 	private void initialize() {
 		frmTrajectoryGenerator = new JFrame();
-		frmTrajectoryGenerator.setTitle("RIMDAG");
+		frmTrajectoryGenerator.setTitle("RITgen");
 		frmTrajectoryGenerator.setBounds(100, 100, 1000, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
