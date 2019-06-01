@@ -9,7 +9,7 @@ public class Trajectory {
 	private double axis;
 	private double oordinat;
 	private Date timestamp;
-	
+
 	public Trajectory(int floorId, int partitionId, double axis, double oordinat, Date timestamp) {
 		super();
 		this.floorId = floorId;

@@ -321,7 +321,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
             }
             FileOutputStream outStr = new FileOutputStream(file);
             trajectoryBuff = new BufferedOutputStream(outStr);
-            String comments = "\"floorId\"" + "," + "\"partitionId\"" + "," + "\"axis\"" + "," + "\"ordinat\"" + ","
+            String comments = "\"floor\"" + "," + "\"room\"" + "," + "\"axis\"" + "," + "\"ordinat\"" + ","
                                       + "\"timestamp\"" + "\n";
 //          String comments = "\"timestamp\"" + "," + "\"axis\"" + "," + "\"ordinat\"" + "\n";
             trajectoryBuff.write(comments.getBytes());
@@ -343,8 +343,8 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
             Date timestamp = new Date(IdrObjsUtility.objectGenerateStartTime.getTime()
                                               + (System.currentTimeMillis() - IdrObjsUtility.startClickedTime.getTime()));
             String timestamp_str = IdrObjsUtility.sdf.format(timestamp);
-            String traj = "\"" + getCurrentFloor().getItemID() + "\"" + "," + "\"" + getCurrentPartition().getItemID() + "\"" + "," + "\"" + getCurrentLocation().getX()
-                                  + "\"" + "," + "\"" + getCurrentLocation().getY() + "\"" + "," + timestamp_str + "\n";
+            String traj = "\"" + getCurrentFloor().getName() + "\"" + "," + "\"" + getCurrentPartition().getName() + "\"" + "," + getCurrentLocation().getX()
+                                  + "," + getCurrentLocation().getY() + "," + timestamp_str + "\n";
             trajectoryBuff.write(traj.getBytes());
         } catch (IOException e) {
             e.printStackTrace();

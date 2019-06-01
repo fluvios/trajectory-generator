@@ -99,7 +99,6 @@ import com.opencsv.CSVReaderBuilder;
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
 import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import cn.edu.zju.db.datagen.algorithm.FPT;
-import cn.edu.zju.db.datagen.algorithm.Lstm;
 import cn.edu.zju.db.datagen.algorithm.PXM;
 import cn.edu.zju.db.datagen.algorithm.TRI;
 import cn.edu.zju.db.datagen.database.DB_Connection;
@@ -1185,14 +1184,6 @@ public class Home extends JApplet {
 //				String outputPath = decideOutputPath();
 //				NeuralNetwork net = new NeuralNetwork();
 //				net.read(outputPath);
-				
-				NeuralNetwork train = new NeuralNetwork();
-				try {
-					train.main(null, txtConsoleArea);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			}
 		});
 
@@ -2450,11 +2441,12 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"position\"" + "\n";
-				buff.write(header.getBytes());	
+//	            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"position\"" + "\n";
+	            String header = "\"floor\"" + "," + "\"room\"" + "\n";
+	            buff.write(header.getBytes());	
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Partition par : floor.getPartitions())
-						buff.write((par.writePartition()).getBytes());
+						buff.write((par.writePartition(floor.getName())).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {

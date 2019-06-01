@@ -1,146 +1,92 @@
 package cn.edu.zju.db.datagen.trajectory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.api.MultiDataSet;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 
 public class TrajectoryProcessor {
-    public static final String SPECIALS = "!\"#$;%^:?*()[]{}<>«»,.–—=+…";
-    private Set<String> dictSet = new HashSet<>();
-    private Map<String, Double> freq = new HashMap<>();
-    private Map<String, Double> dict = new HashMap<>();
-    private boolean countFreq;
-    private InputStream is;
-    private int rowSize;
+	private ComputationGraph net;
+	private INDArray decoderInputTemplate = null;
 
-    public TrajectoryProcessor(String filename, int rowSize, boolean countFreq) throws FileNotFoundException {
-        this(new FileInputStream(filename), rowSize, countFreq);
-    }
+	public TrajectoryProcessor(ComputationGraph net) {
+		this.net = net;
+	}
 
-    public TrajectoryProcessor(InputStream is, int rowSize, boolean countFreq) {
-        this.is = is;
-        this.rowSize = rowSize;
-        this.countFreq = countFreq;
-    }
+	/*
+	 * Given an input to the computation graph (which is expected to a be a seq2seq
+	 * model) Predict the output given the encoder input (which is fixed) + the
+	 * first time step from the decoder input All other time steps in the decoder
+	 * input will be ignored
+	 */
 
-    public void start() throws IOException {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-            String line;
-            String lastName = "";
-            String lastLine = "";
-            while ((line = br.readLine()) != null) {
-                String[] lineSplit = line.toLowerCase().split(" \\+\\+\\+\\$\\+\\+\\+ ", 5);
-                if (lineSplit.length > 4) {
-                    // join consecuitive lines from the same speaker
-                    if (lineSplit[1].equals(lastName)) {
-                        if (!lastLine.isEmpty()) {
-                            // if the previous line doesn't end with a special symbol, append a comma and the current line
-                            if (!SPECIALS.contains(lastLine.substring(lastLine.length() - 1))) {
-                                lastLine += ",";
-                            }
-                            lastLine += " " + lineSplit[4];
-                        } else {
-                            lastLine = lineSplit[4];
-                        }
-                    } else {
-                        if (lastLine.isEmpty()) {
-                            lastLine = lineSplit[4];
-                        } else {
-                            processLine(lastLine);
-                            lastLine = lineSplit[4];
-                        }
-                        lastName = lineSplit[1];
-                    }
-                }
-            }
-            processLine(lastLine);
-        }
-    }
+	public INDArray output(MultiDataSet testSet) {
+		if (testSet.getFeatures()[0].size(0) > 2) {
+			return output(testSet, false);
+		} else {
+			return output(testSet, true);
+		}
 
-    protected void processLine(String lastLine) {
-        tokenizeLine(lastLine, dictSet, false);
-    }
+	}
 
-    // here we not only split the words but also store punctuation marks
-    protected void tokenizeLine(String lastLine, Collection<String> resultCollection, boolean addSpecials) {
-        String[] words = lastLine.split("[ \t]");
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                boolean specialFound = true;
-                while (specialFound && !word.isEmpty()) {
-                    for (int i = 0; i < word.length(); ++i) {
-                        int idx = SPECIALS.indexOf(word.charAt(i));
-                        specialFound = false;
-                        if (idx >= 0) {
-                            String word1 = word.substring(0, i);
-                            if (!word1.isEmpty()) {
-                                addWord(resultCollection, word1);
-                            }
-                            if (addSpecials) {
-                                addWord(resultCollection, String.valueOf(word.charAt(i)));
-                            }
-                            word = word.substring(i + 1);
-                            specialFound = true;
-                            break;
-                        }
-                    }
-                }
-                if (!word.isEmpty()) {
-                    addWord(resultCollection, word);
-                }
-            }
-        }
-    }
+	public INDArray output(MultiDataSet testSet, boolean print) {
 
-    private void addWord(Collection<String> coll, String word) {
-        if (coll != null) {
-            coll.add(word);
-        }
-        if (countFreq) {
-            Double count = freq.get(word);
-            if (count == null) {
-                freq.put(word, 1.0);
-            } else {
-                freq.put(word, count + 1);
-            }
-        }
-    }
+		INDArray correctOutput = testSet.getLabels()[0];
+		INDArray ret = Nd4j.zeros(correctOutput.shape());
+		decoderInputTemplate = testSet.getFeatures()[1].dup();
 
-    public Set<String> getDictSet() {
-        return dictSet;
-    }
+		int currentStepThrough = 0;
+		int stepThroughs = (int) correctOutput.size(2) - 1;
 
-    public Map<String, Double> getFreq() {
-        return freq;
-    }
+		while (currentStepThrough < stepThroughs) {
+			if (print) {
+				System.out.println("In time step " + currentStepThrough);
+				System.out.println("\tEncoder input and Decoder input:");
+				System.out.println(
+						TrajectoryIterator.mapToString(testSet.getFeatures()[0], decoderInputTemplate, " +  "));
 
-    public void setDict(Map<String, Double> dict) {
-        this.dict = dict;
-    }
+			}
+			ret = stepOnce(testSet, currentStepThrough);
+			if (print) {
+				System.out.println("\tDecoder output:");
+				System.out.println("\t" + String.join("\n\t", TrajectoryIterator.oneHotDecode(ret)));
+			}
+			currentStepThrough++;
+		}
 
-    /**
-     * Converts an iterable sequence of words to a list of indices. This will
-     * never return {@code null} but may return an empty {@link java.util.List}.
-     *
-     * @param words
-     *            sequence of words
-     * @return list of indices.
-     */
-    protected final List<Double> wordsToIndexes(final Iterable<String> words) {
-        int i = rowSize;
-        final List<Double> wordIdxs = new LinkedList<>();
-        for (final String word : words) {
-            if (--i == 0) {
-                break;
-            }
-            final Double wordIdx = dict.get(word);
-            if (wordIdx != null) {
-                wordIdxs.add(wordIdx);
-            } else {
-                wordIdxs.add(0.0);
-            }
-        }
-        return wordIdxs;
-    }
+		ret = net.output(false, testSet.getFeatures()[0], decoderInputTemplate)[0];
+		if (print) {
+			System.out.println("Final time step " + currentStepThrough);
+			System.out.println("\tEncoder input and Decoder input:");
+			System.out.println(TrajectoryIterator.mapToString(testSet.getFeatures()[0], decoderInputTemplate, " +  "));
+			System.out.println("\tDecoder output:");
+			System.out.println("\t" + String.join("\n\t", TrajectoryIterator.oneHotDecode(ret)));
+		}
 
+		return ret;
+	}
+
+	/*
+	 * Will do a forward pass through encoder + decoder with the given input Updates
+	 * the decoder input template from time = 1 to time t=n+1; Returns the output
+	 * from this forward pass
+	 */
+	private INDArray stepOnce(MultiDataSet testSet, int n) {
+
+		INDArray currentOutput = net.output(false, testSet.getFeatures()[0], decoderInputTemplate)[0];
+		copyTimeSteps(n, currentOutput, decoderInputTemplate);
+		return currentOutput;
+
+	}
+
+	/*
+	 * Copies timesteps time = 0 to time = t in "fromArr" to time = 1 to time = t+1
+	 * in "toArr"
+	 */
+	private void copyTimeSteps(int t, INDArray fromArr, INDArray toArr) {
+		INDArray fromView = fromArr.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.interval(0, t, true));
+		INDArray toView = toArr.get(NDArrayIndex.all(), NDArrayIndex.all(), NDArrayIndex.interval(1, t + 1, true));
+		toView.assign(fromView.dup());
+	}
 }

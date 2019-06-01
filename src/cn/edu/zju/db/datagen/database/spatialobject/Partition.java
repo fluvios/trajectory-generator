@@ -67,8 +67,8 @@ public class Partition extends FloorItem {
         return this.itemID + "\t" + this.name + "\t" + this.polygon2D;
     }
     
-    public String writePartition() {
-    	return "\"" + this.itemID + "\"" + "," + "\"" + this.name + "\"" + "," + "\"" + this.polygon2D.toString() + "\"" + "\n";
+    public String writePartition(String floorName) {
+    	return "\"" + floorName + "\"" + "," + "\"" + this.name + "\"" + "\n";
     }    
 
     public ArrayList<Partition> getConParts() {
