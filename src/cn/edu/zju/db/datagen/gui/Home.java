@@ -97,7 +97,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 import cn.edu.zju.db.datagen.algorithm.Algorithm;
-import cn.edu.zju.db.datagen.algorithm.Demo;
+import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import cn.edu.zju.db.datagen.algorithm.FPT;
 import cn.edu.zju.db.datagen.algorithm.Lstm;
 import cn.edu.zju.db.datagen.algorithm.PXM;
@@ -1186,7 +1186,7 @@ public class Home extends JApplet {
 //				NeuralNetwork net = new NeuralNetwork();
 //				net.read(outputPath);
 				
-				Demo train = new Demo();
+				NeuralNetwork train = new NeuralNetwork();
 				try {
 					train.main(null, txtConsoleArea);
 				} catch (IOException e1) {

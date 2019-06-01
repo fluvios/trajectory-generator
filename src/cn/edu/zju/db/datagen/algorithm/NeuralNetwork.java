@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextArea;
 
-public class Demo {
+public class NeuralNetwork {
 
     /**
      * Dictionary that maps words into numbers.
@@ -61,9 +61,9 @@ public class Demo {
 
     private static final int HIDDEN_LAYER_WIDTH = 512; // this is purely empirical, affects performance and VRAM requirement
     private static final int EMBEDDING_WIDTH = 128; // one-hot vectors will be embedded to more dense vectors with this width
-    private static final String CORPUS_FILENAME = "movie_lines.txt"; // filename of data corpus to learn
-    private static final String MODEL_FILENAME = "rnn_train.zip"; // filename of the model
-    private static final String BACKUP_MODEL_FILENAME = "rnn_train.bak.zip"; // filename of the previous version of the model (backup)
+    private static final String CORPUS_FILENAME = "/kerja/trajectory-generator/data/Dest_Traj_78.csv"; // filename of data corpus to learn
+    private static final String MODEL_FILENAME = "/kerja/trajectory-generator/data/rnn_train.zip"; // filename of the model
+    private static final String BACKUP_MODEL_FILENAME = "/kerja/trajectory-generator/data/rnn_train.bak.zip"; // filename of the previous version of the model (backup)
     private static final int MINIBATCH_SIZE = 32;
     private static final Random rnd = new Random(new Date().getTime());
     private static final long SAVE_EACH_MS = TimeUnit.MINUTES.toMillis(5); // save the model with this period
@@ -92,7 +92,7 @@ public class Demo {
     private ComputationGraph net;
 
     public static void main(String[] args,JTextArea txtArea) throws IOException {
-        new Demo().run(args, txtArea);
+        new NeuralNetwork().run(args, txtArea);
     }
 
     private void run(String[] args, JTextArea txtArea) throws IOException {

@@ -398,8 +398,8 @@ public class DstMovingObj extends MovingObj {
                     finTrajWrite();
                     return;
                 } else {
-//                    writeTrajectory();
-                	writeTrainTrajectory();
+                    writeTrajectory();
+//                	writeTrainTrajectory();
                 }
             }
 
