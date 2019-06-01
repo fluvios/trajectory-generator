@@ -1,6 +1,5 @@
 package cn.edu.zju.db.datagen.trajectory;
 
-import org.datavec.api.records.reader.RecordReader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.MultiDataSet;
 import org.nd4j.linalg.dataset.api.MultiDataSetPreProcessor;
@@ -9,19 +8,20 @@ import org.nd4j.linalg.factory.Nd4j;
 
 import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.*;
 
 @SuppressWarnings("serial")
 public class TrajectoryIterator implements MultiDataSetIterator {
 
 	private MultiDataSetPreProcessor preProcessor;
-	private RecordReader recordReader;
 	private Random randnumG;
 	private final int seed;
 	private final int batchSize;
 	private final int totalBatches;
 
-	private static final int numDigits = NeuralNetwork.NUM_DIGITS;
+	private static final int numDigits = NeuralNetwork.featureNumbers;
 	public static final int SEQ_VECTOR_DIM = NeuralNetwork.FEATURE_VEC_SIZE;
 	public static final Map<String, Integer> oneHotMap = new HashMap<String, Integer>();
 	public static final String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
@@ -29,17 +29,19 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	private Set<String> seenSequences = new HashSet<String>();
 	private boolean toTestSet = false;
 	private int currentBatch = 0;
+	
+	private static final String COMMA_DELIMITER = ",";
 
-	public TrajectoryIterator(RecordReader recordReader, int seed, int batchSize, int totalBatches) {
+	public TrajectoryIterator(int seed, int batchSize, int totalBatches) {
 
 		this.seed = seed;
 		this.randnumG = new Random(seed);
 
 		this.batchSize = batchSize;
 		this.totalBatches = totalBatches;
-		this.recordReader = recordReader;
 		
-		oneHotEncoding();
+		// Need to fix
+		 oneHotEncoding();
 	}
 
 	public MultiDataSet generateTest(int testSize) {
@@ -51,53 +53,53 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	@Override
 	public MultiDataSet next(int sampleSize) {
-
-		INDArray encoderSeq, decoderSeq, outputSeq;
-		int currentCount = 0;
-		int num1, num2;
-		List<INDArray> encoderSeqList = new ArrayList<>();
-		List<INDArray> decoderSeqList = new ArrayList<>();
-		List<INDArray> outputSeqList = new ArrayList<>();
-		while (currentCount < sampleSize) {
-			while (true) {
-				num1 = randnumG.nextInt((int) Math.pow(10, numDigits));
-				num2 = randnumG.nextInt((int) Math.pow(10, numDigits));
-				String forSum = String.valueOf(num1) + "+" + String.valueOf(num2);
-				if (seenSequences.add(forSum)) {
-					break;
-				}
-			}
-			String[] encoderInput = prepToString(num1, num2);
-			encoderSeqList.add(mapToOneHot(encoderInput));
-
-			String[] decoderInput = prepToString(num1 + num2, true);
-			if (toTestSet) {
-				// wipe out everything after "go"; not necessary since we do not use these at
-				// test time but here for clarity
-				int i = 1;
-				while (i < decoderInput.length) {
-					decoderInput[i] = " ";
-					i++;
-				}
-			}
-			decoderSeqList.add(mapToOneHot(decoderInput));
-
-			String[] decoderOutput = prepToString(num1 + num2, false);
-			outputSeqList.add(mapToOneHot(decoderOutput));
-			currentCount++;
-		}
-
-		encoderSeq = Nd4j.vstack(encoderSeqList);
-		decoderSeq = Nd4j.vstack(decoderSeqList);
-		outputSeq = Nd4j.vstack(outputSeqList);
-
-		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
-		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits * 2 + 1),
-				Nd4j.ones(sampleSize, numDigits + 1 + 1) };
-		INDArray[] labels = new INDArray[] { outputSeq };
-		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits + 1 + 1) };
-		currentBatch++;
-		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
+		return null;
+//		INDArray encoderSeq, decoderSeq, outputSeq;
+//		int currentCount = 0;
+//		int num1, num2;
+//		List<INDArray> encoderSeqList = new ArrayList<>();
+//		List<INDArray> decoderSeqList = new ArrayList<>();
+//		List<INDArray> outputSeqList = new ArrayList<>();
+//		while (currentCount < sampleSize) {
+//			while (true) {
+//				num1 = randnumG.nextInt((int) Math.pow(10, numDigits));
+//				num2 = randnumG.nextInt((int) Math.pow(10, numDigits));
+//				String forSum = String.valueOf(num1) + "+" + String.valueOf(num2);
+//				if (seenSequences.add(forSum)) {
+//					break;
+//				}
+//			}
+//			String[] encoderInput = prepToString(num1, num2);
+//			encoderSeqList.add(mapToOneHot(encoderInput));
+//
+//			String[] decoderInput = prepToString(num1 + num2, true);
+//			if (toTestSet) {
+//				// wipe out everything after "go"; not necessary since we do not use these at
+//				// test time but here for clarity
+//				int i = 1;
+//				while (i < decoderInput.length) {
+//					decoderInput[i] = " ";
+//					i++;
+//				}
+//			}
+//			decoderSeqList.add(mapToOneHot(decoderInput));
+//
+//			String[] decoderOutput = prepToString(num1 + num2, false);
+//			outputSeqList.add(mapToOneHot(decoderOutput));
+//			currentCount++;
+//		}
+//
+//		encoderSeq = Nd4j.vstack(encoderSeqList);
+//		decoderSeq = Nd4j.vstack(decoderSeqList);
+//		outputSeq = Nd4j.vstack(outputSeqList);
+//
+//		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
+//		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits * 2 + 1),
+//				Nd4j.ones(sampleSize, numDigits + 1 + 1) };
+//		INDArray[] labels = new INDArray[] { outputSeq };
+//		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits + 1 + 1) };
+//		currentBatch++;
+//		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
 	}
 
 	@Override
@@ -266,24 +268,34 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	 * One hot encoding map
 	 */
 	private static void oneHotEncoding() {
+		BufferedReader br = null;
+		List<TrajectoryParser> trajectories = new ArrayList<TrajectoryParser>();
+		try {
+			// Reading the csv file
+			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_159.csv"));
 
-		for (int i = 0; i < 10; i++) {
-			oneHotOrder[i] = String.valueOf(i);
-			oneHotMap.put(String.valueOf(i), i);
+			// Create List for holding Floor objects
+
+			String line = "";
+			// Read to skip the header
+			br.readLine();
+			// Reading from the second line
+			while ((line = br.readLine()) != null) {
+				String[] trajectDetails = line.split(COMMA_DELIMITER);
+				trajectories.add(new TrajectoryParser(trajectDetails[0], trajectDetails[1], Double.parseDouble(trajectDetails[2]), Double.parseDouble(trajectDetails[3])));
+			}
+
+			// Convert into binary
+			for (int i = 0; i < trajectories.size(); i++) {
+				oneHotMap.put(i, FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()));
+			}
+
+			// System.out.println(Arrays.asList(binaryFloor));
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		oneHotOrder[10] = " ";
-		oneHotMap.put(" ", 10);
-
-		oneHotOrder[11] = "+";
-		oneHotMap.put("+", 11);
-
-		oneHotOrder[12] = "Go";
-		oneHotMap.put("Go", 12);
-
-		oneHotOrder[13] = "End";
-		oneHotMap.put("End", 13);
-
 	}
+	
 
 	public void setPreProcessor(MultiDataSetPreProcessor preProcessor) {
 		this.preProcessor = preProcessor;

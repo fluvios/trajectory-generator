@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.util.*;
 
 public class FloorIterator {
-	private static Map<String, String> binaryFloor = new IdentityHashMap<String, String>();
-	private static Map<String, String> binaryRoom = new IdentityHashMap<String, String>();
+	private static Map<String, Integer> binaryFloor = new IdentityHashMap<String, Integer>();
+	private static Map<String, Integer> binaryRoom = new IdentityHashMap<String, Integer>();
 
 	private static List<String> floorList = new ArrayList<String>();
 	private static Map<String, String> roomList = new IdentityHashMap<String, String>();
@@ -37,7 +37,7 @@ public class FloorIterator {
 
 			// Convert into binary
 			for (int i = 0; i < floorList.size(); i++) {
-				binaryFloor.put(floorList.get(i), Integer.toBinaryString(i));
+				binaryFloor.put(floorList.get(i), i);
 			}
 
 			// System.out.println(Arrays.asList(binaryFloor));
@@ -70,7 +70,7 @@ public class FloorIterator {
 			for (String floor : floorList) {
 				for (Map.Entry<String, String> entry : roomList.entrySet()) {
 					if (entry.getKey().equals(floor)) {
-						binaryRoom.put(entry.getValue(), Integer.toBinaryString(i));
+						binaryRoom.put(entry.getValue(), i);
 						i++;
 					}
 				}
@@ -87,5 +87,31 @@ public class FloorIterator {
 		}
 	}
 	
+	public static void decodeFloor() {
+		
+	}	
 	
+	public static void decodeRoom() {
+		
+	}
+	
+	public static String getBinary(String floor, String room) {
+		String temp = "";
+		for (Map.Entry<String, Integer> entry : binaryFloor.entrySet()) {
+			if (entry.getKey().equals(floor)) {
+				temp += entry.getValue();
+			}
+		}
+		
+		// make one char as partition
+		temp += "|";
+		
+		for (Map.Entry<String, Integer> entry : binaryRoom.entrySet()) {
+			if (entry.getKey().equals(room)) {
+				temp += entry.getValue();
+			}
+		}
+		
+		return temp;
+	}
 }
