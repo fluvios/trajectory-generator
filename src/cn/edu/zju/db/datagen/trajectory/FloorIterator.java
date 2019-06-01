@@ -12,11 +12,9 @@ public class FloorIterator {
 	private static Map<String, String> roomList = new IdentityHashMap<String, String>();
 
 	private static final String COMMA_DELIMITER = ",";
-
-	public static void main(String[] args) {
-		encodeFloor();
-		encodeRoom();
-	}
+	
+	private static int floorTotal;
+	private static int roomTotal;
 
 	public static void encodeFloor() {
 		BufferedReader br = null;
@@ -40,7 +38,7 @@ public class FloorIterator {
 				binaryFloor.put(floorList.get(i), i);
 			}
 
-			// System.out.println(Arrays.asList(binaryFloor));
+			floorTotal = binaryFloor.size();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -60,7 +58,7 @@ public class FloorIterator {
 			// Reading from the second line
 			while ((line = br.readLine()) != null) {
 				roomDetails = line.split(COMMA_DELIMITER);
-				if (roomDetails[1].equals("OUTDOOR")) {
+				if (!roomDetails[1].equals("OUTDOOR")) {
 					roomList.put(roomDetails[0], roomDetails[1]);
 				}
 			}
@@ -76,42 +74,67 @@ public class FloorIterator {
 				}
 			}
 
-			for (Object obj : binaryRoom.entrySet()) {
-				Map.Entry<String, String> entry = (Map.Entry) obj;
-				System.out.print("Key: " + entry.getKey());
-				System.out.println(", Value: " + entry.getValue());
-			}
-
+//			for (Object obj : binaryRoom.entrySet()) {
+//				Map.Entry<String, Integer> entry = (Map.Entry) obj;
+//				System.out.print("Key: " + entry.getKey());
+//				System.out.println(", Value: " + entry.getValue());
+//			}
+			
+			roomTotal = binaryRoom.size();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void decodeFloor() {
-		
-	}	
-	
+
+	}
+
 	public static void decodeRoom() {
-		
+
 	}
 	
+	public static void main(String[] args) {
+		encodeFloor();
+		encodeRoom();
+	}
+
 	public static String getBinary(String floor, String room) {
 		String temp = "";
-		for (Map.Entry<String, Integer> entry : binaryFloor.entrySet()) {
-			if (entry.getKey().equals(floor)) {
-				temp += entry.getValue();
+
+		for (Map.Entry<String, Integer> f : binaryFloor.entrySet()) {
+			if (f.getKey().equals(floor)) {
+				temp += f.getValue();
+				break;
 			}
 		}
 		
 		// make one char as partition
 		temp += "|";
-		
-		for (Map.Entry<String, Integer> entry : binaryRoom.entrySet()) {
-			if (entry.getKey().equals(room)) {
-				temp += entry.getValue();
+
+		for (Map.Entry<String, Integer> r : binaryRoom.entrySet()) {
+			if (r.getKey().equals(room)) {
+				temp += r.getValue();
+				break;
 			}
 		}
 		
 		return temp;
+	}
+
+	public static int getFloorTotal() {
+		return floorTotal;
+	}
+
+	public static void setFloorTotal(int floorTotal) {
+		FloorIterator.floorTotal = floorTotal;
+	}
+
+	public static int getRoomTotal() {
+		return roomTotal;
+	}
+
+	public static void setRoomTotal(int roomTotal) {
+		FloorIterator.roomTotal = roomTotal;
 	}
 }

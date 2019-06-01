@@ -51,67 +51,67 @@ public class NeuralNetwork {
 		// More details in comments in the class
 		TrajectoryIterator iterator = new TrajectoryIterator(seed, batchSize, totalBatches);
 
-		ComputationGraphConfiguration configuration = new NeuralNetConfiguration.Builder().weightInit(WeightInit.XAVIER)
-				.updater(new Adam(0.25)).seed(seed).graphBuilder()
-				// These are the two inputs to the computation graph
-				.addInputs("additionIn", "sumOut")
-				.setInputTypes(InputType.recurrent(FEATURE_VEC_SIZE), InputType.recurrent(FEATURE_VEC_SIZE))
-				// The inputs to the encoder will have size = minibatch x featuresize x
-				// timesteps
-				// Note that the network only knows of the feature vector size. It does not know
-				// how many time steps unless it sees an instance of the data
-				.addLayer("encoder",
-						new LSTM.Builder().nIn(FEATURE_VEC_SIZE).nOut(numHiddenNodes).activation(Activation.TANH)
-								.build(),
-						"additionIn")
-				// Create a vertex indicating the very last time step of the encoder layer needs
-				// to be directed to other places in the comp graph
-				.addVertex("lastTimeStep", new LastTimeStepVertex("additionIn"), "encoder")
-				// Create a vertex that allows the duplication of 2d input to a 3d input
-				// In this case the last time step of the encoder layer (viz. 2d) is duplicated
-				// to the length of the timeseries "sumOut" which is an input to the comp graph
-				// Refer to the javadoc for more detail
-				.addVertex("duplicateTimeStep", new DuplicateToTimeSeriesVertex("sumOut"), "lastTimeStep")
-				// The inputs to the decoder will have size = size of output of last timestep of
-				// encoder (numHiddenNodes) + size of the other input to the comp graph,sumOut
-				// (feature vector size)
-				.addLayer("decoder",
-						new LSTM.Builder().nIn(FEATURE_VEC_SIZE + numHiddenNodes).nOut(numHiddenNodes)
-								.activation(Activation.SOFTSIGN).build(),
-						"sumOut", "duplicateTimeStep")
-				.addLayer("output",
-						new RnnOutputLayer.Builder().nIn(numHiddenNodes).nOut(FEATURE_VEC_SIZE)
-								.activation(Activation.SOFTMAX).lossFunction(LossFunctions.LossFunction.MCXENT).build(),
-						"decoder")
-				.setOutputs("output").build();
-
-		ComputationGraph net = new ComputationGraph(configuration);
-		net.init();
-		net.setListeners(new ScoreIterationListener(1));
-
-		// Train model:
-		int iEpoch = 0;
-		int testSize = 100;
-		TrajectoryProcessor predictor = new TrajectoryProcessor(net);
-		while (iEpoch < nEpochs) {
-			net.fit(iterator);
-			System.out.printf(
-					"* = * = * = * = * = * = * = * = * = ** EPOCH %d ** = * = * = * = * = * = * = * = * = * = * = * = * = * =\n",
-					iEpoch);
-			MultiDataSet testData = iterator.generateTest(testSize);
-			INDArray predictions = predictor.output(testData);
-			encode_decode_eval(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
-			/*
-			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
-			 * output of the decoder is fed back into the input during test time
-			 */
-			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
-			testData = iterator.generateTest(3);
-			predictor.output(testData, true);
-			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
-					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
-			iEpoch++;
-		}
+//		ComputationGraphConfiguration configuration = new NeuralNetConfiguration.Builder().weightInit(WeightInit.XAVIER)
+//				.updater(new Adam(0.25)).seed(seed).graphBuilder()
+//				// These are the two inputs to the computation graph
+//				.addInputs("additionIn", "sumOut")
+//				.setInputTypes(InputType.recurrent(FEATURE_VEC_SIZE), InputType.recurrent(FEATURE_VEC_SIZE))
+//				// The inputs to the encoder will have size = minibatch x featuresize x
+//				// timesteps
+//				// Note that the network only knows of the feature vector size. It does not know
+//				// how many time steps unless it sees an instance of the data
+//				.addLayer("encoder",
+//						new LSTM.Builder().nIn(FEATURE_VEC_SIZE).nOut(numHiddenNodes).activation(Activation.TANH)
+//								.build(),
+//						"additionIn")
+//				// Create a vertex indicating the very last time step of the encoder layer needs
+//				// to be directed to other places in the comp graph
+//				.addVertex("lastTimeStep", new LastTimeStepVertex("additionIn"), "encoder")
+//				// Create a vertex that allows the duplication of 2d input to a 3d input
+//				// In this case the last time step of the encoder layer (viz. 2d) is duplicated
+//				// to the length of the timeseries "sumOut" which is an input to the comp graph
+//				// Refer to the javadoc for more detail
+//				.addVertex("duplicateTimeStep", new DuplicateToTimeSeriesVertex("sumOut"), "lastTimeStep")
+//				// The inputs to the decoder will have size = size of output of last timestep of
+//				// encoder (numHiddenNodes) + size of the other input to the comp graph,sumOut
+//				// (feature vector size)
+//				.addLayer("decoder",
+//						new LSTM.Builder().nIn(FEATURE_VEC_SIZE + numHiddenNodes).nOut(numHiddenNodes)
+//								.activation(Activation.SOFTSIGN).build(),
+//						"sumOut", "duplicateTimeStep")
+//				.addLayer("output",
+//						new RnnOutputLayer.Builder().nIn(numHiddenNodes).nOut(FEATURE_VEC_SIZE)
+//								.activation(Activation.SOFTMAX).lossFunction(LossFunctions.LossFunction.MCXENT).build(),
+//						"decoder")
+//				.setOutputs("output").build();
+//
+//		ComputationGraph net = new ComputationGraph(configuration);
+//		net.init();
+//		net.setListeners(new ScoreIterationListener(1));
+//
+//		// Train model:
+//		int iEpoch = 0;
+//		int testSize = 100;
+//		TrajectoryProcessor predictor = new TrajectoryProcessor(net);
+//		while (iEpoch < nEpochs) {
+//			net.fit(iterator);
+//			System.out.printf(
+//					"* = * = * = * = * = * = * = * = * = ** EPOCH %d ** = * = * = * = * = * = * = * = * = * = * = * = * = * =\n",
+//					iEpoch);
+//			MultiDataSet testData = iterator.generateTest(testSize);
+//			INDArray predictions = predictor.output(testData);
+//			encode_decode_eval(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
+//			/*
+//			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
+//			 * output of the decoder is fed back into the input during test time
+//			 */
+//			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
+//			testData = iterator.generateTest(3);
+//			predictor.output(testData, true);
+//			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
+//					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
+//			iEpoch++;
+//		}
 
 	}
 

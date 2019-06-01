@@ -21,15 +21,16 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	private final int batchSize;
 	private final int totalBatches;
 
-	private static final int numDigits = NeuralNetwork.featureNumbers;
-	public static final int SEQ_VECTOR_DIM = NeuralNetwork.FEATURE_VEC_SIZE;
-	public static final Map<String, Integer> oneHotMap = new HashMap<String, Integer>();
-	public static final String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
+	private static int numDigits = NeuralNetwork.featureNumbers;
+	public static int SEQ_VECTOR_DIM = 0;
+	public static Map<Integer, String> oneHotMap = new HashMap<Integer, String>();
+	public static List<Integer[]> oneHotBinary;
+	public static String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
 
 	private Set<String> seenSequences = new HashSet<String>();
 	private boolean toTestSet = false;
 	private int currentBatch = 0;
-	
+
 	private static final String COMMA_DELIMITER = ",";
 
 	public TrajectoryIterator(int seed, int batchSize, int totalBatches) {
@@ -39,9 +40,9 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 		this.batchSize = batchSize;
 		this.totalBatches = totalBatches;
-		
+
 		// Need to fix
-		 oneHotEncoding();
+		oneHotEncoding();
 	}
 
 	public MultiDataSet generateTest(int testSize) {
@@ -275,6 +276,9 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_159.csv"));
 
 			// Create List for holding Floor objects
+			FloorIterator.encodeFloor();
+			FloorIterator.encodeRoom();
+			SEQ_VECTOR_DIM = FloorIterator.getFloorTotal() + FloorIterator.getRoomTotal();
 
 			String line = "";
 			// Read to skip the header
@@ -282,20 +286,50 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 			// Reading from the second line
 			while ((line = br.readLine()) != null) {
 				String[] trajectDetails = line.split(COMMA_DELIMITER);
-				trajectories.add(new TrajectoryParser(trajectDetails[0], trajectDetails[1], Double.parseDouble(trajectDetails[2]), Double.parseDouble(trajectDetails[3])));
+				trajectories.add(new TrajectoryParser(trajectDetails[0], trajectDetails[1],
+						Double.parseDouble(trajectDetails[2]), Double.parseDouble(trajectDetails[3])));
 			}
 
-			// Convert into binary
+			// integer encode input data
 			for (int i = 0; i < trajectories.size(); i++) {
-				oneHotMap.put(i, FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()));
+				oneHotMap.put(i,
+						FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()));
 			}
 
-			// System.out.println(Arrays.asList(binaryFloor));
+			// one hot encode
+			oneHotBinary = new ArrayList<Integer[]>();
+			for (Map.Entry<Integer, String> o : oneHotMap.entrySet()) {
+				Integer[] temp = new Integer[SEQ_VECTOR_DIM];
+
+				// First floor total digit use represent floor
+				for (int i = 0; i < FloorIterator.getFloorTotal(); i++) {
+					if ((char) i != o.getValue().charAt(0)) {
+						temp[i] = 0;
+					} else {
+						temp[i] = 1;
+					}
+				}
+
+				// First floor total digit use represent floor
+				for (int i = FloorIterator.getFloorTotal(); i < SEQ_VECTOR_DIM; i++) {
+					if ((char) i != o.getValue().charAt(2)) {
+						temp[i] = 0;
+					} else {
+						temp[i] = 1;
+					}
+				}
+
+				// Push the array into list
+				oneHotBinary.add(temp);
+			}
+			
+			for (int binary : oneHotBinary.get(0)) {
+				System.out.print(Integer.toString(binary));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
 
 	public void setPreProcessor(MultiDataSetPreProcessor preProcessor) {
 		this.preProcessor = preProcessor;
