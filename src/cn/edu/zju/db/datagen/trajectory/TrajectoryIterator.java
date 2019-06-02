@@ -25,7 +25,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	public static int SEQ_VECTOR_DIM = 0;
 	public static Map<Integer, String> oneHotMap = new HashMap<Integer, String>();
 	public static List<Integer[]> oneHotBinary;
-	public static String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
+	public static String[] oneHotOrder = new String[FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()];
 
 	private Set<String> seenSequences = new HashSet<String>();
 	private boolean toTestSet = false;
@@ -54,53 +54,52 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	@Override
 	public MultiDataSet next(int sampleSize) {
-		return null;
-//		INDArray encoderSeq, decoderSeq, outputSeq;
-//		int currentCount = 0;
-//		int num1, num2;
-//		List<INDArray> encoderSeqList = new ArrayList<>();
-//		List<INDArray> decoderSeqList = new ArrayList<>();
-//		List<INDArray> outputSeqList = new ArrayList<>();
-//		while (currentCount < sampleSize) {
-//			while (true) {
-//				num1 = randnumG.nextInt((int) Math.pow(10, numDigits));
-//				num2 = randnumG.nextInt((int) Math.pow(10, numDigits));
-//				String forSum = String.valueOf(num1) + "+" + String.valueOf(num2);
-//				if (seenSequences.add(forSum)) {
-//					break;
-//				}
-//			}
-//			String[] encoderInput = prepToString(num1, num2);
-//			encoderSeqList.add(mapToOneHot(encoderInput));
-//
-//			String[] decoderInput = prepToString(num1 + num2, true);
-//			if (toTestSet) {
-//				// wipe out everything after "go"; not necessary since we do not use these at
-//				// test time but here for clarity
-//				int i = 1;
-//				while (i < decoderInput.length) {
-//					decoderInput[i] = " ";
-//					i++;
-//				}
-//			}
-//			decoderSeqList.add(mapToOneHot(decoderInput));
-//
-//			String[] decoderOutput = prepToString(num1 + num2, false);
-//			outputSeqList.add(mapToOneHot(decoderOutput));
-//			currentCount++;
-//		}
-//
-//		encoderSeq = Nd4j.vstack(encoderSeqList);
-//		decoderSeq = Nd4j.vstack(decoderSeqList);
-//		outputSeq = Nd4j.vstack(outputSeqList);
-//
-//		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
-//		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits * 2 + 1),
-//				Nd4j.ones(sampleSize, numDigits + 1 + 1) };
-//		INDArray[] labels = new INDArray[] { outputSeq };
-//		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits + 1 + 1) };
-//		currentBatch++;
-//		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
+		INDArray encoderSeq, decoderSeq, outputSeq;
+		int currentCount = 0;
+		int num1, num2;
+		List<INDArray> encoderSeqList = new ArrayList<>();
+		List<INDArray> decoderSeqList = new ArrayList<>();
+		List<INDArray> outputSeqList = new ArrayList<>();
+		while (currentCount < sampleSize) {
+			while (true) {
+				num1 = randnumG.nextInt((int) Math.pow(10, numDigits));
+				num2 = randnumG.nextInt((int) Math.pow(10, numDigits));
+				String forSum = String.valueOf(num1) + "+" + String.valueOf(num2);
+				if (seenSequences.add(forSum)) {
+					break;
+				}
+			}
+			String[] encoderInput = prepToString(num1, num2);
+			encoderSeqList.add(mapToOneHot(encoderInput));
+
+			String[] decoderInput = prepToString(num1 + num2, true);
+			if (toTestSet) {
+				// wipe out everything after "go"; not necessary since we do not use these at
+				// test time but here for clarity
+				int i = 1;
+				while (i < decoderInput.length) {
+					decoderInput[i] = " ";
+					i++;
+				}
+			}
+			decoderSeqList.add(mapToOneHot(decoderInput));
+
+			String[] decoderOutput = prepToString(num1 + num2, false);
+			outputSeqList.add(mapToOneHot(decoderOutput));
+			currentCount++;
+		}
+
+		encoderSeq = Nd4j.vstack(encoderSeqList);
+		decoderSeq = Nd4j.vstack(decoderSeqList);
+		outputSeq = Nd4j.vstack(outputSeqList);
+
+		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
+		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits * 2 + 1),
+				Nd4j.ones(sampleSize, numDigits + 1 + 1) };
+		INDArray[] labels = new INDArray[] { outputSeq };
+		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits + 1 + 1) };
+		currentBatch++;
+		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
 	}
 
 	@Override
@@ -209,8 +208,8 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	/*
 	 * Takes in an array of strings and return a one hot encoded array of size 1 x
-	 * 14 x timesteps Each element in the array indicates a time step Length of one
-	 * hot vector = 14
+	 * (Floor+Room) x timesteps Each element in the array indicates a time step Length of one
+	 * hot vector = Floor+Room
 	 */
 	private static INDArray mapToOneHot(String[] toEncode) {
 
