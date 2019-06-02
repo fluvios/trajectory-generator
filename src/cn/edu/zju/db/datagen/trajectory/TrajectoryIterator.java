@@ -299,32 +299,31 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 			// one hot encode
 			oneHotBinary = new ArrayList<Integer[]>();
 			for (Map.Entry<Integer, String> o : oneHotMap.entrySet()) {
-				Integer[] temp = new Integer[SEQ_VECTOR_DIM];
-
+				Integer[] tempFloor = new Integer[FloorIterator.getFloorTotal()];
+				Integer[] tempRoom = new Integer[FloorIterator.getRoomTotal()];				
+				String [] arrOfVal = o.getValue().split(":", 2); 
+				
 				// First floor total digit use represent floor
 				for (int i = 0; i < FloorIterator.getFloorTotal(); i++) {
-					if ((char) i != o.getValue().charAt(0)) {
-						temp[i] = 0;
+					if (i == Integer.parseInt(arrOfVal[0])) {
+						tempFloor[i] = 1;
 					} else {
-						temp[i] = 1;
+						tempFloor[i] = 0;
 					}
 				}
 
 				// First floor total digit use represent floor
-				for (int i = FloorIterator.getFloorTotal(); i < SEQ_VECTOR_DIM; i++) {
-					if ((char) i != o.getValue().charAt(2)) {
-						temp[i] = 0;
+				for (int i = 0; i < FloorIterator.getRoomTotal(); i++) {
+					if (i == Integer.parseInt(arrOfVal[1])) {
+						tempRoom[i] = 1;
 					} else {
-						temp[i] = 1;
+						tempRoom[i] = 0;
 					}
 				}
 
 				// Push the array into list
+				Integer[] temp = combineInt(tempFloor, tempRoom);
 				oneHotBinary.add(temp);
-			}
-			
-			for (int binary : oneHotBinary.get(0)) {
-				System.out.print(Integer.toString(binary));
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -333,5 +332,13 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	public void setPreProcessor(MultiDataSetPreProcessor preProcessor) {
 		this.preProcessor = preProcessor;
+	}
+
+	public static Integer[] combineInt(Integer[] a, Integer[] b) {
+		int length = a.length + b.length;
+		Integer[] result = new Integer[length];
+		System.arraycopy(a, 0, result, 0, a.length);
+		System.arraycopy(b, 0, result, a.length, b.length);
+		return result;
 	}
 }

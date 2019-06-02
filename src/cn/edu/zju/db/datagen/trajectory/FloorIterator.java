@@ -110,7 +110,7 @@ public class FloorIterator {
 		}
 		
 		// make one char as partition
-		temp += "|";
+		temp += ":";
 
 		for (Map.Entry<String, Integer> r : binaryRoom.entrySet()) {
 			if (r.getKey().equals(room)) {
