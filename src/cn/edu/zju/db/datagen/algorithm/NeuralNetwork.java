@@ -25,6 +25,7 @@ import org.nd4j.linalg.io.ClassPathResource;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
+import cn.edu.zju.db.datagen.trajectory.FloorIterator;
 import cn.edu.zju.db.datagen.trajectory.TrajectoryIterator;
 import cn.edu.zju.db.datagen.trajectory.TrajectoryProcessor;
 
@@ -35,47 +36,50 @@ public class NeuralNetwork {
 	public static final int seed = 1234;
 
 	// Tweak these to tune the dataset size = batchSize * totalBatches
-	public static int batchSize = 10;
-	public static int totalBatches = 500;
+	public static int batchSize = 1;
+	public static int totalBatches = 1;
 	public static int nEpochs = 20;
 
 	// Tweak the number of hidden nodes
 	public static final int numHiddenNodes = 128;
 
 	// This is the size of the one hot vector
-	public static final int FEATURE_VEC_SIZE = 14;
+	public static int FEATURE_VEC_SIZE;
 	private static ComputationGraph net;
 
 	public static void main(String[] args) throws Exception {
-
+		// Create List for holding Floor objects
+		FloorIterator.encodeFloor();
+		FloorIterator.encodeRoom();
+		FEATURE_VEC_SIZE = FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()+1;
+		
 		// This is a custom iterator that returns MultiDataSets on each call of next -
 		// More details in comments in the class
 		TrajectoryIterator iterator = new TrajectoryIterator(seed, batchSize, totalBatches);
 		
 		createComputationalGraph();
 
-
 		// Train model:
 		int iEpoch = 0;
-		int testSize = 100;
+		int testSize = 1;
 		TrajectoryProcessor predictor = new TrajectoryProcessor(net);
+		net.fit(iterator);
 		while (iEpoch < nEpochs) {
-			net.fit(iterator);
 			System.out.printf(
 					"* = * = * = * = * = * = * = * = * = ** EPOCH %d ** = * = * = * = * = * = * = * = * = * = * = * = * = * =\n",
 					iEpoch);
-			MultiDataSet testData = iterator.generateTest(testSize);
-			INDArray predictions = predictor.output(testData);
-			encode_decode_eval(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
-			/*
-			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
-			 * output of the decoder is fed back into the input during test time
-			 */
-			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
-			testData = iterator.generateTest(3);
-			predictor.output(testData, true);
-			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
-					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
+//			MultiDataSet testData = iterator.generateTest(testSize);
+//			INDArray predictions = predictor.output(testData);
+//			encode_decode_eval(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
+//			/*
+//			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
+//			 * output of the decoder is fed back into the input during test time
+//			 */
+//			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
+//			testData = iterator.generateTest(testSize);
+//			predictor.output(testData, true);
+//			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
+//					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
 			iEpoch++;
 		}
 	}

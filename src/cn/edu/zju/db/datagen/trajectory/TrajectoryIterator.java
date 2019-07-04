@@ -11,6 +11,7 @@ import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class TrajectoryIterator implements MultiDataSetIterator {
@@ -21,12 +22,16 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	private final int batchSize;
 	private final int totalBatches;
 
-	private static int numDigits = NeuralNetwork.featureNumbers;
-	public static int SEQ_VECTOR_DIM = 0;
-	public static Map<Integer, String> oneHotMap = new HashMap<Integer, String>();
-	public static List<Integer[]> oneHotBinary;
-	public static String[] oneHotOrder = new String[FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()];
+	private static int numDigits = 3; // Maximum number of room code
+	public static int SEQ_VECTOR_DIM = FloorIterator.getFloorTotal() + FloorIterator.getRoomTotal()+1; // Plus separator char
+	
+    public static final Map<String, Integer> oneHotMap = new IdentityHashMap<String, Integer>();
+    public static final String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
 
+//	public static Map<Integer, String> oneHotMap = new HashMap<Integer, String>();
+//	public static String[] oneHotOrder = new String[FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()];
+//	public static List<Integer[]> oneHotBinary;
+	    
 	private Set<String> seenSequences = new HashSet<String>();
 	private boolean toTestSet = false;
 	private int currentBatch = 0;
@@ -40,7 +45,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 		this.batchSize = batchSize;
 		this.totalBatches = totalBatches;
-
+		
 		// Need to fix
 		oneHotEncoding();
 	}
@@ -55,50 +60,28 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	@Override
 	public MultiDataSet next(int sampleSize) {
 		INDArray encoderSeq, decoderSeq, outputSeq;
-		int currentCount = 0;
-		int num1, num2;
+
 		List<INDArray> encoderSeqList = new ArrayList<>();
 		List<INDArray> decoderSeqList = new ArrayList<>();
 		List<INDArray> outputSeqList = new ArrayList<>();
-		while (currentCount < sampleSize) {
-			while (true) {
-				num1 = randnumG.nextInt((int) Math.pow(10, numDigits));
-				num2 = randnumG.nextInt((int) Math.pow(10, numDigits));
-				String forSum = String.valueOf(num1) + "+" + String.valueOf(num2);
-				if (seenSequences.add(forSum)) {
-					break;
-				}
-			}
-			String[] encoderInput = prepToString(num1, num2);
-			encoderSeqList.add(mapToOneHot(encoderInput));
-
-			String[] decoderInput = prepToString(num1 + num2, true);
-			if (toTestSet) {
-				// wipe out everything after "go"; not necessary since we do not use these at
-				// test time but here for clarity
-				int i = 1;
-				while (i < decoderInput.length) {
-					decoderInput[i] = " ";
-					i++;
-				}
-			}
-			decoderSeqList.add(mapToOneHot(decoderInput));
-
-			String[] decoderOutput = prepToString(num1 + num2, false);
-			outputSeqList.add(mapToOneHot(decoderOutput));
-			currentCount++;
+		
+		for (Entry<String, Integer> o : oneHotMap.entrySet()) {
+			// Push the array into list
+			encoderSeqList.add(mapToOneHot(o.getKey()));
+			decoderSeqList.add(mapToOneHot(o.getKey()));
+			outputSeqList.add(mapToOneHot(o.getKey()));
 		}
 
 		encoderSeq = Nd4j.vstack(encoderSeqList);
 		decoderSeq = Nd4j.vstack(decoderSeqList);
 		outputSeq = Nd4j.vstack(outputSeqList);
-
+		
 		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
-		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits * 2 + 1),
-				Nd4j.ones(sampleSize, numDigits + 1 + 1) };
+		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(1, 3),
+				Nd4j.ones(1, 3) };
 		INDArray[] labels = new INDArray[] { outputSeq };
-		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(sampleSize, numDigits + 1 + 1) };
-		currentBatch++;
+		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(1, 3) };
+		
 		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
 	}
 
@@ -141,85 +124,32 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	}
 
 	/*
-	 * Helper method for encoder input Given two numbers, num1 and num, returns a
-	 * string array which represents the input to the encoder RNN Note that the
-	 * string is padded to the correct length and reversed Eg. num1 = 7, num 2 = 13
-	 * will return {"3","1","+","7"," "}
-	 */
-	public String[] prepToString(int num1, int num2) {
-
-		String[] encoded = new String[numDigits * 2 + 1];
-		String num1S = String.valueOf(num1);
-		String num2S = String.valueOf(num2);
-		// padding
-		while (num1S.length() < numDigits) {
-			num1S = " " + num1S;
-		}
-		while (num2S.length() < numDigits) {
-			num2S = " " + num2S;
-		}
-
-		String sumString = num1S + "+" + num2S;
-
-		for (int i = 0; i < encoded.length; i++) {
-			encoded[(encoded.length - 1) - i] = Character.toString(sumString.charAt(i));
-		}
-
-		return encoded;
-
-	}
-
-	/*
-	 * Helper method for decoder input when goFirst for decoder output when !goFirst
-	 * Given a number, return a string array which represents the decoder input (or
-	 * output) given goFirst (or !goFirst) eg. For numDigits = 2 and sum = 31 if
-	 * goFirst will return {"go","3","1", " "} if !goFirst will return
-	 * {"3","1"," ","eos"}
-	 */
-	public String[] prepToString(int sum, boolean goFirst) {
-		int start, end;
-		String[] decoded = new String[numDigits + 1 + 1];
-		if (goFirst) {
-			decoded[0] = "Go";
-			start = 1;
-			end = decoded.length - 1;
-		} else {
-			start = 0;
-			end = decoded.length - 2;
-			decoded[decoded.length - 1] = "End";
-		}
-
-		String sumString = String.valueOf(sum);
-		int maxIndex = start;
-		// add in digits
-		for (int i = 0; i < sumString.length(); i++) {
-			decoded[start + i] = Character.toString(sumString.charAt(i));
-			maxIndex++;
-		}
-
-		// needed padding
-		while (maxIndex <= end) {
-			decoded[maxIndex] = " ";
-			maxIndex++;
-		}
-		return decoded;
-
-	}
-
-	/*
 	 * Takes in an array of strings and return a one hot encoded array of size 1 x
-	 * (Floor+Room) x timesteps Each element in the array indicates a time step Length of one
+	 * (Floor+Room) x length of code Each element in the array indicates a time step Length of one
 	 * hot vector = Floor+Room
 	 */
-	private static INDArray mapToOneHot(String[] toEncode) {
-
-		INDArray ret = Nd4j.zeros(1, SEQ_VECTOR_DIM, toEncode.length);
-		for (int i = 0; i < toEncode.length; i++) {
-			ret.putScalar(0, oneHotMap.get(toEncode[i]), i, 1);
+    private static INDArray mapToOneHot(String toEncode) {
+        INDArray ret = Nd4j.zeros(1, SEQ_VECTOR_DIM, 3);
+        String [] arrOfVal = toEncode.split(":", 3); 
+        
+        for (int i = 0; i < SEQ_VECTOR_DIM; i++) {
+        	for (int j = 0; j < arrOfVal.length; j++) {
+        		// check if its floor
+        		if(i == Integer.parseInt(arrOfVal[0])) {
+                	ret.putScalar(0, i, 0, 1);
+        		}
+        		
+        		// check if its room
+        		if(i == Integer.parseInt(arrOfVal[0])) {
+                	ret.putScalar(0, i, 2, 1);
+        		}        		
+			}
 		}
-
-		return ret;
-	}
+        
+    	ret.putScalar(0, SEQ_VECTOR_DIM-1, 1, 1);
+        
+        return ret;
+    }
 
 	public static String mapToString(INDArray encodeSeq, INDArray decodeSeq) {
 		return mapToString(encodeSeq, decodeSeq, " --> ");
@@ -272,12 +202,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		List<TrajectoryParser> trajectories = new ArrayList<TrajectoryParser>();
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_159.csv"));
-
-			// Create List for holding Floor objects
-			FloorIterator.encodeFloor();
-			FloorIterator.encodeRoom();
-			SEQ_VECTOR_DIM = FloorIterator.getFloorTotal() + FloorIterator.getRoomTotal();
+			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_186.csv"));
 
 			String line = "";
 			// Read to skip the header
@@ -291,39 +216,9 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 			// integer encode input data
 			for (int i = 0; i < trajectories.size(); i++) {
-				oneHotMap.put(i,
-						FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()));
+				oneHotMap.put(FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()),i);
 			}
-
-			// one hot encode
-			oneHotBinary = new ArrayList<Integer[]>();
-			for (Map.Entry<Integer, String> o : oneHotMap.entrySet()) {
-				Integer[] tempFloor = new Integer[FloorIterator.getFloorTotal()];
-				Integer[] tempRoom = new Integer[FloorIterator.getRoomTotal()];				
-				String [] arrOfVal = o.getValue().split(":", 2); 
-				
-				// First floor total digit use represent floor
-				for (int i = 0; i < FloorIterator.getFloorTotal(); i++) {
-					if (i == Integer.parseInt(arrOfVal[0])) {
-						tempFloor[i] = 1;
-					} else {
-						tempFloor[i] = 0;
-					}
-				}
-
-				// First floor total digit use represent floor
-				for (int i = 0; i < FloorIterator.getRoomTotal(); i++) {
-					if (i == Integer.parseInt(arrOfVal[1])) {
-						tempRoom[i] = 1;
-					} else {
-						tempRoom[i] = 0;
-					}
-				}
-
-				// Push the array into list
-				Integer[] temp = combineInt(tempFloor, tempRoom);
-				oneHotBinary.add(temp);
-			}
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -333,9 +228,9 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		this.preProcessor = preProcessor;
 	}
 
-	public static Integer[] combineInt(Integer[] a, Integer[] b) {
+	public static int[] combineInt(int[] a, int[] b) {
 		int length = a.length + b.length;
-		Integer[] result = new Integer[length];
+		int[] result = new int[length];
 		System.arraycopy(a, 0, result, 0, a.length);
 		System.arraycopy(b, 0, result, a.length, b.length);
 		return result;

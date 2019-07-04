@@ -1,0 +1,7 @@
+#Wed Dec 19 23:40:01 KST 2018
+rssiAt1=-30
+n=-2
+
+positioning_algorithm=Trilateration
+
+input_rssi_path=D:\Kerja\trajectory-generator\data\generator\raw rssi\2019_06_02_21_07_16
