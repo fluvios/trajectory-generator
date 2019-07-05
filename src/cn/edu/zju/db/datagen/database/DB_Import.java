@@ -10,7 +10,7 @@ import java.util.List;
 
 import cn.edu.zju.db.datagen.database.spatialobject.AccessPoint;
 import cn.edu.zju.db.datagen.database.spatialobject.Floor;
-import cn.edu.zju.db.datagen.gui.VITA_Application;
+import cn.edu.zju.db.datagen.gui.Main;
 import cn.edu.zju.db.datagen.ifc.dataextraction.ExtractBuildings;
 import cn.edu.zju.db.datagen.ifc.dataextraction.ExtractDoors;
 import cn.edu.zju.db.datagen.ifc.dataextraction.ExtractElevators;
@@ -279,7 +279,7 @@ public class DB_Import {
 
 	// before use, call DB_WrapperLoad.loadAll() firstly
 	public static void decompose(Connection con) throws SQLException {
-		VITA_Application.txtConsoleArea
+		Main.txtConsoleArea
 				.append("\nBefore decomposed partitions size is: " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
 
 		for (cn.edu.zju.db.datagen.database.spatialobject.Partition p : DB_WrapperLoad.partitionT) {
@@ -287,13 +287,13 @@ public class DB_Import {
 				Decomposition.decomposePart(con, p);
 			}
 		}
-		VITA_Application.txtConsoleArea.append("After Decomposition, there are: \n");
+		Main.txtConsoleArea.append("After Decomposition, there are: \n");
 		for (Floor floor : DB_WrapperLoad.floorT) {
-			VITA_Application.txtConsoleArea
+			Main.txtConsoleArea
 					.append(floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
 
 		}
-		VITA_Application.txtConsoleArea
+		Main.txtConsoleArea
 				.append("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
 
 	}

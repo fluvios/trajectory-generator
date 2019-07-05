@@ -107,7 +107,7 @@ import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import diva.util.java2d.Polygon2D;
 
 @SuppressWarnings("serial")
-public class VITA_Application extends JApplet {
+public class Main extends JApplet {
 
 	private static JFrame mainFrame;
 	private static Dimension size = new Dimension(1370, 880);
@@ -250,7 +250,7 @@ public class VITA_Application extends JApplet {
 	private JLabel lblMovObjDistributerType2;
 	private JLabel lblMovObjDistributerType1;
 
-	public VITA_Application() {
+	public Main() {
 	}
 
 	public void init() {
@@ -281,7 +281,7 @@ public class VITA_Application extends JApplet {
 
 		btnImport = new JButton("");
 		btnImport.setBorder(new LineBorder(new Color(0, 0, 0), 0));
-		btnImport.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/import.png")));
+		btnImport.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/import.png")));
 		btnImport.setBackground(Color.WHITE);
 		btnImport.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		btnImport.setBounds(0, 0, 30, 30);
@@ -296,7 +296,7 @@ public class VITA_Application extends JApplet {
 		btnDeleteFile = new JButton("");
 		btnDeleteFile.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteFile
-				.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
 		btnDeleteFile.setBackground(Color.WHITE);
 		btnDeleteFile.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		btnDeleteFile.setBounds(480, 0, 30, 30);
@@ -387,7 +387,7 @@ public class VITA_Application extends JApplet {
 		btnDeleteFloor.setBackground(Color.WHITE);
 		btnDeleteFloor.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteFloor
-				.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
 		btnDeleteFloor.setBounds(500, 8, 16, 25);
 		dbiPanel.add(btnDeleteFloor);
 
@@ -413,7 +413,7 @@ public class VITA_Application extends JApplet {
 		btnDeleteEntity.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteEntity.setBackground(Color.WHITE);
 		btnDeleteEntity
-				.setIcon(new ImageIcon(VITA_Application.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
 		btnDeleteEntity.setBounds(500, 53, 16, 25);
 		dbiPanel.add(btnDeleteEntity);
 
@@ -3111,7 +3111,7 @@ public class VITA_Application extends JApplet {
 
 	public static void main(String[] args) {
 
-		VITA_Application vita = new VITA_Application();
+		Main vita = new Main();
 		vita.getContentPane().setBackground(Color.WHITE);
 		vita.init();
 
