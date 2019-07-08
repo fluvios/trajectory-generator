@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -40,12 +39,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,16 +51,12 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -78,6 +67,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -89,18 +79,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import com.alee.laf.WebLookAndFeel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonReader;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
-import cn.edu.zju.db.datagen.algorithm.Algorithm;
-import cn.edu.zju.db.datagen.algorithm.NeuralNetwork;
-import cn.edu.zju.db.datagen.algorithm.FPT;
-import cn.edu.zju.db.datagen.algorithm.PXM;
-import cn.edu.zju.db.datagen.algorithm.TRI;
 import cn.edu.zju.db.datagen.database.DB_Connection;
 import cn.edu.zju.db.datagen.database.DB_FileUploader;
 import cn.edu.zju.db.datagen.database.DB_Import;
@@ -122,15 +107,12 @@ import cn.edu.zju.db.datagen.indoorobject.movingobject.RegularMultiDestCustomer;
 import cn.edu.zju.db.datagen.indoorobject.station.Pack;
 import cn.edu.zju.db.datagen.indoorobject.station.Station;
 import cn.edu.zju.db.datagen.indoorobject.utility.IdrObjsUtility;
-import cn.edu.zju.db.datagen.json.DateSerializer;
 import cn.edu.zju.db.datagen.json.TimeDeserializer;
 import cn.edu.zju.db.datagen.json.TimeSerializer;
 import cn.edu.zju.db.datagen.machine.Machine;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import cn.edu.zju.db.datagen.trajectory.Trajectory;
 import diva.util.java2d.Polygon2D;
-import javax.swing.ListModel;
-import javax.swing.JRadioButton;
 
 public class Home extends JApplet {
 
@@ -314,6 +296,7 @@ public class Home extends JApplet {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Home window = new Home();
@@ -336,6 +319,8 @@ public class Home extends JApplet {
 	 * Create the frame.
 	 */
 	private void initialize() {
+        WebLookAndFeel.install ();
+		
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("RITgen");
 		frmTrajectoryGenerator.setBounds(100, 100, 1000, 935);
@@ -377,7 +362,7 @@ public class Home extends JApplet {
 		btnDecompAll.setBounds(576, 10, 110, 23);
 		filePanel.add(btnDecompAll);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		tabbedPane.setFont(new Font("Dialog", Font.PLAIN, 11));
 		tabbedPane.setBounds(0, 43, 984, 853);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
@@ -1116,18 +1101,21 @@ public class Home extends JApplet {
 	private void addActionListeners() {
 		
 		btnMachineUpload.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				uploadConfigFile();
 			}
 		});
 		
 		btnMovingObjUpload.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				uploadObjectFile();
 			}
 		});
 
 		btnImport.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				uploadFile();
 				updateFileChooser();
@@ -1157,6 +1145,7 @@ public class Home extends JApplet {
 		});
 
 		btnView.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				viewFile();
 
@@ -1214,10 +1203,12 @@ public class Home extends JApplet {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".ifc") || f.isDirectory();
 			}
 
+			@Override
 			public String getDescription() {
 				return "Ifc Files";
 			}
@@ -1261,10 +1252,12 @@ public class Home extends JApplet {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
 			}
 
+			@Override
 			public String getDescription() {
 				return "Json Files";
 			}
@@ -1313,10 +1306,12 @@ public class Home extends JApplet {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
+			@Override
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
 			}
 
+			@Override
 			public String getDescription() {
 				return "Json Files";
 			}
@@ -1563,6 +1558,7 @@ public class Home extends JApplet {
 			});
 			
 			btnStationGenerate.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 
 					storePropFromGUI("conf/pattern.properties");
@@ -1623,6 +1619,7 @@ public class Home extends JApplet {
 			});
 
 			btnObjectInit.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					storePropFromGUI("conf/pattern.properties");
 					generateMovingObjs();
@@ -1687,6 +1684,7 @@ public class Home extends JApplet {
 			});
 
 			btnSnapShot.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					String outputPath = decideOutputPath();
 					if (outputPath != null) {
@@ -1705,10 +1703,12 @@ public class Home extends JApplet {
 			chooser.setCurrentDirectory(new File(default_path));
 			
 			FileFilter filter = new FileFilter() {
+				@Override
 				public boolean accept(File f) {
 					return f.getName().toLowerCase().endsWith(".zip") || f.isDirectory();
 				}
 
+				@Override
 				public String getDescription() {
 					return "zip Files";
 				}
@@ -2061,6 +2061,7 @@ public class Home extends JApplet {
 			}
 		}
 
+		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			chosenFloor = (Floor) navCombobox.getSelectedItem();
@@ -2999,14 +3000,16 @@ public class Home extends JApplet {
 		private class MovingAdapter extends MouseAdapter {
 			private Point startDrag;
 
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
 				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					incrementZoom(1.0 * (double) e.getWheelRotation());
+					incrementZoom(1.0 * e.getWheelRotation());
 				}
 			}
 
+			@Override
 			public void mousePressed(MouseEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
@@ -3053,6 +3056,7 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseDragged(MouseEvent e) {
 
 				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
@@ -3070,6 +3074,7 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
 		}
@@ -3427,6 +3432,7 @@ public class Home extends JApplet {
 			}
 		}
 
+		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			chosenFloor = (Floor) floorCombobox.getSelectedItem();
@@ -3892,14 +3898,16 @@ public class Home extends JApplet {
 		private class MovingAdapter extends MouseAdapter {
 			private Point startDrag;
 
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
 				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					incrementZoom(1.0 * (double) e.getWheelRotation());
+					incrementZoom(1.0 * e.getWheelRotation());
 				}
 			}
 
+			@Override
 			public void mousePressed(MouseEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
@@ -3946,6 +3954,7 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseDragged(MouseEvent e) {
 
 				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
@@ -3963,6 +3972,7 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
 		}
