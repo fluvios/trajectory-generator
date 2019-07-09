@@ -32,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -74,12 +73,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -283,6 +282,7 @@ public class Home extends JApplet {
 	private JTextField textField_9;
 	private JTextField textField_10;
 	private JTextField textField_11;
+	private JPanel panel_3;
 
 	/**
 	 * Launch the application.
@@ -702,7 +702,7 @@ public class Home extends JApplet {
 		lblBuildingDetails.setBounds(840, 10, 186, 23);
 		panel_2.add(lblBuildingDetails);
 		
-		floorCombobox = new JComboBox();
+		floorCombobox = new JComboBox<Floor>();
 		floorCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		floorCombobox.setBackground(Color.WHITE);
 		floorCombobox.setBounds(965, 45, 239, 23);
@@ -797,13 +797,11 @@ public class Home extends JApplet {
 		tabbedPane_1.setBounds(838, 461, 366, 353);
 		panel_2.add(tabbedPane_1);
 		
-		JScrollPane panel_3 = new JScrollPane();
-
 	     // Table data
-        String[] headers = { "Header 1", "Header 2", "Header 3", "Header 4", "Header 5", "Header 6" };
-        String[][] data = { { "1", "2", "3", "4", "5", "6" }, { "7", "8", "9", "10", "11", "12" }, { "13", "14", "15", "16", "17", "18" },
-                { "19", "20", "21", "22", "23", "24" }, { "25", "26", "27", "28", "29", "30" }, { "31", "32", "33", "34", "35", "36" },
-                { "37", "38", "39", "40", "41", "42" }, { "43", "44", "45", "46", "47", "48" }, { "49", "50", "51", "52", "53", "54" } };
+        String[] headers = { "Object Id", "Action" };
+        String[][] data = { 
+        		{ "1", "2"},
+        		{ "3", "4"}};
 
         // Static table
         WebTable table = new WebTable ( data, headers );
@@ -812,8 +810,8 @@ public class Home extends JApplet {
         table.setRowSelectionAllowed ( false );
         table.setColumnSelectionAllowed ( true );
         table.setPreferredScrollableViewportSize ( new Dimension ( 300, 100 ) );
-				
-        panel_3.add(table);
+		
+		WebScrollPane panel_3 = new WebScrollPane(table);
 		tabbedPane_1.addTab("ID-Based Query", null, panel_3, null);
 		
 		JScrollPane panel_4 = new JScrollPane();
@@ -1403,6 +1401,10 @@ public class Home extends JApplet {
 	// Generator Map Class
 	private class MapPainter extends JPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private MovingAdapter ma = new MovingAdapter();
 		private int fileIDX;
 		private boolean stationsGen = false;
@@ -1447,7 +1449,6 @@ public class Home extends JApplet {
 				floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
 				floor.setD2dGraph(buildingD2D);
 			}
-
 		}
 
 		private void addMapPainterActionListener() {
@@ -1459,6 +1460,9 @@ public class Home extends JApplet {
 					selectedPart = null;
 					selectedAP = null;
 					selectedCon = null;
+					
+					revalidate();
+					repaint();
 				}
 
 			});
@@ -2795,6 +2799,10 @@ public class Home extends JApplet {
 	// Visual Map Class
 	private class MapVisualPainter extends JPanel {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private MovingAdapter ma = new MovingAdapter();
 		private int fileIDX;
 
@@ -2842,6 +2850,9 @@ public class Home extends JApplet {
 					selectedPart = null;
 					selectedAP = null;
 					selectedCon = null;
+					
+					revalidate();
+					repaint();
 				}
 
 			});
@@ -3035,7 +3046,6 @@ public class Home extends JApplet {
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			System.out.println("Redraw");
 			chosenFloor = (Floor) floorCombobox.getSelectedItem();
 
 			Graphics2D g2 = (Graphics2D) g.create();
