@@ -1,5 +1,35 @@
 package cn.edu.zju.db.datagen.indoorobject.utility;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.TexturePaint;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.imageio.ImageIO;
+
+import org.khelekore.prtree.PRTree;
+
 import cn.edu.zju.db.datagen.database.spatialobject.AccessPoint;
 import cn.edu.zju.db.datagen.database.spatialobject.Floor;
 import cn.edu.zju.db.datagen.database.spatialobject.Partition;
@@ -7,21 +37,6 @@ import cn.edu.zju.db.datagen.indoorobject.movingobject.MovingObj;
 import cn.edu.zju.db.datagen.indoorobject.movingobject.RegularMultiDestCustomer;
 import cn.edu.zju.db.datagen.indoorobject.station.Station;
 import cn.edu.zju.db.datagen.trajectory.Trajectory;
-
-import org.khelekore.prtree.PRTree;
-
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.List;
-
-import javax.imageio.ImageIO;
 
 public class IdrObjsUtility {
 
@@ -154,21 +169,19 @@ public class IdrObjsUtility {
         	for (Trajectory t : temp) {            	
             	if(t.getFloorId() == floor.getItemID()) {
             		if(i == 0 || i == (temp.size()-1)) {
+            			BufferedImage image = null;
+            			
+                        try {
+                            image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+            			
                         Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 2, 2);
-                        Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-
-                        // g2.draw(ellipseNew);
-                        g2.setColor(new Color(0,0,0));
-                        g2.fill(ellipseNew);
-
-                        g2.setColor(color);
-                        g2.draw(ellipseNew);        		            		
-            		} else {
-                        Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
                         Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);            			
 
                         // g2.draw(ellipseNew);
-                        g2.setColor(color);
+                        g2.setPaint(new TexturePaint(image, new Rectangle()));
                         g2.fill(ellipseNew);
 
                         g2.setColor(color);

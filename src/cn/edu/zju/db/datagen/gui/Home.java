@@ -50,6 +50,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -80,6 +81,7 @@ import javax.swing.filechooser.FileFilter;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
+import com.alee.laf.table.WebTableHeader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -156,7 +158,6 @@ public class Home extends JApplet {
 	private JPanel uclPanel;
 	private JPanel movingObjectPanel;
 	private JPanel playPanel;
-	private JPanel stationPanel;
 	private JPanel positionAlgPanel;
 
 	private JLabel lblConnectedPartitions1;
@@ -213,7 +214,6 @@ public class Home extends JApplet {
 	private JScrollPane scrollPaneConsole;
 	private JScrollPane scrollPanePart;
 	private JScrollPane movingObjectScroll;
-	private JScrollPane machineScroll;
 
 	private JTabbedPane tabbedVITAPane;
 
@@ -245,6 +245,7 @@ public class Home extends JApplet {
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
 	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
 	private ArrayList<Trajectory> heatTrajectories = new ArrayList<Trajectory>();
+	private Map<Integer, ArrayList<Trajectory>> idTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
 	private Machine[] machines;
@@ -277,12 +278,19 @@ public class Home extends JApplet {
 	private JTextField textField_4;
 	private JTextField textField_5;
 	private JTextField textField_6;
-	private JTextField textField;
 	private JTextField textField_8;
 	private JTextField textField_9;
 	private JTextField textField_10;
 	private JTextField textField_11;
 	private JPanel panel_3;
+	
+	private Vector columnId;
+	private Vector dataId;
+	private Vector columnPath;
+	private Vector dataPath;
+	
+	private WebTable idTable;
+	private WebTable pathTable;
 
 	/**
 	 * Launch the application.
@@ -612,7 +620,7 @@ public class Home extends JApplet {
 		tabbedPane.addTab("Training", null, panel, null);
 		panel.setLayout(null);
 		
-		JLabel lblMachineConfiguration = new JLabel("Neural Netwok Configuration");
+		JLabel lblMachineConfiguration = new JLabel("Training Configuration");
 		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblMachineConfiguration.setBounds(504, 10, 236, 23);
 		panel.add(lblMachineConfiguration);
@@ -620,28 +628,13 @@ public class Home extends JApplet {
 		JButton btnMachineClear = new JButton("Clear");
 		btnMachineClear.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMachineClear.setBackground(Color.WHITE);
-		btnMachineClear.setBounds(810, 76, 97, 23);
+		btnMachineClear.setBounds(703, 98, 97, 23);
 		panel.add(btnMachineClear);
-		
-		stationPanel = new JPanel();
-		stationPanel.setBackground(Color.LIGHT_GRAY);
-		stationPanel.setBounds(504, 109, 403, 120);
-		panel.add(stationPanel);
-		
-		machineScroll = new JScrollPane();
-		machineScroll.setBackground(Color.LIGHT_GRAY);
-		machineScroll.setBounds(504, 109, 403, 105);
-		stationPanel.add(machineScroll);	
-		
-		JLabel lblTrainingConfiguration = new JLabel("Training Configuration");
-		lblTrainingConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblTrainingConfiguration.setBounds(504, 248, 186, 23);
-		panel.add(lblTrainingConfiguration);
 		
 		btnTrain = new JButton("Train");
 		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnTrain.setBackground(Color.WHITE);
-		btnTrain.setBounds(810, 327, 97, 23);
+		btnTrain.setBounds(810, 98, 97, 23);
 		panel.add(btnTrain);
 		
 		txtConsoleArea = new JTextArea();
@@ -650,26 +643,10 @@ public class Home extends JApplet {
 		txtConsoleArea.setBounds(12, 10, 480, 804);
 		panel.add(txtConsoleArea);
 		
-		JLabel lblTraining = new JLabel("Training");
-		lblTraining.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblTraining.setBounds(504, 281, 113, 23);
-		panel.add(lblTraining);
-		
-		JLabel lblIteration = new JLabel("Iteration:");
-		lblIteration.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblIteration.setBounds(504, 302, 113, 23);
-		panel.add(lblIteration);
-		
-		textField = new JTextField();
-		textField.setFont(new Font("Dialog", Font.PLAIN, 11));
-		textField.setColumns(10);
-		textField.setBounds(629, 295, 278, 21);
-		panel.add(textField);
-		
 		btnMachineUpload = new JButton("Upload");
 		btnMachineUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMachineUpload.setBackground(Color.WHITE);
-		btnMachineUpload.setBounds(701, 76, 97, 23);
+		btnMachineUpload.setBounds(594, 98, 97, 23);
 		panel.add(btnMachineUpload);
 		
 		JLabel lblNeuralNetwork = new JLabel("Neural Network");
@@ -797,24 +774,35 @@ public class Home extends JApplet {
 		tabbedPane_1.setBounds(838, 461, 366, 353);
 		panel_2.add(tabbedPane_1);
 		
-	     // Table data
-        String[] headers = { "Object Id", "Action" };
-        String[][] data = { 
-        		{ "1", "2"},
-        		{ "3", "4"}};
-
-        // Static table
-        WebTable table = new WebTable ( data, headers );
-        table.setEditable ( false );
-        table.setAutoResizeMode ( WebTable.AUTO_RESIZE_OFF );
-        table.setRowSelectionAllowed ( false );
-        table.setColumnSelectionAllowed ( true );
-        table.setPreferredScrollableViewportSize ( new Dimension ( 300, 100 ) );
+		columnId = new Vector();
+		dataId = new Vector();
 		
-		WebScrollPane panel_3 = new WebScrollPane(table);
+		columnId.addElement("Object Id");
+		columnId.addElement("Action");
+		
+        idTable = new WebTable (dataId, columnId);
+        idTable.setEditable ( false );
+        idTable.setAutoResizeMode ( WebTable.AUTO_RESIZE_OFF );
+        idTable.setRowSelectionAllowed ( false );
+        idTable.setColumnSelectionAllowed ( true );
+        idTable.setPreferredScrollableViewportSize ( new Dimension ( 300, 100 ) );
+		
+		WebScrollPane panel_3 = new WebScrollPane(idTable);
 		tabbedPane_1.addTab("ID-Based Query", null, panel_3, null);
 		
-		JScrollPane panel_4 = new JScrollPane();
+		columnPath = new Vector();
+		dataPath = new Vector();
+		
+		columnPath.addElement("Object List");
+		
+        pathTable = new WebTable (dataPath, columnPath);
+        pathTable.setEditable ( false );
+        pathTable.setAutoResizeMode ( WebTable.AUTO_RESIZE_OFF );
+        pathTable.setRowSelectionAllowed ( false );
+        pathTable.setColumnSelectionAllowed ( true );
+        pathTable.setPreferredScrollableViewportSize ( new Dimension ( 300, 100 ) );
+		
+		WebScrollPane panel_4 = new WebScrollPane(pathTable);
 		tabbedPane_1.addTab("Region-Based Query", null, panel_4, null);
 				
 		addActionListeners();
@@ -1007,7 +995,7 @@ public class Home extends JApplet {
 		btnMachineUpload.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				uploadConfigFile();
+				System.out.println("Demo");
 			}
 		});
 		
@@ -1146,60 +1134,6 @@ public class Home extends JApplet {
 				importFile();
 				JOptionPane.showMessageDialog(this, "Uploading File is done!", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
-	
-	private void uploadConfigFile() {
-		String default_path = System.getProperty("user.dir"); // + "//export
-		// files";
-		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(default_path));
-		FileFilter filter = new FileFilter() {
-			@Override
-			public boolean accept(File f) {
-				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
-			}
-
-			@Override
-			public String getDescription() {
-				return "Json Files";
-			}
-		};
-		chooser.setFileFilter(filter);
-
-		int result = chooser.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			UploadObject object = new UploadObject();
-			object.setFilename(file.getName());
-			object.setFile_type("JSON");
-			object.setFile_size((int) file.length());
-			object.setDescription("");
-			if (isFileExisted(object) == true) {
-				System.out.println("File already existed!");
-				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-				txtConsoleArea.append("File Already Existed! PASS\n");
-				return;
-			}
-
-			// load machine objects
-			try {
-				Gson gson = new Gson();
-				JsonReader reader = new JsonReader(new FileReader(file));
-				reader.setLenient(true);
-				machines = gson.fromJson(reader, Machine[].class);
-				// Show the file in panel
-				machineComboBox.removeAllItems();
-				machineComboBox.addItem(object);
-				for (Machine machine: machines) {
-					MachineView view = new MachineView(machine, machine.getName());
-					stationPanel.add(view);
-					repaint();
-				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -2962,6 +2896,16 @@ public class Home extends JApplet {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						paintHeatMap();
+						
+						// Handle Id & Path Table
+						if (trajectories != null) {
+							for (int i = 0; i < trajectories.size(); i++) {
+								idTrajectories.put(trajectories.get(i).get(0).getUserId(),
+										trajectories.get(i));
+							}
+						}
+						
+						// Add Rows to ID Table
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -3339,9 +3283,10 @@ public class Home extends JApplet {
 						Trajectory traject = new Trajectory(
 								Integer.parseInt(row[0]), 
 								Integer.parseInt(row[1]), 
-								Double.parseDouble(row[2]), 
+								Integer.parseInt(row[2]), 
 								Double.parseDouble(row[3]), 
-								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[4]));
+								Double.parseDouble(row[4]), 
+								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[5]));
 						if(isWithinRange(traject.getTimestamp())) {
 							temp.add(traject);
 							heatTrajectories.add(traject);

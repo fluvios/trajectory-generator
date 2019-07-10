@@ -1,5 +1,0 @@
-#Mon Feb 13 10:26:24 CST 2017
-
-positioning_algorithm=Proximity_Analysis
-
-input_rssi_path=D:\Kerja\trajectory-generator\data\generator\raw rssi\2019_06_02_21_07_16

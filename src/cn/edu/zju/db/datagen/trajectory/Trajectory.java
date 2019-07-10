@@ -9,6 +9,16 @@ public class Trajectory {
 	private double axis;
 	private double oordinat;
 	private Date timestamp;
+	
+	public Trajectory(int userId, int floorId, int partitionId, double axis, double oordinat, Date timestamp) {
+		super();
+		this.userId = userId;
+		this.floorId = floorId;
+		this.partitionId = partitionId;
+		this.axis = axis;
+		this.oordinat = oordinat;
+		this.timestamp = timestamp;
+	}
 
 	public Trajectory(int floorId, int partitionId, double axis, double oordinat, Date timestamp) {
 		super();

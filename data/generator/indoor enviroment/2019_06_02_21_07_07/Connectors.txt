@@ -1,2 +1,0 @@
-890	Stair:Concrete Pan - 180mm Max Riser 280mm Tread:235743	Point2D.Double[303.3331250000001, 267.0684583333335]	
-891	Stair:Concrete Pan - 180mm Max Riser 280mm Tread:233637	Point2D.Double[380.8881250000002, 267.1042916666668]	
