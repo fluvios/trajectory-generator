@@ -2,6 +2,7 @@ package cn.edu.zju.db.datagen.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -56,6 +57,7 @@ import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -79,6 +81,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
@@ -2915,8 +2918,7 @@ public class Home extends JApplet {
 						});
 						
 						idTable.getColumn("Action").setCellRenderer(new ButtonRenderer());
-						idTable.getColumn("Action").setCellEditor(new 
-								ButtonEditor(new JCheckBox(), idTable, idTrajectories));
+						idTable.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -3019,7 +3021,7 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
-			if (isDisplay == true) {
+			if (idTrajectory != null && isDisplay) {
 				IdrObjsUtility.paintSingleTrajectories(chosenFloor, g2, tx, Pen1, idTrajectory);									
 			}
 			
@@ -3476,6 +3478,96 @@ public class Home extends JApplet {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
+		}
+	}
+
+	// Button Renderer Class
+	private class ButtonRenderer extends JButton implements TableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ButtonRenderer() {
+			setOpaque(false);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+//				setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+//				setBackground(UIManager.getColor("Button.background"));
+			}
+			setText((value == null) ? "" : value.toString());
+			return this;
+		}
+	}
+
+	// Button Editor Class
+	private class ButtonEditor extends DefaultCellEditor {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected JButton button;
+		private String label;
+		private boolean isPushed;
+		
+		public ButtonEditor(JCheckBox checkBox) {
+			super(checkBox);
+			button = new JButton();
+			button.setOpaque(true);
+			button.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					int row = idTable.convertRowIndexToModel( idTable.getEditingRow() );
+					// System.out.println(idTrajectories.get(idTable.getValueAt(row, 0)));
+					idTrajectory = idTrajectories.get(idTable.getValueAt(row, 0));
+					isDisplay = true;
+					revalidate();
+					repaint();
+					fireEditingStopped();
+				}
+			});
+		}
+
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+			if (isSelected) {
+				button.setForeground(table.getSelectionForeground());
+				button.setBackground(table.getSelectionBackground());
+			} else {
+				button.setForeground(table.getForeground());
+				button.setBackground(table.getBackground());
+			}
+			label = (value == null) ? "" : value.toString();
+			button.setText(label);
+			isPushed = true;
+			return button;
+		}
+
+		public Object getCellEditorValue() {
+			if (isPushed) {
+				//
+				//
+				// JOptionPane.showMessageDialog(button ,label + ": Ouch!");
+				// System.out.println(label + ": Ouch!");
+
+			}
+			isPushed = false;
+			return new String(label);
+		}
+
+		public boolean stopCellEditing() {
+			isPushed = false;
+			return super.stopCellEditing();
+		}
+
+		protected void fireEditingStopped() {
+			super.fireEditingStopped();
 		}
 	}
 }

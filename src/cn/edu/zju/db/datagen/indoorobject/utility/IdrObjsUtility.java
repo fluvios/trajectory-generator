@@ -158,7 +158,7 @@ public class IdrObjsUtility {
 		int i = 0;
 		for (Trajectory t : trajectories) {
 			if (t.getFloorId() == floor.getItemID()) {
-                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.8, 0.8);
+                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.35, 0.35);
                 Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);            			
 
                 // g2.draw(ellipseNew);
