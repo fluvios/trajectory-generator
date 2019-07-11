@@ -70,6 +70,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -80,6 +81,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.table.WebTableHeader;
@@ -246,12 +248,14 @@ public class Home extends JApplet {
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
 	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
 	private ArrayList<Trajectory> heatTrajectories = new ArrayList<Trajectory>();
+	public ArrayList<Trajectory> idTrajectory = new ArrayList<Trajectory>();	
 	private Map<Integer, ArrayList<Trajectory>> idTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
 	private Machine[] machines;
 
 	private boolean empty = false;
+	public boolean isDisplay = false;
 	private double zoom = 1;
 	private double previousX;
 	private double previousY;
@@ -290,8 +294,8 @@ public class Home extends JApplet {
 	private Vector columnPath;
 	private Vector dataPath;
 	
-	private WebTable idTable;
-	private WebTable pathTable;
+	private JTable idTable;
+	private JTable pathTable;
 
 	/**
 	 * Launch the application.
@@ -781,8 +785,7 @@ public class Home extends JApplet {
 		columnId.addElement("Object Id");
 		columnId.addElement("Action");
 		
-        idTable = new WebTable (dataId, columnId);
-        idTable.setEditable ( false );
+        idTable = new JTable (dataId, columnId);
         idTable.setAutoResizeMode ( WebTable.AUTO_RESIZE_OFF );
         idTable.setRowSelectionAllowed ( false );
         idTable.setColumnSelectionAllowed ( true );
@@ -796,8 +799,7 @@ public class Home extends JApplet {
 		
 		columnPath.addElement("Object List");
 		
-        pathTable = new WebTable (dataPath, columnPath);
-        pathTable.setEditable ( false );
+        pathTable = new JTable (dataPath, columnPath);
         pathTable.setAutoResizeMode ( WebTable.AUTO_RESIZE_OFF );
         pathTable.setRowSelectionAllowed ( false );
         pathTable.setColumnSelectionAllowed ( true );
@@ -2896,7 +2898,7 @@ public class Home extends JApplet {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						paintHeatMap();
+						loadTrajectoryData();
 						
 						// Handle Id & Path Table
 						if (trajectories != null) {
@@ -2909,8 +2911,12 @@ public class Home extends JApplet {
 						// Add Rows to ID Table
 						DefaultTableModel data = (DefaultTableModel) idTable.getModel();
 						idTrajectories.forEach((k,v)->{
-							data.addRow(new Object[] {k,v.size()});
+							data.addRow(new Object[] {k, "Show"});
 						});
+						
+						idTable.getColumn("Action").setCellRenderer(new ButtonRenderer());
+						idTable.getColumn("Action").setCellEditor(new 
+								ButtonEditor(new JCheckBox(), idTable, idTrajectories));
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -3013,8 +3019,8 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
-			if (trajectories != null) {
-				IdrObjsUtility.paintTrajectories(chosenFloor, g2, tx, Pen1, trajectories);									
+			if (isDisplay == true) {
+				IdrObjsUtility.paintSingleTrajectories(chosenFloor, g2, tx, Pen1, idTrajectory);									
 			}
 			
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
@@ -3263,7 +3269,7 @@ public class Home extends JApplet {
 			}
 		}
 		
-		private void paintHeatMap() throws ParseException {
+		private void loadTrajectoryData() throws ParseException {
 			String outputPath = decideOutputPath();
 			File folder = new File(outputPath);
 			File[] listOfFiles = folder.listFiles();
@@ -3303,8 +3309,6 @@ public class Home extends JApplet {
 					continue;
 				}
 			}
-			
-			repaint();
 		}
 		
 		private boolean isWithinRange(Date testDate) throws ParseException {
