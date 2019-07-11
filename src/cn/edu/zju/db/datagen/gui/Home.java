@@ -77,6 +77,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableModel;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -2906,6 +2907,10 @@ public class Home extends JApplet {
 						}
 						
 						// Add Rows to ID Table
+						DefaultTableModel data = (DefaultTableModel) idTable.getModel();
+						idTrajectories.forEach((k,v)->{
+							data.addRow(new Object[] {k,v.size()});
+						});
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
