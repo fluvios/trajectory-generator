@@ -55,6 +55,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
@@ -80,14 +81,14 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.button.WebButton;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
-import com.alee.laf.table.WebTableHeader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -117,7 +118,6 @@ import cn.edu.zju.db.datagen.indoorobject.station.Station;
 import cn.edu.zju.db.datagen.indoorobject.utility.IdrObjsUtility;
 import cn.edu.zju.db.datagen.json.TimeDeserializer;
 import cn.edu.zju.db.datagen.json.TimeSerializer;
-import cn.edu.zju.db.datagen.machine.Machine;
 import cn.edu.zju.db.datagen.spatialgraph.D2DGraph;
 import cn.edu.zju.db.datagen.trajectory.Trajectory;
 import diva.util.java2d.Polygon2D;
@@ -258,15 +258,18 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
+	private ArrayList<Trajectory> idTrajectory = new ArrayList<Trajectory>();
+//	private ArrayList<Trajectory> regionTrajectory = new ArrayList<Trajectory>();
 	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
-	private ArrayList<Trajectory> heatTrajectories = new ArrayList<Trajectory>();
-	public ArrayList<Trajectory> idTrajectory = new ArrayList<Trajectory>();
+
 	private Map<Integer, ArrayList<Trajectory>> idTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
+	private Map<Integer, ArrayList<Trajectory>> pathTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
 
 	private boolean empty = false;
-	public boolean isDisplay = false;
+	private boolean isDisplay = false;
+	private boolean isRegion = false;
 	private double zoom = 1;
 	private double previousX;
 	private double previousY;
@@ -808,8 +811,9 @@ public class Home extends JApplet {
 		columnPath = new Vector();
 		dataPath = new Vector();
 
-		columnPath.addElement("Object List");
-
+		columnPath.addElement("Object Id");
+		columnPath.addElement("Number Of Movement");
+		
 		pathTable = new JTable(dataPath, columnPath);
 		pathTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
 		pathTable.setRowSelectionAllowed(false);
@@ -1009,7 +1013,7 @@ public class Home extends JApplet {
 		btnMachineUpload.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Demo");
+				uploadTrainingFile();
 			}
 		});
 
@@ -1076,7 +1080,7 @@ public class Home extends JApplet {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				String outputPath = decideOutputPath();
+				String outputPath = decideOutputPath();
 //				NeuralNetwork net = new NeuralNetwork();
 //				net.read(outputPath);
 			}
@@ -1149,6 +1153,42 @@ public class Home extends JApplet {
 				JOptionPane.showMessageDialog(this, "Uploading File is done!", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
+		}
+	}
+	
+	private void uploadTrainingFile() {
+		String default_path = System.getProperty("user.dir"); // + "//export
+		// files";
+		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(default_path));
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
+			}
+
+			public String getDescription() {
+				return "Json Files";
+			}
+		};
+		chooser.setFileFilter(filter);
+
+		int result = chooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			UploadObject object = new UploadObject();
+			object.setFilename(file.getName());
+			object.setFile_type("JSON");
+			object.setFile_size((int) file.length());
+			object.setDescription("");
+			if (isFileExisted(object) == true) {
+				System.out.println("File already existed!");
+				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
+				txtConsoleArea.append("File Already Existed! PASS\n");
+				return;
+			}
+			
+			machineComboBox.removeAllItems();
+			machineComboBox.addItem(object);
 		}
 	}
 
@@ -2911,7 +2951,7 @@ public class Home extends JApplet {
 					try {
 						loadTrajectoryData();
 
-						// Handle Id & Path Table
+						// Handle Id Table
 						if (trajectories != null) {
 							for (int i = 0; i < trajectories.size(); i++) {
 								idTrajectories.put(trajectories.get(i).get(0).getUserId(), trajectories.get(i));
@@ -2924,8 +2964,8 @@ public class Home extends JApplet {
 							data.addRow(new Object[] { k, "Show" });
 						});
 
-						idTable.getColumn("Action").setCellRenderer(new ButtonRenderer());
-						idTable.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+						idTable.getColumn("Action").setCellRenderer(new IdTableRenderer());
+						idTable.getColumn("Action").setCellEditor(new IdTableEditor(new JCheckBox()));
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -3028,7 +3068,12 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(visualChosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(visualChosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (idTrajectory != null && isDisplay) {
-				IdrObjsUtility.paintSingleTrajectories(visualChosenFloor, g2, tx, Pen1, idTrajectory);
+				if(isRegion) {
+					IdrObjsUtility.paintRegionTrajectories(visualChosenFloor, g2, tx, Pen1, pathTrajectories);
+				} else {
+					IdrObjsUtility.paintSingleTrajectories(visualChosenFloor, g2, tx, Pen1, idTrajectory);					
+				}
+
 			}
 
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
@@ -3304,7 +3349,7 @@ public class Home extends JApplet {
 								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[5]));
 						if (isWithinRange(traject.getTimestamp())) {
 							temp.add(traject);
-							heatTrajectories.add(traject);
+//							regionTrajectory.add(traject);
 						}
 					}
 					trajectories.add(temp);
@@ -3327,8 +3372,8 @@ public class Home extends JApplet {
 			if (visualSelectedPart != null) {
 				txtselectedNameField
 						.setText(visualSelectedPart.getName() + " AND ID: " + visualSelectedPart.getItemID());
-				for (Partition partition : visualSelectedPart.getConParts()) {
-					connectedPartsModel.addElement(partition);
+				for (Partition p : visualSelectedPart.getConParts()) {
+					connectedPartsModel.addElement(p);
 				}
 			} else if (visualSelectedAP != null) {
 				txtselectedNameField.setText(visualSelectedAP.getName() + " AND ID: " + visualSelectedAP.getItemID());
@@ -3338,13 +3383,45 @@ public class Home extends JApplet {
 			} else if (visualSelectedCon != null) {
 				txtselectedNameField.setText(visualSelectedCon.getName() + " AND ID: " + visualSelectedCon.getItemID());
 				for (Partition p : visualSelectedCon.getPartitions()) {
-
 					connectedPartsModel.addElement(p);
 				}
 
 			} else {
 
 			}
+		}
+
+		private void getTrajectoryInRegion() {
+			DefaultTableModel data = (DefaultTableModel) pathTable.getModel();
+			
+			if(data.getRowCount() > 0) {
+				data.getDataVector().removeAllElements();
+				data.fireTableDataChanged();
+			}
+
+
+			// filter trajectory
+			if (visualSelectedPart != null) {
+				idTrajectories.forEach((k, v) -> {
+					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
+					for (int i = 0; i < v.size(); i++) {
+						if (v.get(i).getRoomId() == visualSelectedPart.getItemID()) {
+							temp.add(v.get(i));
+						}
+					}
+					pathTrajectories.put(k, temp);
+				});
+			}
+
+			// Add Rows to Path Table
+			pathTrajectories.forEach((k, v) -> {
+				data.addRow(new Object[] { k, v.size() });
+			});
+
+			isDisplay = true;
+			isRegion = true;
+			
+			repaint();
 		}
 
 		private AffineTransform getCurrentTransform() {
@@ -3452,6 +3529,8 @@ public class Home extends JApplet {
 
 					connectedPartsModel.clear();
 					updateSelectPartsList();
+					// Testing function for Region Table
+					getTrajectoryInRegion();
 
 					// possibleConnectedPartsList.clear();
 					// updatePossibleConnectedPartsList();
@@ -3483,15 +3562,15 @@ public class Home extends JApplet {
 		}
 	}
 
-	// Button Renderer Class
-	private class ButtonRenderer extends JButton implements TableCellRenderer {
+	// Id Table Renderer Class
+	private class IdTableRenderer extends JButton implements TableCellRenderer {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public ButtonRenderer() {
+		public IdTableRenderer() {
 			setOpaque(false);
 		}
 
@@ -3509,8 +3588,8 @@ public class Home extends JApplet {
 		}
 	}
 
-	// Button Editor Class
-	private class ButtonEditor extends DefaultCellEditor {
+	// Id Table Editor Class
+	private class IdTableEditor extends DefaultCellEditor {
 		/**
 		 * 
 		 */
@@ -3519,7 +3598,7 @@ public class Home extends JApplet {
 		private String label;
 		private boolean isPushed;
 
-		public ButtonEditor(JCheckBox checkBox) {
+		public IdTableEditor(JCheckBox checkBox) {
 			super(checkBox);
 			button = new JButton();
 			button.setOpaque(true);
@@ -3530,6 +3609,7 @@ public class Home extends JApplet {
 					// System.out.println(idTrajectories.get(idTable.getValueAt(row, 0)));
 					idTrajectory = idTrajectories.get(idTable.getValueAt(row, 0));
 					isDisplay = true;
+					isRegion = false;
 					revalidate();
 					repaint();
 					fireEditingStopped();

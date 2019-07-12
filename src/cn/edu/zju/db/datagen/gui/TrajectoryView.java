@@ -21,7 +21,7 @@ public class TrajectoryView extends JPanel {
 	 * Create the panel.
 	 */
 	
-	public TrajectoryView(MovingObj obj, String title) {
+	public TrajectoryView(String objectId) {
 		setLayout(null);
 		
 		JLabel lblDomo = new JLabel("");
@@ -33,7 +33,8 @@ public class TrajectoryView extends JPanel {
 		btnDetail.setBounds(100, 58, 89, 23);
 		add(btnDetail);
 		
-		JLabel label = new JLabel("<< Object Id >>");
+		JLabel label = new JLabel();
+		label.setText(objectId);
 		label.setBounds(100, 33, 89, 14);
 		add(label);
 	}

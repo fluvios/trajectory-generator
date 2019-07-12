@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
@@ -158,17 +159,47 @@ public class IdrObjsUtility {
 		int i = 0;
 		for (Trajectory t : trajectories) {
 			if (t.getFloorId() == floor.getItemID()) {
-                Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.35, 0.35);
-                Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);            			
+				Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+				Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
-                // g2.draw(ellipseNew);
-                g2.setColor(color);
-                g2.fill(ellipseNew);
+				// g2.draw(ellipseNew);
+				g2.setColor(color);
+				g2.fill(ellipseNew);
 
-                g2.setColor(color);
-                g2.draw(ellipseNew);
+				g2.setColor(color);
+				g2.draw(ellipseNew);
 			}
 		}
+	}
+
+	public static void paintRegionTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1,
+			Map<Integer, ArrayList<Trajectory>> trajectories) {
+
+		g2.setStroke(pen1);
+		trajectories.forEach((k, v) -> {
+			Random rand = new Random();
+			// Java 'Color' class takes 3 floats, from 0 to 1.
+			float r = rand.nextFloat();
+			float g = rand.nextFloat();
+			float b = rand.nextFloat();
+
+			Color color = new Color(r, g, b);
+
+			int i = 0;
+			for (Trajectory t : v) {
+				if (t.getFloorId() == floor.getItemID()) {
+					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+					// g2.draw(ellipseNew);
+					g2.setColor(color);
+					g2.fill(ellipseNew);
+
+					g2.setColor(color);
+					g2.draw(ellipseNew);
+				}
+			}
+		});
 	}
 
 	public static void paintTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1,
@@ -187,28 +218,15 @@ public class IdrObjsUtility {
 			int i = 0;
 			for (Trajectory t : temp) {
 				if (t.getFloorId() == floor.getItemID()) {
-					if (i == 0 || i == (temp.size() - 1)) {
-						BufferedImage image = null;
+					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
-						try {
-							image = ImageIO
-									.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
-						} catch (IOException ioe) {
-							ioe.printStackTrace();
-						}
+					// g2.draw(ellipseNew);
+					g2.setColor(color);
+					g2.fill(ellipseNew);
 
-						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 2, 2);
-						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-
-						// g2.draw(ellipseNew);
-						g2.setPaint(new TexturePaint(image, new Rectangle()));
-						g2.fill(ellipseNew);
-
-						g2.setColor(color);
-						g2.draw(ellipseNew);
-					}
-
-					i++;
+					g2.setColor(color);
+					g2.draw(ellipseNew);
 				}
 			}
 		}
