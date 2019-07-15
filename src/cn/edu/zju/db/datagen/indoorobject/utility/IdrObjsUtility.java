@@ -159,15 +159,28 @@ public class IdrObjsUtility {
 		int i = 0;
 		for (Trajectory t : trajectories) {
 			if (t.getFloorId() == floor.getItemID()) {
-				Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
-				Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+				if (i == 0 || i == trajectories.size() - 1) {
+        			BufferedImage image = null;
+        			
+                    try {
+                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                    
+//                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+				} else {
+					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
-				// g2.draw(ellipseNew);
-				g2.setColor(color);
-				g2.fill(ellipseNew);
+					// g2.draw(ellipseNew);
+					g2.setColor(color);
+					g2.fill(ellipseNew);
 
-				g2.setColor(color);
-				g2.draw(ellipseNew);
+					g2.setColor(color);
+					g2.draw(ellipseNew);
+				}
+				i++;
 			}
 		}
 	}

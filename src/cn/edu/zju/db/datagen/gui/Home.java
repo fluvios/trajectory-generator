@@ -3529,8 +3529,11 @@ public class Home extends JApplet {
 
 					connectedPartsModel.clear();
 					updateSelectPartsList();
-					// Testing function for Region Table
-					getTrajectoryInRegion();
+					
+					if(visualSelectedPart != null) {
+						// Testing function for Region Table
+						getTrajectoryInRegion();
+					}
 
 					// possibleConnectedPartsList.clear();
 					// updatePossibleConnectedPartsList();
