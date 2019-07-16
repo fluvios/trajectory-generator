@@ -1,6 +1,0 @@
-Device Type=WIFI
-Deployment Model=Coverage
-Maximum Device Number in a Partition=2
-Maximum Device Number in 100 m^2=1
-Detection Range(m)=20
-Detection Frequency(ms)=55

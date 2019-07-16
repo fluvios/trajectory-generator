@@ -1163,11 +1163,11 @@ public class Home extends JApplet {
 		chooser.setCurrentDirectory(new File(default_path));
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File f) {
-				return f.getName().toLowerCase().endsWith(".json") || f.isDirectory();
+				return f.getName().toLowerCase().endsWith(".zip") || f.isDirectory();
 			}
 
 			public String getDescription() {
-				return "Json Files";
+				return "ZIP Files";
 			}
 		};
 		chooser.setFileFilter(filter);
@@ -1177,7 +1177,7 @@ public class Home extends JApplet {
 			File file = chooser.getSelectedFile();
 			UploadObject object = new UploadObject();
 			object.setFilename(file.getName());
-			object.setFile_type("JSON");
+			object.setFile_type("ZIP");
 			object.setFile_size((int) file.length());
 			object.setDescription("");
 			if (isFileExisted(object) == true) {
