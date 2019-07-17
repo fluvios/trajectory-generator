@@ -48,7 +48,7 @@ public class DB_Main {
             con = DB_Connection.connectToDatabase("conf/moovework.properties");
 
             DB_CreateFunction.CreateRandomPointsInPolygon(con);
-            System.out.println("Done with the test...");
+            System.out.println("Database Creation Success!");
         } catch (SQLException ex) {
             Logger lgr = Logger.getLogger(PreparedStatement.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
