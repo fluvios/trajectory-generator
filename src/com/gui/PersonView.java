@@ -49,9 +49,9 @@ public class PersonView extends JPanel {
 		lblNewLabel.setFont(new Font("Dialog", Font.PLAIN, 11));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		if(obj.getMovementType().equals("normal")) {
-			lblNewLabel.setIcon(new ImageIcon(MachineView.class.getResource("/cn/edu/zju/db/datagen/gui/normal.png")));			
+			lblNewLabel.setIcon(new ImageIcon(MachineView.class.getResource("/com/gui/normal.png")));			
 		} else {
-			lblNewLabel.setIcon(new ImageIcon(MachineView.class.getResource("/cn/edu/zju/db/datagen/gui/wheelchair.png")));
+			lblNewLabel.setIcon(new ImageIcon(MachineView.class.getResource("/com/gui/wheelchair.png")));
 		}
 		add(lblNewLabel, BorderLayout.CENTER);
 		

@@ -339,7 +339,7 @@ public class Home extends JApplet {
 		WebLookAndFeel.install();
 
 		frmTrajectoryGenerator = new JFrame();
-		frmTrajectoryGenerator.setTitle("RITgen");
+		frmTrajectoryGenerator.setTitle("RITGen");
 		frmTrajectoryGenerator.setBounds(100, 100, 1250, 935);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
@@ -2206,11 +2206,11 @@ public class Home extends JApplet {
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
 //		            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"position\"" + "\n";
-				String header = "\"floor\"" + "," + "\"room\"" + "\n";
+				String header = "\"floor\"" + "," + "\"itemId\"" + "," + "\"name\"" + "\n";
 				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Partition par : floor.getPartitions())
-						buff.write((par.writePartition(floor.getName())).getBytes());
+						buff.write((par.writePartition(floor)).getBytes());
 				}
 				buff.close();
 			} catch (FileNotFoundException e) {

@@ -27,15 +27,17 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 	private final int totalBatches;
 
 	private static int numDigits = 3; // Maximum number of room code
-	public static int SEQ_VECTOR_DIM = FloorIterator.getFloorTotal() + FloorIterator.getRoomTotal()+1; // Plus separator char
-	
-    public static final Map<String, Integer> oneHotMap = new IdentityHashMap<String, Integer>();
-    public static final String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
+	public static int SEQ_VECTOR_DIM = FloorIterator.getFloorTotal() + FloorIterator.getRoomTotal() + 1; // Plus
+																											// separator
+																											// char
+
+	public static final Map<String, Integer> oneHotMap = new IdentityHashMap<String, Integer>();
+	public static final String[] oneHotOrder = new String[SEQ_VECTOR_DIM];
 
 //	public static Map<Integer, String> oneHotMap = new HashMap<Integer, String>();
 //	public static String[] oneHotOrder = new String[FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()];
 //	public static List<Integer[]> oneHotBinary;
-	    
+
 	private Set<String> seenSequences = new HashSet<String>();
 	private boolean toTestSet = false;
 	private int currentBatch = 0;
@@ -49,7 +51,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 		this.batchSize = batchSize;
 		this.totalBatches = totalBatches;
-		
+
 		// Need to fix
 		oneHotEncoding();
 	}
@@ -68,7 +70,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		List<INDArray> encoderSeqList = new ArrayList<>();
 		List<INDArray> decoderSeqList = new ArrayList<>();
 		List<INDArray> outputSeqList = new ArrayList<>();
-		
+
 		for (Entry<String, Integer> o : oneHotMap.entrySet()) {
 			// Push the array into list
 			encoderSeqList.add(mapToOneHot(o.getKey()));
@@ -79,13 +81,12 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		encoderSeq = Nd4j.vstack(encoderSeqList);
 		decoderSeq = Nd4j.vstack(decoderSeqList);
 		outputSeq = Nd4j.vstack(outputSeqList);
-		
+
 		INDArray[] inputs = new INDArray[] { encoderSeq, decoderSeq };
-		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(1, 3),
-				Nd4j.ones(1, 3) };
+		INDArray[] inputMasks = new INDArray[] { Nd4j.ones(1, 3), Nd4j.ones(1, 3) };
 		INDArray[] labels = new INDArray[] { outputSeq };
 		INDArray[] labelMasks = new INDArray[] { Nd4j.ones(1, 3) };
-		
+
 		return new org.nd4j.linalg.dataset.MultiDataSet(inputs, labels, inputMasks, labelMasks);
 	}
 
@@ -129,31 +130,31 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	/*
 	 * Takes in an array of strings and return a one hot encoded array of size 1 x
-	 * (Floor+Room) x length of code Each element in the array indicates a time step Length of one
-	 * hot vector = Floor+Room
+	 * (Floor+Room) x length of code Each element in the array indicates a time step
+	 * Length of one hot vector = Floor+Room
 	 */
-    private static INDArray mapToOneHot(String toEncode) {
-        INDArray ret = Nd4j.zeros(1, SEQ_VECTOR_DIM, 3);
-        String [] arrOfVal = toEncode.split(":", 3); 
-        
-        for (int i = 0; i < SEQ_VECTOR_DIM; i++) {
-        	for (int j = 0; j < arrOfVal.length; j++) {
-        		// check if its floor
-        		if(i == Integer.parseInt(arrOfVal[0])) {
-                	ret.putScalar(0, i, 0, 1);
-        		}
-        		
-        		// check if its room
-        		if(i == Integer.parseInt(arrOfVal[0])) {
-                	ret.putScalar(0, i, 2, 1);
-        		}        		
+	private static INDArray mapToOneHot(String toEncode) {
+		INDArray ret = Nd4j.zeros(1, SEQ_VECTOR_DIM, 3);
+		String[] arrOfVal = toEncode.split(":", 3);
+
+		for (int i = 0; i < SEQ_VECTOR_DIM; i++) {
+			for (int j = 0; j < arrOfVal.length; j++) {
+				// check if its floor
+				if (i == Integer.parseInt(arrOfVal[0])) {
+					ret.putScalar(0, i, 0, 1);
+				}
+
+				// check if its room
+				if (i == Integer.parseInt(arrOfVal[0])) {
+					ret.putScalar(0, i, 2, 1);
+				}
 			}
 		}
-        
-    	ret.putScalar(0, SEQ_VECTOR_DIM-1, 1, 1);
-        
-        return ret;
-    }
+
+		ret.putScalar(0, SEQ_VECTOR_DIM - 1, 1, 1);
+
+		return ret;
+	}
 
 	public static String mapToString(INDArray encodeSeq, INDArray decodeSeq) {
 		return mapToString(encodeSeq, decodeSeq, " --> ");
@@ -206,7 +207,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		List<TrajectoryParser> trajectories = new ArrayList<TrajectoryParser>();
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_186.csv"));
+			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_185.csv"));
 
 			String line = "";
 			// Read to skip the header
@@ -214,15 +215,21 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 			// Reading from the second line
 			while ((line = br.readLine()) != null) {
 				String[] trajectDetails = line.split(COMMA_DELIMITER);
-				trajectories.add(new TrajectoryParser(trajectDetails[0], trajectDetails[1],
-						Double.parseDouble(trajectDetails[2]), Double.parseDouble(trajectDetails[3])));
+				trajectories.add(new TrajectoryParser(trajectDetails[1], trajectDetails[2],
+						Double.parseDouble(trajectDetails[3]), Double.parseDouble(trajectDetails[4])));
 			}
 
 			// integer encode input data
 			for (int i = 0; i < trajectories.size(); i++) {
-				oneHotMap.put(FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()),i);
+				oneHotMap.put(FloorIterator.getBinary(trajectories.get(i).getFloor(), trajectories.get(i).getRoom()),
+						i);
 			}
-			
+
+			// for testing purpose
+//			oneHotMap.forEach((k, v) -> {
+//				System.out.println("Key : " + k + " Value : " + v);
+//			});
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

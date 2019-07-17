@@ -33,7 +33,7 @@ public class FloorIterator {
 			// Reading from the second line
 			while ((line = br.readLine()) != null) {
 				String[] floorDetails = line.split(COMMA_DELIMITER);
-				floorList.add(floorDetails[2]);
+				floorList.add(floorDetails[0]);
 			}
 
 			// Convert into binary
@@ -61,7 +61,7 @@ public class FloorIterator {
 			// Reading from the second line
 			while ((line = br.readLine()) != null) {
 				roomDetails = line.split(COMMA_DELIMITER);
-				if (!roomDetails[1].equals("OUTDOOR")) {
+				if (!roomDetails[2].equals("OUTDOOR")) {
 					roomList.put(roomDetails[0], roomDetails[1]);
 				}
 			}
@@ -100,6 +100,14 @@ public class FloorIterator {
 	public static void main(String[] args) {
 		encodeFloor();
 		encodeRoom();
+		
+//		binaryFloor.forEach((k, v) -> {
+//			System.out.println("Key : " + k + " Value : " + v);
+//		});
+//		
+//		binaryRoom.forEach((k, v) -> {
+//			System.out.println("Key : " + k + " Value : " + v);
+//		});
 	}
 
 	public static String getBinary(String floor, String room) {
