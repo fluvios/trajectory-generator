@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,6 +36,7 @@ import com.indoorobject.movingobject.MovingObj;
 import com.indoorobject.movingobject.RegularMultiDestCustomer;
 import com.indoorobject.station.Station;
 import com.trajectory.Trajectory;
+import com.trajectory.VisualTrajectory;
 
 public class IdrObjsUtility {
 
@@ -157,15 +159,25 @@ public class IdrObjsUtility {
 		for (Trajectory t : trajectories) {
 			if (t.getFloorId() == floor.getItemID()) {
 				if (i == 0 || i == trajectories.size() - 1) {
-        			BufferedImage image = null;
-        			
-                    try {
-                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    
+//        			BufferedImage image = null;
+//        			
+//                    try {
+//                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+//                    } catch (IOException ioe) {
+//                        ioe.printStackTrace();
+//                    }
+//                    
 //                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+					Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
+					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+					// g2.draw(ellipseNew);
+					Color background = new Color(255, 255, 255);
+					g2.setColor(background);
+					g2.fill(ellipseNew);
+
+					g2.setColor(color);
+					g2.draw(ellipseNew);
 				} else {
 					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
 					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
@@ -198,18 +210,79 @@ public class IdrObjsUtility {
 			int i = 0;
 			for (Trajectory t : v) {
 				if (t.getFloorId() == floor.getItemID()) {
-					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
-					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+					if (i == 0 || i == trajectories.size() - 1) {
+//	        			BufferedImage image = null;
+//	        			
+//	                    try {
+//	                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+//	                    } catch (IOException ioe) {
+//	                        ioe.printStackTrace();
+//	                    }
+//	                    
+//	                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
+						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
-					// g2.draw(ellipseNew);
-					g2.setColor(color);
-					g2.fill(ellipseNew);
+						// g2.draw(ellipseNew);
+						Color background = new Color(255, 255, 255);
+						g2.setColor(background);
+						g2.fill(ellipseNew);
 
-					g2.setColor(color);
-					g2.draw(ellipseNew);
+						g2.setColor(color);
+						g2.draw(ellipseNew);
+					} else {
+						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+						// g2.draw(ellipseNew);
+						g2.setColor(color);
+						g2.fill(ellipseNew);
+
+						g2.setColor(color);
+						g2.draw(ellipseNew);
+					}
+					
+					i++;
 				}
 			}
 		});
+	}
+	
+	public static void paintRegionTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1,
+			ArrayList<VisualTrajectory> trajectories) {
+
+		g2.setStroke(pen1);
+		for (VisualTrajectory vt : trajectories) {
+			int i = 0;
+			for (Trajectory t : vt.getTrajectories()) {
+				if (t.getFloorId() == floor.getItemID()) {
+					if (i == 0 || i == trajectories.size() - 1) {
+						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
+						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+						// g2.draw(ellipseNew);
+						Color background = new Color(255, 255, 255);
+						g2.setColor(background);
+						g2.fill(ellipseNew);
+
+						g2.setColor(vt.getColor());
+						g2.draw(ellipseNew);
+					} else {
+						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+
+						// g2.draw(ellipseNew);
+						g2.setColor(vt.getColor());
+						g2.fill(ellipseNew);
+
+						g2.setColor(vt.getColor());
+						g2.draw(ellipseNew);
+					}
+					
+					i++;
+				}
+			}
+		}
 	}
 
 	public static void paintTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1,

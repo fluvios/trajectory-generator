@@ -207,7 +207,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		List<TrajectoryParser> trajectories = new ArrayList<TrajectoryParser>();
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_185.csv"));
+			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_55.csv"));
 
 			String line = "";
 			// Read to skip the header

@@ -1,5 +1,8 @@
 package com.algorithm;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.graph.rnn.DuplicateToTimeSeriesVertex;
@@ -10,8 +13,10 @@ import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.api.MultiDataSet;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
@@ -24,10 +29,16 @@ public class NeuralNetwork {
 	public static final int featureNumbers = 5;
 	// Random number generator seed, for reproducability
 	public static final int seed = 1234;
+	
+	// filename of the model
+    private static final String MODEL_FILENAME = "/Kerja/trajectory-generator/data/rnn_train.zip";
+    
+    // filename of the previous version of the model (backup)
+    private static final String BACKUP_MODEL_FILENAME = "/Kerja/trajectory-generator/data/rnn_train.bak.zip";
 
 	// Tweak these to tune the dataset size = batchSize * totalBatches
-	public static int batchSize = 1;
-	public static int totalBatches = 1;
+	public static int batchSize = 10;
+	public static int totalBatches = 100;
 	public static int nEpochs = 20;
 
 	// Tweak the number of hidden nodes
@@ -46,8 +57,15 @@ public class NeuralNetwork {
 		// This is a custom iterator that returns MultiDataSets on each call of next -
 		// More details in comments in the class
 		TrajectoryIterator iterator = new TrajectoryIterator(seed, batchSize, totalBatches);
-		
-		createComputationalGraph();
+
+		File networkFile = new File(MODEL_FILENAME);
+		if (networkFile.exists()) {
+            System.out.println("Loading the existing network...");
+            net = ComputationGraph.load(networkFile, true);
+		} else {
+			System.out.println("Create Computational Graph");
+			createComputationalGraph();
+		}
 
 		// Train model:
 		int iEpoch = 0;
@@ -58,18 +76,18 @@ public class NeuralNetwork {
 			System.out.printf(
 					"* = * = * = * = * = * = * = * = * = ** EPOCH %d ** = * = * = * = * = * = * = * = * = * = * = * = * = * =\n",
 					iEpoch);
-//			MultiDataSet testData = iterator.generateTest(testSize);
-//			INDArray predictions = predictor.output(testData);
-//			encode_decode_eval(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
-//			/*
-//			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
-//			 * output of the decoder is fed back into the input during test time
-//			 */
-//			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
-//			testData = iterator.generateTest(testSize);
-//			predictor.output(testData, true);
-//			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
-//					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
+			MultiDataSet testData = iterator.generateTest(testSize);
+			INDArray predictions = predictor.output(testData);
+			evaluation(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
+			/*
+			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
+			 * output of the decoder is fed back into the input during test time
+			 */
+			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
+			testData = iterator.generateTest(testSize);
+			predictor.output(testData, true);
+			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
+					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
 			iEpoch++;
 		}
 	}
@@ -80,8 +98,7 @@ public class NeuralNetwork {
 				// These are the two inputs to the computation graph
 				.addInputs("additionIn", "sumOut")
 				.setInputTypes(InputType.recurrent(FEATURE_VEC_SIZE), InputType.recurrent(FEATURE_VEC_SIZE))
-				// The inputs to the encoder will have size = minibatch x featuresize x
-				// timesteps
+				// The inputs to the encoder will have size = minibatch x featuresize x timesteps
 				// Note that the network only knows of the feature vector size. It does not know
 				// how many time steps unless it sees an instance of the data
 				.addLayer("encoder",
@@ -113,8 +130,21 @@ public class NeuralNetwork {
 		net.init();
 		net.setListeners(new ScoreIterationListener(1));
 	}
+	
+    private void saveModel(File networkFile) throws IOException {
+        System.out.println("Saving the model...");
+        File backup = new File(BACKUP_MODEL_FILENAME);
+        if (networkFile.exists()) {
+            if (backup.exists()) {
+                backup.delete();
+            }
+            networkFile.renameTo(backup);
+        }
+        ModelSerializer.writeModel(net, networkFile, true);
+        System.out.println("Done.");
+    }
 
-	private static void encode_decode_eval(INDArray predictions, INDArray questions, INDArray answers) {
+	private static void evaluation(INDArray predictions, INDArray questions, INDArray answers) {
 
 		int nTests = (int) predictions.size(0);
 		int wrong = 0;

@@ -116,6 +116,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.spatialgraph.D2DGraph;
 import com.trajectory.Trajectory;
+import com.trajectory.VisualTrajectory;
 
 import diva.util.java2d.Polygon2D;
 
@@ -256,7 +257,7 @@ public class Home extends JApplet {
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
 	private ArrayList<Trajectory> idTrajectory = new ArrayList<Trajectory>();
-//	private ArrayList<Trajectory> regionTrajectory = new ArrayList<Trajectory>();
+	private ArrayList<VisualTrajectory> regionTrajectory = new ArrayList<VisualTrajectory>();
 	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
 
 	private Map<Integer, ArrayList<Trajectory>> idTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
@@ -3066,7 +3067,7 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintStations(visualChosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 			if (idTrajectory != null && isDisplay) {
 				if(isRegion) {
-					IdrObjsUtility.paintRegionTrajectories(visualChosenFloor, g2, tx, Pen1, pathTrajectories);
+					IdrObjsUtility.paintRegionTrajectories(visualChosenFloor, g2, tx, Pen1, regionTrajectory);
 				} else {
 					IdrObjsUtility.paintSingleTrajectories(visualChosenFloor, g2, tx, Pen1, idTrajectory);					
 				}
@@ -3399,6 +3400,9 @@ public class Home extends JApplet {
 
 			// filter trajectory
 			if (visualSelectedPart != null) {
+				// Clear data first
+				regionTrajectory.clear();
+				
 				idTrajectories.forEach((k, v) -> {
 					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
 					for (int i = 0; i < v.size(); i++) {
@@ -3407,6 +3411,7 @@ public class Home extends JApplet {
 						}
 					}
 					pathTrajectories.put(k, temp);
+					regionTrajectory.add(new VisualTrajectory(RandomColor(), temp));
 				});
 			}
 
@@ -3419,6 +3424,18 @@ public class Home extends JApplet {
 			isRegion = true;
 			
 			repaint();
+		}
+		
+		private Color RandomColor() {
+			Random rand = new Random();
+			// Java 'Color' class takes 3 floats, from 0 to 1.
+			float r = rand.nextFloat();
+			float g = rand.nextFloat();
+			float b = rand.nextFloat();
+
+			Color color = new Color(r, g, b);
+			
+			return color;
 		}
 
 		private AffineTransform getCurrentTransform() {
