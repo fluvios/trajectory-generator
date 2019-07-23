@@ -38,7 +38,7 @@ public class NeuralNetwork {
 
 	// Tweak these to tune the dataset size = batchSize * totalBatches
 	public static int batchSize = 10;
-	public static int totalBatches = 100;
+	public static int totalBatches = 500;
 	public static int nEpochs = 20;
 
 	// Tweak the number of hidden nodes
@@ -47,6 +47,52 @@ public class NeuralNetwork {
 	// This is the size of the one hot vector
 	public static int FEATURE_VEC_SIZE;
 	private static ComputationGraph net;
+	
+	public void train(String trainFile,String configFile) throws Exception {
+		// Create List for holding Floor objects
+		FloorIterator.encodeFloor();
+		FloorIterator.encodeRoom();
+		
+		FEATURE_VEC_SIZE = FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()+1;
+		
+		// This is a custom iterator that returns MultiDataSets on each call of next -
+		// More details in comments in the class
+		TrajectoryIterator iterator = new TrajectoryIterator(seed, batchSize, totalBatches, configFile);
+
+		File networkFile = new File(trainFile);
+		if (networkFile.exists()) {
+            System.out.println("Loading the existing network...");
+            net = ComputationGraph.load(networkFile, true);
+		} else {
+			System.out.println("Create Computational Graph");
+			createComputationalGraph();
+		}
+
+		// Train model:
+		int iEpoch = 0;
+		int testSize = 1;
+		TrajectoryProcessor predictor = new TrajectoryProcessor(net);
+		net.fit(iterator);
+		while (iEpoch < nEpochs) {
+			System.out.printf(
+					"* = * = * = * = * = * = * = * = * = ** EPOCH %d ** = * = * = * = * = * = * = * = * = * = * = * = * = * =\n",
+					iEpoch);
+			MultiDataSet testData = iterator.generateTest(testSize);
+			INDArray predictions = predictor.output(testData);
+			evaluation(predictions, testData.getFeatures()[0], testData.getLabels()[0]);
+			/*
+			 * (Comment/Uncomment) the following block of code to (see/or not see) how the
+			 * output of the decoder is fed back into the input during test time
+			 */
+			System.out.println("Printing stepping through the decoder for a minibatch of size three:");
+			testData = iterator.generateTest(testSize);
+			predictor.output(testData, true);
+			System.out.println("\n* = * = * = * = * = * = * = * = * = ** EPOCH " + iEpoch
+					+ " COMPLETE ** = * = * = * = * = * = * = * = * = * = * = * = * = * =");
+			saveModel(networkFile);
+			iEpoch++;
+		}
+	}
 
 	public static void main(String[] args) throws Exception {
 		// Create List for holding Floor objects

@@ -23,7 +23,7 @@ public class FloorIterator {
 		BufferedReader br = null;
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Floors.csv"));
+			br = new BufferedReader(new FileReader("../trajectory-generator/data/dataset/Floors.csv"));
 
 			// Create List for holding Floor objects
 
@@ -53,7 +53,7 @@ public class FloorIterator {
 
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Partitions.csv"));
+			br = new BufferedReader(new FileReader("../trajectory-generator/data/dataset/Partitions.csv"));
 
 			String line = "";
 			// Read to skip the header

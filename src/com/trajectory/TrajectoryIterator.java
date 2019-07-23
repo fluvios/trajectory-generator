@@ -22,6 +22,7 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	private MultiDataSetPreProcessor preProcessor;
 	private Random randnumG;
+	private static String configFile;
 	private final int seed;
 	private final int batchSize;
 	private final int totalBatches;
@@ -44,6 +45,19 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 
 	private static final String COMMA_DELIMITER = ",";
 
+	public TrajectoryIterator(int seed, int batchSize, int totalBatches, String configFile) {
+
+		this.seed = seed;
+		this.randnumG = new Random(seed);
+		this.configFile = configFile;
+
+		this.batchSize = batchSize;
+		this.totalBatches = totalBatches;
+
+		// Need to fix
+		oneHotEncoding();
+	}
+	
 	public TrajectoryIterator(int seed, int batchSize, int totalBatches) {
 
 		this.seed = seed;
@@ -207,7 +221,8 @@ public class TrajectoryIterator implements MultiDataSetIterator {
 		List<TrajectoryParser> trajectories = new ArrayList<TrajectoryParser>();
 		try {
 			// Reading the csv file
-			br = new BufferedReader(new FileReader("/Kerja/trajectory-generator/data/dataset/Dest_Traj_55.csv"));
+			br = new BufferedReader(new FileReader("../trajectory-generator/data/dataset/Dest_Traj_55.csv"));
+//			br = new BufferedReader(new FileReader(configFile + "/Dest_Traj_55.csv"));
 
 			String line = "";
 			// Read to skip the header

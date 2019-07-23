@@ -64,29 +64,29 @@ public class Seq2SeqPredicter {
         int currentStepThrough = 0;
         int stepThroughs = (int)correctOutput.size(2)-1;
 
-        while (currentStepThrough < stepThroughs) {
-            if (print) {
-                System.out.println("In time step "+currentStepThrough);
-                System.out.println("\tEncoder input and Decoder input:");
-                System.out.println(CustomSequenceIterator.mapToString(testSet.getFeatures()[0],decoderInputTemplate, " +  "));
-
-            }
-            ret = stepOnce(testSet, currentStepThrough);
-            if (print) {
-                System.out.println("\tDecoder output:");
-                System.out.println("\t"+String.join("\n\t",CustomSequenceIterator.oneHotDecode(ret)));
-            }
-            currentStepThrough++;
-        }
+//        while (currentStepThrough < stepThroughs) {
+//            if (print) {
+//                System.out.println("In time step "+currentStepThrough);
+//                System.out.println("\tEncoder input and Decoder input:");
+//                System.out.println(CustomSequenceIterator.mapToString(testSet.getFeatures()[0],decoderInputTemplate, " +  "));
+//
+//            }
+//            ret = stepOnce(testSet, currentStepThrough);
+//            if (print) {
+//                System.out.println("\tDecoder output:");
+//                System.out.println("\t"+String.join("\n\t",CustomSequenceIterator.oneHotDecode(ret)));
+//            }
+//            currentStepThrough++;
+//        }
 
         ret = net.output(false,testSet.getFeatures()[0],decoderInputTemplate)[0];
-        if (print) {
-            System.out.println("Final time step "+currentStepThrough);
-            System.out.println("\tEncoder input and Decoder input:");
-            System.out.println(CustomSequenceIterator.mapToString(testSet.getFeatures()[0],decoderInputTemplate, " +  "));
-            System.out.println("\tDecoder output:");
-            System.out.println("\t"+String.join("\n\t",CustomSequenceIterator.oneHotDecode(ret)));
-        }
+//        if (print) {
+//            System.out.println("Final time step "+currentStepThrough);
+//            System.out.println("\tEncoder input and Decoder input:");
+//            System.out.println(CustomSequenceIterator.mapToString(testSet.getFeatures()[0],decoderInputTemplate, " +  "));
+//            System.out.println("\tDecoder output:");
+//            System.out.println("\t"+String.join("\n\t",CustomSequenceIterator.oneHotDecode(ret)));
+//        }
 
         return ret;
     }

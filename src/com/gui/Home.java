@@ -86,6 +86,7 @@ import javax.swing.table.TableCellRenderer;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
+import com.algorithm.NeuralNetwork;
 import com.database.DB_Connection;
 import com.database.DB_FileUploader;
 import com.database.DB_Import;
@@ -123,6 +124,7 @@ import diva.util.java2d.Polygon2D;
 public class Home extends JApplet {
 
 	private static String lastSelectedFileName = null;
+	private String networkFile;
 
 	private JFrame frmTrajectoryGenerator;
 	private JTextField txtselectedNameField;
@@ -1078,9 +1080,14 @@ public class Home extends JApplet {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String outputPath = decideOutputPath();
-//				NeuralNetwork net = new NeuralNetwork();
-//				net.read(outputPath);
+				String configFile = decideOutputPath();
+				NeuralNetwork net = new NeuralNetwork();
+				try {
+					net.train(networkFile, configFile);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -1173,6 +1180,7 @@ public class Home extends JApplet {
 		int result = chooser.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
+			networkFile = file.getPath();
 			UploadObject object = new UploadObject();
 			object.setFilename(file.getName());
 			object.setFile_type("ZIP");
@@ -3143,38 +3151,6 @@ public class Home extends JApplet {
 			}
 		}
 
-		private void paintBackgroundPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
-			partitionsMap.clear();
-			for (Partition r : visualChosenFloor.getPartsAfterDecomposed()) {
-				Polygon2D.Double po = r.getPolygon2D();
-
-				Path2D poNew = (Path2D) tx.createTransformedShape(po);
-				partitionsMap.put(poNew, r);
-
-				// Highlight color
-				g2.setColor(new Color(0, 0, 230));
-				g2.fill(poNew);
-
-				// Background color
-				if (r == visualSelectedPart) {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				} else {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				}
-				g2.draw(poNew);
-
-				paintNameOnPart(r, g2, poNew);
-			}
-			if (visualSelectedPart != null) {
-				paintConnectedPartitions(g2, tx, Pen1, Pen2);
-			}
-		}
-
 		private void paintNameOnPart(Partition r, Graphics2D g2, Path2D poNew) {
 			if (r.getPolygonGIS().numPoints() < 6) {
 
@@ -3402,11 +3378,13 @@ public class Home extends JApplet {
 			if (visualSelectedPart != null) {
 				// Clear data first
 				regionTrajectory.clear();
+				pathTrajectories.clear();
 				
 				idTrajectories.forEach((k, v) -> {
 					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
 					for (int i = 0; i < v.size(); i++) {
 						if (v.get(i).getRoomId() == visualSelectedPart.getItemID()) {
+							System.out.println(v.get(i).getRoomId());
 							temp.add(v.get(i));
 						}
 					}
@@ -3516,6 +3494,7 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
+//							System.out.println("Partition");
 							visualSelectedPart = mapping.getValue();
 							visualSelectedAP = null;
 							visualSelectedCon = null;
@@ -3525,6 +3504,7 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
+//							System.out.println("AP");
 							visualSelectedAP = mapping.getValue();
 							visualSelectedPart = null;
 							visualSelectedCon = null;
@@ -3534,6 +3514,7 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
+//							System.out.println("Connector");
 							visualSelectedCon = mapping.getValue();
 							visualSelectedPart = null;
 							visualSelectedAP = null;
@@ -3627,9 +3608,9 @@ public class Home extends JApplet {
 					idTrajectory = idTrajectories.get(idTable.getValueAt(row, 0));
 					isDisplay = true;
 					isRegion = false;
+					fireEditingStopped();
 					revalidate();
 					repaint();
-					fireEditingStopped();
 				}
 			});
 		}
