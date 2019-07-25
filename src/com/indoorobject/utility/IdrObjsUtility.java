@@ -256,30 +256,15 @@ public class IdrObjsUtility {
 			int i = 0;
 			for (Trajectory t : vt.getTrajectories()) {
 				if (t.getFloorId() == floor.getItemID()) {
-					if (i == 0 || i == trajectories.size() - 1) {
-						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
-						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+					Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
+					Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
-						// g2.draw(ellipseNew);
-						Color background = new Color(255, 255, 255);
-						g2.setColor(background);
-						g2.fill(ellipseNew);
+					// g2.draw(ellipseNew);
+					g2.setColor(vt.getColor());
+					g2.fill(ellipseNew);
 
-						g2.setColor(vt.getColor());
-						g2.draw(ellipseNew);
-					} else {
-						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
-						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-
-						// g2.draw(ellipseNew);
-						g2.setColor(vt.getColor());
-						g2.fill(ellipseNew);
-
-						g2.setColor(vt.getColor());
-						g2.draw(ellipseNew);
-					}
-					
-					i++;
+					g2.setColor(vt.getColor());
+					g2.draw(ellipseNew);
 				}
 			}
 		}

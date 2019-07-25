@@ -37,41 +37,6 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  */
 public class AdditionRNN {
 
-	/*
-	 * This example is modeled off the sequence to sequence RNNs described in
-	 * http://arxiv.org/abs/1410.4615 Specifically, a sequence to sequence NN is
-	 * build for the addition operation. Addition is viewed as a translation task.
-	 * For eg. "12+23 " = " 35" with "12+23 " as the input sequence to be translated
-	 * to the output sequence " 35" For a general idea of seq2seq models refer to
-	 * the image on Pg. 3 in the paper https://arxiv.org/pdf/1406.1078v3
-	 * 
-	 * This example is build using a computation graph with RNN layers. Refer here
-	 * for more details on computation graphs in dl4j
-	 * https://deeplearning4j.org/compgraph And here for RNNs
-	 * https://deeplearning4j.org/usingrnns
-	 * 
-	 * There are two RNN layers to this computation graph. The inputs to them are as
-	 * follows, During training: - encoder RNN layer: Takes in the addition input
-	 * string, eg. '12+13' - decoder RNN layer: Takes in an input that combines the
-	 * following two elements 1. The output of the very last time step of the
-	 * encoder 2. The shifted 'correct' output of the addition (by appending with a
-	 * "Go"), 'Go25 '
-	 * 
-	 * which is then trained to fit to the output of the decoder RNN layer, eg '25 '
-	 * 
-	 * During test the inputs are as follows: - encoder RNN layer: Takes in the
-	 * addition input string '12+13' - decoder RNN layer: For a time step t takes in
-	 * an input that combines the following two elements 1. The output of the very
-	 * last time step of the encoder 2. The output of the decoder at time step, t-1;
-	 * For t = 0 input to the decoder is merely "go"
-	 * 
-	 * One hot vectors are used for encoding/decoding (length of one hot vector is
-	 * 14 for 10 digits and "+"," ",beginning of string and end of string 10 epochs
-	 * give ~85% accuracy for 2 digits 20 epochs give >95% accuracy for 2 digits
-	 * 
-	 * To try out addition for numbers with different number of digits simply change
-	 * "NUM_DIGITS"
-	 */
 
 	public static final int NUM_DIGITS = 2;
 	// Random number generator seed, for reproducability

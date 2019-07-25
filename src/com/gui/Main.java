@@ -282,7 +282,7 @@ public class Main extends JApplet {
 
 		btnImport = new JButton("");
 		btnImport.setBorder(new LineBorder(new Color(0, 0, 0), 0));
-		btnImport.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/import.png")));
+		btnImport.setIcon(new ImageIcon(Main.class.getResource("/com/gui/import.png")));
 		btnImport.setBackground(Color.WHITE);
 		btnImport.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		btnImport.setBounds(0, 0, 30, 30);
@@ -297,7 +297,7 @@ public class Main extends JApplet {
 		btnDeleteFile = new JButton("");
 		btnDeleteFile.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteFile
-				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/com/gui/rubbish.png")));
 		btnDeleteFile.setBackground(Color.WHITE);
 		btnDeleteFile.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 		btnDeleteFile.setBounds(480, 0, 30, 30);
@@ -388,7 +388,7 @@ public class Main extends JApplet {
 		btnDeleteFloor.setBackground(Color.WHITE);
 		btnDeleteFloor.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteFloor
-				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/com/gui/rubbish.png")));
 		btnDeleteFloor.setBounds(500, 8, 16, 25);
 		dbiPanel.add(btnDeleteFloor);
 
@@ -414,7 +414,7 @@ public class Main extends JApplet {
 		btnDeleteEntity.setBorder(new LineBorder(new Color(0, 0, 0), 0));
 		btnDeleteEntity.setBackground(Color.WHITE);
 		btnDeleteEntity
-				.setIcon(new ImageIcon(Main.class.getResource("/cn/edu/zju/db/datagen/gui/rubbish.png")));
+				.setIcon(new ImageIcon(Main.class.getResource("/com/gui/rubbish.png")));
 		btnDeleteEntity.setBounds(500, 53, 16, 25);
 		dbiPanel.add(btnDeleteEntity);
 

@@ -3344,17 +3344,20 @@ public class Home extends JApplet {
 		private void updateSelectPartsList() {
 			connectedPartsModel.clear();
 			if (visualSelectedPart != null) {
+				System.out.println("Partition");
 				txtselectedNameField
 						.setText(visualSelectedPart.getName() + " AND ID: " + visualSelectedPart.getItemID());
 				for (Partition p : visualSelectedPart.getConParts()) {
 					connectedPartsModel.addElement(p);
 				}
 			} else if (visualSelectedAP != null) {
+				System.out.println("AP");
 				txtselectedNameField.setText(visualSelectedAP.getName() + " AND ID: " + visualSelectedAP.getItemID());
 				for (Partition p : visualSelectedAP.getPartitions()) {
 					connectedPartsModel.addElement(p);
 				}
 			} else if (visualSelectedCon != null) {
+				System.out.println("Connector");				
 				txtselectedNameField.setText(visualSelectedCon.getName() + " AND ID: " + visualSelectedCon.getItemID());
 				for (Partition p : visualSelectedCon.getPartitions()) {
 					connectedPartsModel.addElement(p);
@@ -3384,10 +3387,10 @@ public class Home extends JApplet {
 					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
 					for (int i = 0; i < v.size(); i++) {
 						if (v.get(i).getRoomId() == visualSelectedPart.getItemID()) {
-							System.out.println(v.get(i).getRoomId());
 							temp.add(v.get(i));
 						}
 					}
+					
 					pathTrajectories.put(k, temp);
 					regionTrajectory.add(new VisualTrajectory(RandomColor(), temp));
 				});
@@ -3494,7 +3497,6 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
-//							System.out.println("Partition");
 							visualSelectedPart = mapping.getValue();
 							visualSelectedAP = null;
 							visualSelectedCon = null;
@@ -3504,7 +3506,6 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
-//							System.out.println("AP");
 							visualSelectedAP = mapping.getValue();
 							visualSelectedPart = null;
 							visualSelectedCon = null;
@@ -3514,7 +3515,6 @@ public class Home extends JApplet {
 
 					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
 						if (mapping.getKey().contains(startDrag)) {
-//							System.out.println("Connector");
 							visualSelectedCon = mapping.getValue();
 							visualSelectedPart = null;
 							visualSelectedAP = null;
