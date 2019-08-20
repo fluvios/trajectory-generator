@@ -51,9 +51,10 @@ public class Connectivity {
     }
 
     public String writeConnectivity() {
-    	return "\"" + this.ap.getItemID() + "\"" + "," + "\"" + this.ap.getGlobalID() + "\"" + "," + 
-    			"\"" + this.ap.getName() + "\"" + "," + "\"" + this.part1 + "\"" 
-    			+ "," + "\"" + this.part2 + "\"" + "," + "\"" + this.accRules.toString() + "\"" + "," + 
-    			"\"" + this.ap.getLocation2D().getX() + "\"" + "," + "\"" + this.ap.getLocation2D().getY() + "\"" + "\n";
+    	return this.ap.getItemID() + "," +  this.ap.getGlobalID() + "," + 
+    			this.ap.getName() + "," + this.part1 + "," + 
+    			this.part2 + "," + this.accRules.toString() + "," + 
+    			this.ap.getLocation2D().getX() + "," + 
+    			this.ap.getLocation2D().getY() + "\n";
     }
 }

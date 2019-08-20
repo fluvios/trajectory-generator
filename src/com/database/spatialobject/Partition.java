@@ -69,8 +69,14 @@ public class Partition extends FloorItem {
     }
     
     public String writePartition(Floor floor) {
-    	return "\"" + floor.getItemID() + "\"" + "," + "\"" + this.itemID + "\"" + 
-    			"," + "\"" + this.name + "\""  + "\n";
+    	ArrayList<Polygons> polygon = new ArrayList<Polygons>();
+    	
+    	for (int i = 0; i < this.polygon2D.getVertexCount(); i++) {
+			polygon.add(new Polygons(this.polygon2D.getX(i), this.polygon2D.getY(i)));
+		}
+    	
+    	return floor.getItemID() + "," + this.itemID + 
+    			"," + this.name + "," + polygon.toString() + "\n";
     }    
 
     public ArrayList<Partition> getConParts() {
@@ -127,5 +133,23 @@ public class Partition extends FloorItem {
         double randX = Math.random() * (maxX - minX) + minX;
         double randY = Math.random() * (maxY - minY) + minY;
         return new Point2D.Double(randX, randY);
+    }
+    
+    static class Polygons {
+    	Double x;
+    	Double y;
+    	
+		public Polygons(Double x, Double y) {
+			super();
+			this.x = x;
+			this.y = y;
+		}
+		
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return '['+ Double.toString(this.x) +
+					',' + Double.toString(this.y) +']';
+		}
     }
 }

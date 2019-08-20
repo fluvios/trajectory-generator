@@ -47,6 +47,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
@@ -80,6 +81,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -258,11 +260,12 @@ public class Home extends JApplet {
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
-	private ArrayList<Trajectory> idTrajectory = new ArrayList<Trajectory>();
+	private ArrayList<VisualTrajectory> idTrajectory = new ArrayList<VisualTrajectory>();
+	private DefaultTableModel idTrajectoryModel = new DefaultTableModel();
 	private ArrayList<VisualTrajectory> regionTrajectory = new ArrayList<VisualTrajectory>();
 	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
 
-	private Map<Integer, ArrayList<Trajectory>> idTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
+	private Map<Integer, VisualTrajectory> idTrajectories = new HashMap<Integer, VisualTrajectory>();
 	private Map<Integer, ArrayList<Trajectory>> pathTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
@@ -310,6 +313,7 @@ public class Home extends JApplet {
 
 	private JTable idTable;
 	private JTable pathTable;
+	private JButton btnShowTrajectory;
 
 	/**
 	 * Launch the application.
@@ -338,6 +342,7 @@ public class Home extends JApplet {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("serial")
 	private void initialize() {
 		WebLookAndFeel.install();
 
@@ -766,7 +771,7 @@ public class Home extends JApplet {
 		txtEndTime.setBounds(963, 354, 239, 21);
 		panel_2.add(txtEndTime);
 
-		btnShow = new JButton("Show");
+		btnShow = new JButton("Load");
 		btnShow.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnShow.setBackground(Color.WHITE);
 		btnShow.setBounds(1105, 386, 97, 23);
@@ -784,44 +789,53 @@ public class Home extends JApplet {
 		btnDeleteEntity.setBounds(1131, 142, 73, 23);
 		panel_2.add(btnDeleteEntity);
 
-		JLabel lblPositioning = new JLabel("Results");
+		JLabel lblPositioning = new JLabel("Trajectories List");
 		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblPositioning.setBounds(838, 427, 186, 23);
 		panel_2.add(lblPositioning);
 
-		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane_1.setBounds(838, 461, 366, 353);
+		JPanel tabbedPane_1 = new JPanel();
+		tabbedPane_1.setBounds(838, 461, 366, 320);
 		panel_2.add(tabbedPane_1);
-
-		columnId = new Vector();
-		dataId = new Vector();
-
-		columnId.addElement("Object Id");
-		columnId.addElement("Action");
-
-		idTable = new JTable(dataId, columnId);
+		
+		// Model For Path Table
+		idTrajectoryModel = new DefaultTableModel() {
+			
+			@Override
+			public Class<?> getColumnClass(int columnIndex) {
+				// TODO Auto-generated method stub
+				switch (columnIndex) {
+				case 0:
+					return Integer.class;
+				case 1:
+					return Color.class;
+				case 2:
+					return Boolean.class;
+				default:
+					return String.class;
+				}
+			}
+		};
+		
+		idTrajectoryModel.addColumn("User Id");
+		idTrajectoryModel.addColumn("Color");
+		idTrajectoryModel.addColumn("Action");		
+		
+		idTable = new JTable();
 		idTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
 		idTable.setRowSelectionAllowed(false);
 		idTable.setColumnSelectionAllowed(true);
-		idTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
+		idTable.setPreferredScrollableViewportSize(new Dimension(345, 290));
+		idTable.setModel(idTrajectoryModel);
 
 		WebScrollPane panel_3 = new WebScrollPane(idTable);
-		tabbedPane_1.addTab("ID-Based Query", null, panel_3, null);
-
-		columnPath = new Vector();
-		dataPath = new Vector();
-
-		columnPath.addElement("Object Id");
-		columnPath.addElement("Number Of Movement");
+		tabbedPane_1.add(panel_3);
 		
-		pathTable = new JTable(dataPath, columnPath);
-		pathTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
-		pathTable.setRowSelectionAllowed(false);
-		pathTable.setColumnSelectionAllowed(true);
-		pathTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
-
-		WebScrollPane panel_4 = new WebScrollPane(pathTable);
-		tabbedPane_1.addTab("Region-Based Query", null, panel_4, null);
+		btnShowTrajectory = new JButton("Show");
+		btnShowTrajectory.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnShowTrajectory.setBackground(Color.WHITE);
+		btnShowTrajectory.setBounds(1107, 792, 97, 23);
+		panel_2.add(btnShowTrajectory);
 
 		addActionListeners();
 		addFocusListeners();
@@ -2177,7 +2191,7 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-				String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"floorName\"" + "\n";
+				String header = "ITEMID" + "," + "GLOBALID" + "," + "FLOORNAME" + "\n";
 				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					buff.write((floor.writeFloor()).getBytes());
@@ -2195,7 +2209,7 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-				String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"x\"" + "," + "\"y\"" + "\n";
+				String header = "ITEMID" + "," + "GLOBALID" + "," + "X" + "," + "Y" + "\n";
 				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (AccessPoint ap : floor.getAccessPoints())
@@ -2215,7 +2229,7 @@ public class Home extends JApplet {
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
 //		            String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"position\"" + "\n";
-				String header = "\"floor\"" + "," + "\"itemId\"" + "," + "\"name\"" + "\n";
+				String header = "FLOORID" + "," + "ITEMID" + "," + "NAME" + "," + "POLYGON" + "\n";
 				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Partition par : floor.getPartitions())
@@ -2234,7 +2248,7 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-				String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"x\"" + "," + "\"y\"" + "\n";
+				String header = "ITEMID" + "," + "GLOBALID" + "," + "X" + "," + "Y" + "\n";
 				buff.write(header.getBytes());
 				for (Floor floor : DB_WrapperLoad.floorT) {
 					for (Connector connector : floor.getConnectors())
@@ -2253,9 +2267,9 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-				String header = "\"itemId\"" + "," + "\"globalId\"" + "," + "\"name\"" + ","
-						+ "\"firstPartitionGlobalId\"" + "," + "\"secondPartitionGlobalId \"" + "," + "\"accessRule\""
-						+ "," + "\"x\"" + "," + "\"y\"" + "\n";
+				String header = "ITEMID" + "," + "GLOBALID" + "," + "NAME" + ","
+						+ "FIRSTPARTITIONGLOBALID" + "," + "SECONDPARTITIONGLOBALID" + "," + "ACCESSRULE"
+						+ "," + "X" + "," + "Y" + "\n";
 				buff.write(header.getBytes());
 				for (Connectivity connectivity : DB_WrapperLoad.connectivityT) {
 					buff.write((connectivity.writeConnectivity()).getBytes());
@@ -2960,22 +2974,49 @@ public class Home extends JApplet {
 						// Handle Id Table
 						if (trajectories != null) {
 							for (int i = 0; i < trajectories.size(); i++) {
-								idTrajectories.put(trajectories.get(i).get(0).getUserId(), trajectories.get(i));
+								idTrajectories.put(i, 
+										new VisualTrajectory(trajectories.get(i).get(0).getUserId(), 
+												RandomColor(), trajectories.get(i)));
 							}
 						}
 
 						// Add Rows to ID Table
-						DefaultTableModel data = (DefaultTableModel) idTable.getModel();
+						IdTableRenderer tableRender = new IdTableRenderer();
 						idTrajectories.forEach((k, v) -> {
-							data.addRow(new Object[] { k, "Show" });
+							idTrajectoryModel.addRow(new Object[] { 
+									v.getUserId(), "", false });
+							tableRender.setColorForCell(k, 1, v.getColor());
 						});
+						
+						idTable.setDefaultRenderer(Object.class, tableRender);
 
-						idTable.getColumn("Action").setCellRenderer(new IdTableRenderer());
-						idTable.getColumn("Action").setCellEditor(new IdTableEditor(new JCheckBox()));
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+				}
+			});
+			
+			btnShowTrajectory.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					isDisplay = true;
+					idTrajectory.clear();
+
+					for (int i = 0; i < idTable.getRowCount(); i++) {
+					     Boolean isChecked = Boolean.valueOf(idTable.getValueAt(i, 2).toString());
+
+					     if (isChecked) {
+					        //get the values of the columns you need.
+					    	 idTrajectory.add(idTrajectories.get(i));
+					    } else {
+					    	
+					    }
+					}
+					
+					revalidate();
+					repaint();
 				}
 			});
 		}
@@ -3385,9 +3426,9 @@ public class Home extends JApplet {
 				
 				idTrajectories.forEach((k, v) -> {
 					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
-					for (int i = 0; i < v.size(); i++) {
-						if (v.get(i).getRoomId() == visualSelectedPart.getItemID()) {
-							temp.add(v.get(i));
+					for (int i = 0; i < v.getTrajectories().size(); i++) {
+						if (v.getTrajectories().get(i).getRoomId() == visualSelectedPart.getItemID()) {
+							temp.add(v.getTrajectories().get(i));
 						}
 					}
 					
@@ -3527,7 +3568,7 @@ public class Home extends JApplet {
 					
 					if(visualSelectedPart != null) {
 						// Testing function for Region Table
-						getTrajectoryInRegion();
+						// getTrajectoryInRegion();
 					}
 
 					// possibleConnectedPartsList.clear();
@@ -3559,96 +3600,31 @@ public class Home extends JApplet {
 			}
 		}
 	}
-
+	
 	// Id Table Renderer Class
-	private class IdTableRenderer extends JButton implements TableCellRenderer {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
+	private class IdTableRenderer extends DefaultTableCellRenderer {
+		private final Map<String, Color> colorMap = new HashMap<>();
+		
 		public IdTableRenderer() {
-			setOpaque(false);
+			// TODO Auto-generated constructor stub
+			setOpaque(true);
 		}
+		
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            setBackground(null);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            getColorForCell(row, column).ifPresent(this::setBackground);
+            return this;
+        }
 
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			if (isSelected) {
-				setForeground(table.getSelectionForeground());
-//				setBackground(table.getSelectionBackground());
-			} else {
-				setForeground(table.getForeground());
-//				setBackground(UIManager.getColor("Button.background"));
-			}
-			setText((value == null) ? "" : value.toString());
-			return this;
-		}
-	}
+        public void setColorForCell(int row, int col, Color color) {
+            colorMap.put(row + ":" + col, color);
+        }
 
-	// Id Table Editor Class
-	private class IdTableEditor extends DefaultCellEditor {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		protected JButton button;
-		private String label;
-		private boolean isPushed;
-
-		public IdTableEditor(JCheckBox checkBox) {
-			super(checkBox);
-			button = new JButton();
-			button.setOpaque(true);
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					int row = idTable.convertRowIndexToModel(idTable.getEditingRow());
-					// System.out.println(idTrajectories.get(idTable.getValueAt(row, 0)));
-					idTrajectory = idTrajectories.get(idTable.getValueAt(row, 0));
-					isDisplay = true;
-					isRegion = false;
-					fireEditingStopped();
-					revalidate();
-					repaint();
-				}
-			});
-		}
-
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
-				int column) {
-			if (isSelected) {
-				button.setForeground(table.getSelectionForeground());
-				button.setBackground(table.getSelectionBackground());
-			} else {
-				button.setForeground(table.getForeground());
-				button.setBackground(table.getBackground());
-			}
-			label = (value == null) ? "" : value.toString();
-			button.setText(label);
-			isPushed = true;
-			return button;
-		}
-
-		public Object getCellEditorValue() {
-			if (isPushed) {
-				//
-				//
-				// JOptionPane.showMessageDialog(button ,label + ": Ouch!");
-				// System.out.println(label + ": Ouch!");
-
-			}
-			isPushed = false;
-			return new String(label);
-		}
-
-		public boolean stopCellEditing() {
-			isPushed = false;
-			return super.stopCellEditing();
-		}
-
-		protected void fireEditingStopped() {
-			super.fireEditingStopped();
-		}
+        public Optional<Color> getColorForCell(int row, int col) {
+            return Optional.ofNullable(colorMap.get(row + ":" + col));
+        }
 	}
 }

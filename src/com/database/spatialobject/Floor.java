@@ -116,7 +116,7 @@ public class Floor extends Item {
     }
     
     public String writeFloor() {
-    	return "\"" + this.itemID + "\"" + "," + "\"" + this.globalID + "\"" + "," + "\"" + this.name + "\"" + "\n";
+    	return this.itemID + "," + this.globalID + "," + this.name + "\n";
     }
 
     public Partition getOutdoorPart() {

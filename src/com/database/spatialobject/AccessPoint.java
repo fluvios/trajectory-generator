@@ -99,7 +99,7 @@ public class AccessPoint extends FloorItem {
     }
     
     public String writeAccessPoint() {
-    	return "\"" + this.itemID + "\"" + "," + "\"" + this.name + "\"" 
-    			+ "," + "\"" + this.location2D.getX() + "\"" + "," + "\"" + this.location2D.getY() + "\"" + "\n";
+    	return this.itemID + "," + this.name + "," 
+    			+ this.location2D.getX() + "," + this.location2D.getY() + "\n";
     }
 }

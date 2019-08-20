@@ -325,8 +325,8 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
             }
             FileOutputStream outStr = new FileOutputStream(file);
             trajectoryBuff = new BufferedOutputStream(outStr);
-            String comments = "objectId" + "," + "floor" + "," + "room" + "," + "x" + "," + "y" + ","
-                                      + "timestamp" + "\n";
+            String comments = "OBJECTID" + "," + "FLOORID" + "," + "ROOMID" + "," + "X" + "," + "Y" + ","
+                                      + "TIMESTAMP" + "\n";
 //          String comments = "\"timestamp\"" + "," + "\"axis\"" + "," + "\"ordinat\"" + "\n";
             trajectoryBuff.write(comments.getBytes());
         } catch (FileNotFoundException e) {
