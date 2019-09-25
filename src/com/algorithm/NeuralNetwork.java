@@ -99,6 +99,7 @@ public class NeuralNetwork {
 		FloorIterator.encodeFloor();
 		FloorIterator.encodeRoom();
 		FEATURE_VEC_SIZE = FloorIterator.getFloorTotal()+FloorIterator.getRoomTotal()+1;
+		System.out.println(FEATURE_VEC_SIZE     );
 		
 		// This is a custom iterator that returns MultiDataSets on each call of next -
 		// More details in comments in the class
