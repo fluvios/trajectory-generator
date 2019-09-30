@@ -153,10 +153,8 @@ public class Home extends JApplet {
 	private JButton btnObjectStart;
 	private JButton btnObjectStop;
 	private JButton btnSnapShot;
-	private JButton btnMachineUpload;
 	private JButton btnMovingObjUpload;
 	private JButton btnShow;
-	private JButton btnTrain;
 
 	private JPanel filePanel;
 	private JPanel mapPanel;
@@ -206,8 +204,6 @@ public class Home extends JApplet {
 	private JLabel lblDBIEntities;
 	private JLabel lblInputRssiPath;
 
-	public static JTextArea txtConsoleArea;
-
 	private JCheckBox chckbxPositiongData;
 	private JCheckBox chckbxTrajectory;
 	private JCheckBox chckbxTracking;
@@ -216,8 +212,6 @@ public class Home extends JApplet {
 
 	private ButtonGroup visualButtonGroup;
 	private ButtonGroup generateButtonGroup;
-	private JRadioButton chkbxScenario;
-	private JRadioButton chkbxLSTM;
 
 	private JScrollPane scrollPaneConsole;
 	private JScrollPane scrollPanePart;
@@ -231,7 +225,6 @@ public class Home extends JApplet {
 	private JComboBox<String> movObjDistributerTypeComboBox;
 	private JComboBox<UploadObject> fileComboBox;
 	private JComboBox<UploadObject> objectComboBox;
-	private JComboBox<UploadObject> machineComboBox;
 	private JComboBox<Floor> floorCombobox;
 	private JComboBox<Floor> navCombobox;
 	private Calendar startCalendar;
@@ -616,77 +609,11 @@ public class Home extends JApplet {
 		btnDeleteNav.setBounds(1109, 80, 73, 23);
 		panel_1.add(btnDeleteNav);
 
-		JLabel lblMethod = new JLabel("Method:");
-		lblMethod.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblMethod.setBounds(842, 740, 95, 23);
-		panel_1.add(lblMethod);
-
-		chkbxScenario = new JRadioButton("Scenario");
-		chkbxScenario.setSelected(true);
-		chkbxScenario.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chkbxScenario.setBounds(945, 741, 105, 23);
-		panel_1.add(chkbxScenario);
-
-		chkbxLSTM = new JRadioButton("Trajectory Social-LSTM");
-		chkbxLSTM.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chkbxLSTM.setBounds(1061, 740, 144, 23);
-		panel_1.add(chkbxLSTM);
-
 		generateButtonGroup = new ButtonGroup();
-		generateButtonGroup.add(chkbxScenario);
-		generateButtonGroup.add(chkbxLSTM);
 
 		connectedPartsModel = new DefaultListModel<Partition>();
 
 		possibleConnectedPartsList = new ArrayList<>();
-
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Training", null, panel, null);
-		panel.setLayout(null);
-
-		JLabel lblMachineConfiguration = new JLabel("Training Configuration");
-		lblMachineConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMachineConfiguration.setBounds(504, 10, 236, 23);
-		panel.add(lblMachineConfiguration);
-
-		JButton btnMachineClear = new JButton("Clear");
-		btnMachineClear.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnMachineClear.setBackground(Color.WHITE);
-		btnMachineClear.setBounds(703, 98, 97, 23);
-		panel.add(btnMachineClear);
-
-		btnTrain = new JButton("Train");
-		btnTrain.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnTrain.setBackground(Color.WHITE);
-		btnTrain.setBounds(810, 98, 97, 23);
-		panel.add(btnTrain);
-
-		txtConsoleArea = new JTextArea();
-		txtConsoleArea.setEditable(false);
-		txtConsoleArea.setBackground(Color.WHITE);
-		txtConsoleArea.setBounds(12, 10, 480, 804);
-		panel.add(txtConsoleArea);
-
-		btnMachineUpload = new JButton("Upload");
-		btnMachineUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnMachineUpload.setBackground(Color.WHITE);
-		btnMachineUpload.setBounds(594, 98, 97, 23);
-		panel.add(btnMachineUpload);
-
-		JLabel lblNeuralNetwork = new JLabel("Neural Network");
-		lblNeuralNetwork.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblNeuralNetwork.setBounds(504, 43, 113, 23);
-		panel.add(lblNeuralNetwork);
-
-		JLabel label_5 = new JLabel("Files:");
-		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_5.setBounds(504, 64, 113, 23);
-		panel.add(label_5);
-
-		machineComboBox = new JComboBox<UploadObject>();
-		machineComboBox.setBackground(Color.WHITE);
-		machineComboBox.setBounds(619, 45, 288, 23);
-		panel.add(machineComboBox);
 
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Visualization", null, panel_2, null);
@@ -1024,13 +951,6 @@ public class Home extends JApplet {
 
 	private void addActionListeners() {
 
-		btnMachineUpload.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				uploadTrainingFile();
-			}
-		});
-
 		btnMovingObjUpload.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1088,21 +1008,6 @@ public class Home extends JApplet {
 				deleteFile();
 			}
 
-		});
-
-		btnTrain.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String configFile = decideOutputPath();
-				NeuralNetwork net = new NeuralNetwork();
-				try {
-					net.train(networkFile, configFile);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
 		});
 
 	}
@@ -1172,43 +1077,6 @@ public class Home extends JApplet {
 				JOptionPane.showMessageDialog(this, "Uploading File is done!", "Information",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
-		}
-	}
-	
-	private void uploadTrainingFile() {
-		String default_path = System.getProperty("user.dir"); // + "//export
-		// files";
-		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(default_path));
-		FileFilter filter = new FileFilter() {
-			public boolean accept(File f) {
-				return f.getName().toLowerCase().endsWith(".zip") || f.isDirectory();
-			}
-
-			public String getDescription() {
-				return "ZIP Files";
-			}
-		};
-		chooser.setFileFilter(filter);
-
-		int result = chooser.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			networkFile = file.getPath();
-			UploadObject object = new UploadObject();
-			object.setFilename(file.getName());
-			object.setFile_type("ZIP");
-			object.setFile_size((int) file.length());
-			object.setDescription("");
-			if (isFileExisted(object) == true) {
-				System.out.println("File already existed!");
-				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-				txtConsoleArea.append("File Already Existed! PASS\n");
-				return;
-			}
-			
-			machineComboBox.removeAllItems();
-			machineComboBox.addItem(object);
 		}
 	}
 
