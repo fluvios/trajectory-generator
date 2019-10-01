@@ -1,6 +1,6 @@
 {
 		"startTime"	: "19/07/18 17:00:00",
-		"endTime"	: "19/07/18 17:10:00",
+		"endTime"	: "19/07/18 18:30:00",
 		"movingObject" : [
 		{
 			"objectId"	: "student_1",
@@ -10,7 +10,7 @@
 			"movementType"	: "normal",
 			"movingObjectType"	: "Destination",
 			"initialDistribution"	: "Uniform",
-			"objectNumber"	: 20,
+			"objectNumber"	: 50,
 			"lifeSpan"	: 3600,
 			"stepLength"	: 0.03,
 			"moveRate"	: 100,

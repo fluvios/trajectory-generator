@@ -90,8 +90,6 @@ import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
-import org.openstreetmap.gui.jmapviewer.Coordinate;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -1562,7 +1560,6 @@ public class Home extends JApplet {
 					selectedAP = null;
 					selectedCon = null;
 
-					revalidate();
 					repaint();
 				}
 
@@ -2955,7 +2952,6 @@ public class Home extends JApplet {
 					visualSelectedAP = null;
 					visualSelectedCon = null;
 
-					revalidate();
 					repaint();
 				}
 
@@ -3111,7 +3107,6 @@ public class Home extends JApplet {
 					    }
 					}
 					
-					revalidate();
 					repaint();
 				}
 			});
