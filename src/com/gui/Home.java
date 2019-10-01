@@ -85,6 +85,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.jxmapviewer.JXMapViewer;
+import org.jxmapviewer.OSMTileFactoryInfo;
+import org.jxmapviewer.viewer.DefaultTileFactory;
+import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
@@ -122,6 +130,8 @@ import com.trajectory.Trajectory;
 import com.trajectory.VisualTrajectory;
 
 import diva.util.java2d.Polygon2D;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 public class Home extends JApplet {
 
@@ -307,6 +317,15 @@ public class Home extends JApplet {
 	private JTable idTable;
 	private JTable pathTable;
 	private JButton btnShowTrajectory;
+	private JPanel roadPanel;
+	private JButton btnLoadMapOffline;
+	private JButton btnLoadMapOnline;
+	private JTextField textField;
+	private JPanel roadMapPanel;
+	private JPanel roadVisualMapPanel;
+	private JLabel lblPointOfInterest;
+	private JTextField textField_7;
+	private JTextField textField_12;
 
 	/**
 	 * Launch the application.
@@ -340,16 +359,24 @@ public class Home extends JApplet {
 		WebLookAndFeel.install();
 
 		frmTrajectoryGenerator = new JFrame();
-		frmTrajectoryGenerator.setTitle("RITGen");
-		frmTrajectoryGenerator.setBounds(100, 100, 1250, 935);
+		frmTrajectoryGenerator.setTitle("BT-Gen");
+		frmTrajectoryGenerator.setBounds(100, 100, 1298, 992);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
-
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(0, 0, 1276, 936);
+		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
+		
+		JPanel inPanel = new JPanel();
+		tabbedPane.addTab("Indoor Environment", null, inPanel, null);
+		inPanel.setLayout(null);
+		
 		JPanel filePanel = new JPanel();
 		filePanel.setBounds(0, 0, 1234, 45);
-		frmTrajectoryGenerator.getContentPane().add(filePanel);
+		inPanel.add(filePanel);
 		filePanel.setLayout(null);
-
+		
 		fileComboBox = new JComboBox<UploadObject>();
 		fileComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		fileComboBox.setBackground(Color.WHITE);
@@ -379,14 +406,14 @@ public class Home extends JApplet {
 		btnDecompAll.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnDecompAll.setBounds(576, 10, 110, 23);
 		filePanel.add(btnDecompAll);
-
-		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
-		tabbedPane.setFont(new Font("Dialog", Font.PLAIN, 11));
-		tabbedPane.setBounds(0, 43, 1234, 853);
-		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
+		
+		JTabbedPane inTabPane = new JTabbedPane(SwingConstants.TOP);
+		inTabPane.setFont(new Font("Dialog", Font.PLAIN, 11));
+		inTabPane.setBounds(0, 49, 1234, 853);
+		inPanel.add(inTabPane);
 
 		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Generator", null, panel_1, null);
+		inTabPane.addTab("Generator", null, panel_1, null);
 		panel_1.setLayout(null);
 
 		mapPanel = new JPanel();
@@ -616,7 +643,7 @@ public class Home extends JApplet {
 		possibleConnectedPartsList = new ArrayList<>();
 
 		JPanel panel_2 = new JPanel();
-		tabbedPane.addTab("Visualization", null, panel_2, null);
+		inTabPane.addTab("Visualizer", null, panel_2, null);
 		panel_2.setLayout(null);
 
 		mapVisualPanel = new JPanel();
@@ -724,6 +751,207 @@ public class Home extends JApplet {
 		JPanel tabbedPane_1 = new JPanel();
 		tabbedPane_1.setBounds(838, 461, 366, 320);
 		panel_2.add(tabbedPane_1);
+		
+		JPanel outPanel = new JPanel();
+		tabbedPane.addTab("Outdoor Environment", null, outPanel, null);
+		outPanel.setLayout(null);
+		
+		roadPanel = new JPanel();
+		roadPanel.setLayout(null);
+		roadPanel.setBounds(0, 0, 1234, 45);
+		outPanel.add(roadPanel);
+		
+		btnLoadMapOffline = new JButton("Load Map Offline");
+		btnLoadMapOffline.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnLoadMapOffline.setBackground(Color.WHITE);
+		btnLoadMapOffline.setBounds(290, 13, 115, 23);
+		roadPanel.add(btnLoadMapOffline);
+		
+		btnLoadMapOnline = new JButton("Load Map Online");
+		btnLoadMapOnline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			       JXMapViewer mapViewer = new JXMapViewer();
+
+			        // Create a TileFactoryInfo for OpenStreetMap
+			        TileFactoryInfo info = new OSMTileFactoryInfo();
+			        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+			        mapViewer.setTileFactory(tileFactory);
+
+			        // Use 8 threads in parallel to load the tiles
+			        tileFactory.setThreadPoolSize(8);
+
+			        // Set the focus
+			        GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
+
+			        mapViewer.setZoom(7);
+			        mapViewer.setAddressLocation(frankfurt);
+				roadMapPanel.add(mapViewer);
+			}
+		});
+		btnLoadMapOnline.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnLoadMapOnline.setBackground(Color.WHITE);
+		btnLoadMapOnline.setBounds(417, 13, 125, 23);
+		roadPanel.add(btnLoadMapOnline);
+		
+		JLabel lblOsmMap = new JLabel("OSM Map");
+		lblOsmMap.setBounds(15, 13, 69, 20);
+		roadPanel.add(lblOsmMap);
+		
+		textField = new JTextField();
+		textField.setBounds(99, 10, 176, 26);
+		roadPanel.add(textField);
+		textField.setColumns(10);
+		
+		JTabbedPane outTabPane = new JTabbedPane(JTabbedPane.TOP);
+		outTabPane.setFont(new Font("Dialog", Font.PLAIN, 11));
+		outTabPane.setBounds(0, 49, 1234, 853);
+		outPanel.add(outTabPane);
+		
+		JPanel panel = new JPanel();
+		outTabPane.addTab("Generator", null, panel, null);
+		panel.setLayout(null);
+		
+		roadMapPanel = new JPanel();
+		roadMapPanel.setBorder(null);
+		roadMapPanel.setBackground(Color.WHITE);
+		roadMapPanel.setBounds(15, 16, 800, 805);
+		panel.add(roadMapPanel);
+		roadMapPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		lblPointOfInterest = new JLabel("Point Of Interest");
+		lblPointOfInterest.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblPointOfInterest.setBounds(830, 16, 186, 23);
+		panel.add(lblPointOfInterest);
+		
+		JLabel label_1 = new JLabel("Moving Object Configuration");
+		label_1.setFont(new Font("Dialog", Font.PLAIN, 18));
+		label_1.setBounds(830, 285, 237, 23);
+		panel.add(label_1);
+		
+		JLabel label_2 = new JLabel("Scenario");
+		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_2.setBounds(830, 316, 113, 23);
+		panel.add(label_2);
+		
+		JLabel label_3 = new JLabel("Files:");
+		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_3.setBounds(830, 337, 113, 23);
+		panel.add(label_3);
+		
+		JComboBox<UploadObject> comboBox = new JComboBox<UploadObject>();
+		comboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
+		comboBox.setBackground(Color.WHITE);
+		comboBox.setBounds(945, 318, 225, 23);
+		panel.add(comboBox);
+		
+		JButton button = new JButton("Upload");
+		button.setFont(new Font("Dialog", Font.PLAIN, 11));
+		button.setBackground(Color.WHITE);
+		button.setBounds(970, 351, 97, 23);
+		panel.add(button);
+		
+		JButton button_1 = new JButton("Clear");
+		button_1.setFont(new Font("Dialog", Font.PLAIN, 11));
+		button_1.setBackground(Color.WHITE);
+		button_1.setBounds(1073, 351, 97, 23);
+		panel.add(button_1);
+		
+		JPanel panel_6 = new JPanel();
+		panel_6.setBackground(Color.LIGHT_GRAY);
+		panel_6.setBounds(830, 385, 340, 119);
+		panel.add(panel_6);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBackground(Color.LIGHT_GRAY);
+		panel_6.add(scrollPane);
+		
+		JButton button_2 = new JButton("Init");
+		button_2.setBackground(Color.WHITE);
+		button_2.setBounds(830, 528, 80, 25);
+		panel.add(button_2);
+		
+		JButton button_3 = new JButton("Start");
+		button_3.setBackground(Color.WHITE);
+		button_3.setBounds(920, 528, 80, 25);
+		panel.add(button_3);
+		
+		JButton button_4 = new JButton("Stop");
+		button_4.setBackground(Color.WHITE);
+		button_4.setBounds(1010, 528, 80, 25);
+		panel.add(button_4);
+		
+		JButton button_5 = new JButton("Capture");
+		button_5.setBackground(Color.WHITE);
+		button_5.setBounds(1100, 528, 87, 25);
+		panel.add(button_5);
+		
+		JPanel panel_4 = new JPanel();
+		outTabPane.addTab("Visualizer", null, panel_4, null);
+		panel_4.setLayout(null);
+		
+		roadVisualMapPanel = new JPanel();
+		roadVisualMapPanel.setBorder(null);
+		roadVisualMapPanel.setBackground(Color.WHITE);
+		roadVisualMapPanel.setBounds(15, 16, 800, 805);
+		panel_4.add(roadVisualMapPanel);
+		roadVisualMapPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		
+		JLabel label_4 = new JLabel("Movement Patterns");
+		label_4.setFont(new Font("Dialog", Font.PLAIN, 18));
+		label_4.setBounds(830, 16, 186, 23);
+		panel_4.add(label_4);
+		
+		JLabel label_5 = new JLabel("Start Date:");
+		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_5.setBounds(830, 50, 95, 23);
+		panel_4.add(label_5);
+		
+		textField_7 = new JTextField();
+		textField_7.setFont(new Font("Dialog", Font.PLAIN, 11));
+		textField_7.setColumns(10);
+		textField_7.setBounds(955, 50, 239, 21);
+		panel_4.add(textField_7);
+		
+		JLabel label_6 = new JLabel("End Date:");
+		label_6.setFont(new Font("Dialog", Font.PLAIN, 14));
+		label_6.setBounds(830, 83, 95, 23);
+		panel_4.add(label_6);
+		
+		textField_12 = new JTextField();
+		textField_12.setFont(new Font("Dialog", Font.PLAIN, 11));
+		textField_12.setColumns(10);
+		textField_12.setBounds(955, 83, 239, 21);
+		panel_4.add(textField_12);
+		
+		JButton button_6 = new JButton("Load");
+		button_6.setFont(new Font("Dialog", Font.PLAIN, 11));
+		button_6.setBackground(Color.WHITE);
+		button_6.setBounds(1097, 115, 97, 23);
+		panel_4.add(button_6);
+		
+		JLabel label_8 = new JLabel("Trajectories List");
+		label_8.setFont(new Font("Dialog", Font.PLAIN, 18));
+		label_8.setBounds(830, 156, 186, 23);
+		panel_4.add(label_8);
+		
+		JPanel panel_8 = new JPanel();
+		panel_8.setBounds(830, 190, 366, 320);
+		panel_4.add(panel_8);
+		
+		WebScrollPane webScrollPane = new WebScrollPane((Component) null);
+		panel_8.add(webScrollPane);
+		
+		JButton button_7 = new JButton("Show");
+		button_7.setFont(new Font("Dialog", Font.PLAIN, 11));
+		button_7.setBackground(Color.WHITE);
+		button_7.setBounds(1099, 521, 97, 23);
+		panel_4.add(button_7);
+
+		generateButtonGroup = new ButtonGroup();
+
+		connectedPartsModel = new DefaultListModel<Partition>();
+
+		possibleConnectedPartsList = new ArrayList<>();
 		
 		// Model For Path Table
 		idTrajectoryModel = new DefaultTableModel() {
@@ -965,7 +1193,7 @@ public class Home extends JApplet {
 				updateFileChooser();
 				if (files.size() > 0) {
 					fileComboBox.setSelectedItem(files.get(files.size() - 1));
-					printUploadInfo();
+//					printUploadInfo();
 					switchStateForButtons(InteractionState.AFTER_IMPORT);
 				}
 			}
@@ -1012,24 +1240,24 @@ public class Home extends JApplet {
 
 	}
 
-	private void printUploadInfo() {
-		txtConsoleArea.append("You have extracted: \n");
-		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
-		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
-		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
-		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
-		txtConsoleArea.append("----------------------------------------------------------------\n");
-	}
+//	private void printUploadInfo() {
+//		txtConsoleArea.append("You have extracted: \n");
+//		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
+//		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
+//		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
+//		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
+//		txtConsoleArea.append("----------------------------------------------------------------\n");
+//	}
 
-	private void printPartAPInfo() {
-		txtConsoleArea.append("Viewing File " + fileChosen.getUploadId() + ". " + fileChosen.getFilename() + "\n");
-		txtConsoleArea.append("There are in total: \n");
-		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
-		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
-		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
-		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
-		txtConsoleArea.append("----------------------------------------------------------------\n");
-	}
+//	private void printPartAPInfo() {
+//		txtConsoleArea.append("Viewing File " + fileChosen.getUploadId() + ". " + fileChosen.getFilename() + "\n");
+//		txtConsoleArea.append("There are in total: \n");
+//		txtConsoleArea.append(DB_WrapperLoad.floorT.size() + " floors\n");
+//		txtConsoleArea.append(DB_WrapperLoad.partitionT.size() + " partitions\n");
+//		txtConsoleArea.append(DB_WrapperLoad.accesspointT.size() + " doors\n");
+//		txtConsoleArea.append(DB_WrapperLoad.connectorT.size() + " stairs\n");
+//		txtConsoleArea.append("----------------------------------------------------------------\n");
+//	}
 
 	private void uploadFile() {
 		String default_path = System.getProperty("user.dir"); // + "//export
@@ -1109,7 +1337,7 @@ public class Home extends JApplet {
 			if (isFileExisted(object) == true) {
 				System.out.println("File already existed!");
 				JOptionPane.showMessageDialog(this, "File already existed!", "Error", JOptionPane.ERROR_MESSAGE);
-				txtConsoleArea.append("File Already Existed! PASS\n");
+//				txtConsoleArea.append("File Already Existed! PASS\n");
 				return;
 			}
 
@@ -1191,7 +1419,7 @@ public class Home extends JApplet {
 			mapVisualPanel.add(mapVisualPainter);
 
 			switchStateForButtons(InteractionState.AFTER_VIEW_FILE_NO_CHANGE);
-			printPartAPInfo();
+//			printPartAPInfo();
 		} else if (n == JOptionPane.NO_OPTION) {
 			// Nothing
 		} else {
@@ -1208,7 +1436,7 @@ public class Home extends JApplet {
 
 			try {
 				fileChosen = (UploadObject) fileComboBox.getSelectedItem();
-				txtConsoleArea.append(fileChosen.getFilename() + " is deleted!!!\n");
+//				txtConsoleArea.append(fileChosen.getFilename() + " is deleted!!!\n");
 				DB_WrapperDelete.deleteFile(connection, fileChosen);
 				connection.close();
 			} catch (SQLException ex) {
@@ -1415,9 +1643,9 @@ public class Home extends JApplet {
 						if (chckbxTrajectory.isSelected() || chckbxTracking.isSelected()) {
 
 							// for Trajectory LSTM Case
-							if (chkbxLSTM.isSelected()) {
-								test();
-							}
+//							if (chkbxLSTM.isSelected()) {
+//								test();
+//							}
 
 							String outputPath = decideOutputPath();
 							if (outputPath != null) {
