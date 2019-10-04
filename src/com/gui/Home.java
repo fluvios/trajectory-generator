@@ -121,52 +121,34 @@ import com.indoorobject.station.Station;
 import com.indoorobject.utility.IdrObjsUtility;
 import com.json.TimeDeserializer;
 import com.json.TimeSerializer;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.spatialgraph.D2DGraph;
-import com.trajectory.Trajectory;
-import com.trajectory.VisualTrajectory;
 
 import diva.util.java2d.Polygon2D;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 public class Home extends JApplet {
 
 	private static String lastSelectedFileName = null;
-	private String networkFile;
-
 	private JFrame frmTrajectoryGenerator;
-	private JTextField txtselectedNameField;
 	private JTextField txtStationMaxNumInPart;
 	private JTextField txtStationMaxNumInArea;
 	private JTextField txtScanRange;
 	private JTextField txtScanRate;
-	private JTextField txtMaxMovObjNumInPart;
-	private JTextField txtMaximumLifeSpan;
-	private JTextField txtMaxStepLength;
-	private JTextField txtMoveRate;
-	private JTextField txtStartTime;
-	private JTextField txtEndTime;
 
 	private JButton btnImport;
 	private JButton btnDeleteFile;
 	private JButton btnView;
 	private JButton btnDecompAll;
 	private JButton btnDeleteNav;
-	private JButton btnDeleteFloor;
-	private JButton btnDeleteEntity;
 	private JButton btnStationGenerate;
 	private JButton btnObjectInit;
 	private JButton btnObjectStart;
 	private JButton btnObjectStop;
 	private JButton btnSnapShot;
 	private JButton btnMovingObjUpload;
-	private JButton btnShow;
 
 	private JPanel filePanel;
 	private JPanel mapPanel;
-	private JPanel mapVisualPanel;
 	private JPanel controlPanel;
 	private JPanel dbiPanel;
 	private JPanel uclPanel;
@@ -222,7 +204,6 @@ public class Home extends JApplet {
 	private ButtonGroup generateButtonGroup;
 
 	private JScrollPane scrollPaneConsole;
-	private JScrollPane scrollPanePart;
 	private JScrollPane movingObjectScroll;
 
 	private JTabbedPane tabbedVITAPane;
@@ -233,13 +214,11 @@ public class Home extends JApplet {
 	private JComboBox<String> movObjDistributerTypeComboBox;
 	private JComboBox<UploadObject> fileComboBox;
 	private JComboBox<UploadObject> objectComboBox;
-	private JComboBox<Floor> floorCombobox;
 	private JComboBox<Floor> navCombobox;
 	private Calendar startCalendar;
 	private Calendar endCalendar;
 
 	private MapPainter mapPainter;
-	private MapVisualPainter mapVisualPainter;
 
 	private Connection connection = null;
 	private UploadObject fileChosen = null;
@@ -248,32 +227,17 @@ public class Home extends JApplet {
 	private Partition selectedPart = null;
 	private AccessPoint selectedAP = null;
 	private Connector selectedCon = null;
-	private JList<Partition> connectedPartsList;
 	private DefaultListModel<Partition> connectedPartsModel;
-
-	private Floor visualChosenFloor = null;
-	private Partition visualSelectedPart = null;
-	private AccessPoint visualSelectedAP = null;
-	private Connector visualSelectedCon = null;
-	private JList<Partition> visualConnectedPartsList;
-	private DefaultListModel<Partition> visualConnectedPartsModel;
 
 	private ArrayList<UploadObject> files = null;
 	private ArrayList<MovingObj> movingObjs = new ArrayList<MovingObj>();
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
-	private ArrayList<VisualTrajectory> idTrajectory = new ArrayList<VisualTrajectory>();
 	private DefaultTableModel idTrajectoryModel = new DefaultTableModel();
-	private ArrayList<VisualTrajectory> regionTrajectory = new ArrayList<VisualTrajectory>();
-	private ArrayList<ArrayList<Trajectory>> trajectories = new ArrayList<ArrayList<Trajectory>>();
 
-	private Map<Integer, VisualTrajectory> idTrajectories = new HashMap<Integer, VisualTrajectory>();
-	private Map<Integer, ArrayList<Trajectory>> pathTrajectories = new HashMap<Integer, ArrayList<Trajectory>>();
 	private MovingObjResponse movingObj;
 	private MovingObj[] persons;
 
 	private boolean empty = false;
-	private boolean isDisplay = false;
-	private boolean isRegion = false;
 	private double zoom = 1;
 	private double previousX;
 	private double previousY;
@@ -314,7 +278,6 @@ public class Home extends JApplet {
 
 	private JTable idTable;
 	private JTable pathTable;
-	private JButton btnShowTrajectory;
 	private JPanel roadPanel;
 	private JButton btnLoadMapOffline;
 	private JButton btnLoadMapOnline;
@@ -358,197 +321,199 @@ public class Home extends JApplet {
 
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("BT-Gen");
-		frmTrajectoryGenerator.setBounds(100, 100, 1298, 992);
+		frmTrajectoryGenerator.setBounds(100, 100, 1250, 988);
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
-		
+
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 1276, 936);
+		tabbedPane.setBounds(0, 0, 1238, 949);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
-		
+
 		JPanel inPanel = new JPanel();
 		tabbedPane.addTab("Indoor Environment", null, inPanel, null);
 		inPanel.setLayout(null);
-		
+
 		JPanel filePanel = new JPanel();
-		filePanel.setBounds(0, 0, 1234, 45);
+		filePanel.setBounds(0, 0, 1234, 72);
 		inPanel.add(filePanel);
 		filePanel.setLayout(null);
-		
+
 		fileComboBox = new JComboBox<UploadObject>();
 		fileComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		fileComboBox.setBackground(Color.WHITE);
-		fileComboBox.setBounds(12, 10, 225, 23);
+		fileComboBox.setBounds(10, 38, 225, 23);
 		filePanel.add(fileComboBox);
 
 		btnImport = new JButton("Import");
 		btnImport.setBackground(Color.WHITE);
 		btnImport.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnImport.setBounds(249, 10, 97, 23);
+		btnImport.setBounds(247, 38, 97, 23);
 		filePanel.add(btnImport);
 
 		btnDeleteFile = new JButton("Clear");
 		btnDeleteFile.setBackground(Color.WHITE);
 		btnDeleteFile.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnDeleteFile.setBounds(358, 10, 97, 23);
+		btnDeleteFile.setBounds(356, 38, 97, 23);
 		filePanel.add(btnDeleteFile);
 
 		btnView = new JButton("Load");
 		btnView.setBackground(Color.WHITE);
 		btnView.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnView.setBounds(467, 10, 97, 23);
+		btnView.setBounds(463, 38, 97, 23);
 		filePanel.add(btnView);
 
 		btnDecompAll = new JButton("Decompose");
 		btnDecompAll.setBackground(Color.WHITE);
 		btnDecompAll.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnDecompAll.setBounds(576, 10, 110, 23);
+		btnDecompAll.setBounds(574, 38, 110, 23);
 		filePanel.add(btnDecompAll);
-		
-		JTabbedPane inTabPane = new JTabbedPane(SwingConstants.TOP);
-		inTabPane.setFont(new Font("Dialog", Font.PLAIN, 11));
-		inTabPane.setBounds(0, 49, 1234, 853);
-		inPanel.add(inTabPane);
 
-		JPanel panel_1 = new JPanel();
-		inTabPane.addTab("Generator", null, panel_1, null);
-		panel_1.setLayout(null);
+		JLabel lblFileLoader = new JLabel("File Loader");
+		lblFileLoader.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblFileLoader.setBounds(10, 11, 186, 23);
+		filePanel.add(lblFileLoader);
+
+		JPanel inGenPanel = new JPanel();
+		inGenPanel.setBounds(0, 73, 1234, 848);
+		inPanel.add(inGenPanel);
+		inGenPanel.setLayout(null);
 
 		mapPanel = new JPanel();
 		mapPanel.setBorder(null);
 		mapPanel.setBackground(Color.WHITE);
 		mapPanel.setBounds(12, 10, 800, 805);
-		panel_1.add(mapPanel);
+		inGenPanel.add(mapPanel);
+		mapPanel.setLayout(null);
 
 		JLabel lblDeviceConfiguration = new JLabel("Device Configuration");
 		lblDeviceConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblDeviceConfiguration.setBounds(842, 116, 186, 23);
-		panel_1.add(lblDeviceConfiguration);
+		inGenPanel.add(lblDeviceConfiguration);
 
 		JLabel lblExport = new JLabel("Export:");
 		lblExport.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblExport.setBounds(842, 146, 95, 23);
-		panel_1.add(lblExport);
+		inGenPanel.add(lblExport);
 
 		chckbxEnvironment = new JCheckBox("Environment");
 		chckbxEnvironment.setFont(new Font("Dialog", Font.PLAIN, 11));
 		chckbxEnvironment.setBounds(945, 149, 105, 23);
-		panel_1.add(chckbxEnvironment);
+		inGenPanel.add(chckbxEnvironment);
 
 		chckbxPositioningDevice = new JCheckBox("Device Position");
 		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 11));
 		chckbxPositioningDevice.setBounds(1065, 149, 121, 23);
-		panel_1.add(chckbxPositioningDevice);
+		inGenPanel.add(chckbxPositioningDevice);
 
 		JLabel lblDevice = new JLabel("Device");
 		lblDevice.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblDevice.setBounds(842, 179, 95, 23);
-		panel_1.add(lblDevice);
+		inGenPanel.add(lblDevice);
 
 		JLabel lblType = new JLabel("Type:");
 		lblType.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblType.setBounds(842, 200, 95, 23);
-		panel_1.add(lblType);
+		inGenPanel.add(lblType);
 
 		stationTypeComboBox = new JComboBox();
 		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationTypeComboBox.setBackground(Color.WHITE);
-		stationTypeComboBox.setBounds(945, 193, 237, 21);
-		panel_1.add(stationTypeComboBox);
+		stationTypeComboBox.setBounds(945, 193, 247, 21);
+		inGenPanel.add(stationTypeComboBox);
 
 		stationDistriTypeComboBox = new JComboBox();
 		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationDistriTypeComboBox.setBackground(Color.WHITE);
-		stationDistriTypeComboBox.setBounds(945, 247, 237, 21);
-		panel_1.add(stationDistriTypeComboBox);
+		stationDistriTypeComboBox.setBounds(945, 247, 247, 21);
+		inGenPanel.add(stationDistriTypeComboBox);
 
 		JLabel lblDeployment = new JLabel("Deployment");
 		lblDeployment.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblDeployment.setBounds(842, 233, 95, 23);
-		panel_1.add(lblDeployment);
+		inGenPanel.add(lblDeployment);
 
 		JLabel lblModel_1 = new JLabel("Model:");
 		lblModel_1.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblModel_1.setBounds(842, 254, 95, 23);
-		panel_1.add(lblModel_1);
+		inGenPanel.add(lblModel_1);
 
 		JLabel lblDevice_1 = new JLabel("Device");
 		lblDevice_1.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblDevice_1.setBounds(842, 297, 95, 23);
-		panel_1.add(lblDevice_1);
+		inGenPanel.add(lblDevice_1);
 
 		JLabel lblNumber = new JLabel("Number:");
 		lblNumber.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblNumber.setBounds(842, 318, 95, 23);
-		panel_1.add(lblNumber);
+		inGenPanel.add(lblNumber);
 
 		txtStationMaxNumInPart = new JTextField();
 		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInPart.setToolTipText("Maximum for each room");
 		txtStationMaxNumInPart.setColumns(10);
-		txtStationMaxNumInPart.setBounds(945, 289, 237, 21);
-		panel_1.add(txtStationMaxNumInPart);
+		txtStationMaxNumInPart.setBounds(945, 289, 247, 21);
+		inGenPanel.add(txtStationMaxNumInPart);
 
 		txtStationMaxNumInArea = new JTextField();
 		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInArea.setToolTipText("Maximum for each 100 meter square");
 		txtStationMaxNumInArea.setColumns(10);
-		txtStationMaxNumInArea.setBounds(945, 320, 237, 21);
-		panel_1.add(txtStationMaxNumInArea);
+		txtStationMaxNumInArea.setBounds(945, 320, 247, 21);
+		inGenPanel.add(txtStationMaxNumInArea);
 
 		JLabel lblDetection = new JLabel("Detection");
 		lblDetection.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblDetection.setBounds(842, 351, 95, 23);
-		panel_1.add(lblDetection);
+		inGenPanel.add(lblDetection);
 
 		JLabel lblRange = new JLabel("Range:");
 		lblRange.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblRange.setBounds(842, 372, 95, 23);
-		panel_1.add(lblRange);
+		inGenPanel.add(lblRange);
 
 		txtScanRange = new JTextField();
 		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRange.setColumns(10);
-		txtScanRange.setBounds(945, 365, 237, 21);
-		panel_1.add(txtScanRange);
+		txtScanRange.setBounds(945, 365, 247, 21);
+		inGenPanel.add(txtScanRange);
 
 		JLabel lblDetection_1 = new JLabel("Detection");
 		lblDetection_1.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblDetection_1.setBounds(842, 405, 95, 23);
-		panel_1.add(lblDetection_1);
+		inGenPanel.add(lblDetection_1);
 
 		JLabel lblFrequency = new JLabel("Frequency:");
 		lblFrequency.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblFrequency.setBounds(842, 426, 95, 23);
-		panel_1.add(lblFrequency);
+		inGenPanel.add(lblFrequency);
 
 		txtScanRate = new JTextField();
 		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRate.setColumns(10);
-		txtScanRate.setBounds(945, 419, 237, 21);
-		panel_1.add(txtScanRate);
+		txtScanRate.setBounds(945, 419, 247, 21);
+		inGenPanel.add(txtScanRate);
 
 		btnStationGenerate = new JButton("Generate");
 		btnStationGenerate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnStationGenerate.setBackground(Color.WHITE);
-		btnStationGenerate.setBounds(1085, 450, 97, 23);
-		panel_1.add(btnStationGenerate);
+		btnStationGenerate.setBounds(1095, 451, 97, 23);
+		inGenPanel.add(btnStationGenerate);
 
 		JLabel lblMovingObjectConfiguration = new JLabel("Moving Object Configuration");
 		lblMovingObjectConfiguration.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblMovingObjectConfiguration.setBounds(842, 483, 237, 23);
-		panel_1.add(lblMovingObjectConfiguration);
+		inGenPanel.add(lblMovingObjectConfiguration);
 
 		JButton btnClear_1 = new JButton("Clear");
 		btnClear_1.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnClear_1.setBackground(Color.WHITE);
-		btnClear_1.setBounds(1085, 549, 97, 23);
-		panel_1.add(btnClear_1);
+		btnClear_1.setBounds(1095, 549, 97, 23);
+		inGenPanel.add(btnClear_1);
 
 		movingObjectPanel = new JPanel();
 		movingObjectPanel.setBackground(Color.LIGHT_GRAY);
-		movingObjectPanel.setBounds(842, 583, 340, 119);
-		panel_1.add(movingObjectPanel);
+		movingObjectPanel.setBounds(842, 583, 350, 119);
+		inGenPanel.add(movingObjectPanel);
 
 		movingObjectScroll = new JScrollPane();
 		movingObjectScroll.setBackground(Color.LIGHT_GRAY);
@@ -557,82 +522,92 @@ public class Home extends JApplet {
 
 		btnObjectInit = new JButton("Init");
 		btnObjectInit.setBackground(Color.WHITE);
-		btnObjectInit.setBounds(842, 790, 80, 25);
-		panel_1.add(btnObjectInit);
+		btnObjectInit.setBounds(842, 744, 80, 25);
+		inGenPanel.add(btnObjectInit);
 
 		btnObjectStart = new JButton("Start");
 		btnObjectStart.setBackground(Color.WHITE);
-		btnObjectStart.setBounds(932, 790, 80, 25);
-		panel_1.add(btnObjectStart);
+		btnObjectStart.setBounds(932, 744, 80, 25);
+		inGenPanel.add(btnObjectStart);
 
 		btnObjectStop = new JButton("Stop");
 		btnObjectStop.setBackground(Color.WHITE);
-		btnObjectStop.setBounds(1022, 790, 80, 25);
-		panel_1.add(btnObjectStop);
+		btnObjectStop.setBounds(1022, 744, 80, 25);
+		inGenPanel.add(btnObjectStop);
 
 		btnMovingObjUpload = new JButton("Upload");
 		btnMovingObjUpload.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnMovingObjUpload.setBackground(Color.WHITE);
 		btnMovingObjUpload.setBounds(982, 549, 97, 23);
-		panel_1.add(btnMovingObjUpload);
+		inGenPanel.add(btnMovingObjUpload);
 
 		chckbxTrajectory = new JCheckBox("Trajectory");
 		chckbxTrajectory.setFont(new Font("Dialog", Font.PLAIN, 11));
 		chckbxTrajectory.setBounds(941, 714, 105, 23);
-		panel_1.add(chckbxTrajectory);
+		inGenPanel.add(chckbxTrajectory);
 
 		chckbxTracking = new JCheckBox("Raw RSSI");
 		chckbxTracking.setFont(new Font("Dialog", Font.PLAIN, 11));
 		chckbxTracking.setBounds(1061, 714, 121, 23);
-		panel_1.add(chckbxTracking);
+		inGenPanel.add(chckbxTracking);
 
 		JLabel label = new JLabel("Export:");
 		label.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label.setBounds(842, 711, 91, 23);
-		panel_1.add(label);
+		inGenPanel.add(label);
 
 		objectComboBox = new JComboBox<UploadObject>();
 		objectComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		objectComboBox.setBackground(Color.WHITE);
-		objectComboBox.setBounds(957, 516, 225, 23);
-		panel_1.add(objectComboBox);
+		objectComboBox.setBounds(957, 516, 235, 23);
+		inGenPanel.add(objectComboBox);
 
 		JLabel lblConfiguration = new JLabel("Scenario");
 		lblConfiguration.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblConfiguration.setBounds(842, 514, 113, 23);
-		panel_1.add(lblConfiguration);
+		inGenPanel.add(lblConfiguration);
 
 		JLabel lblFiles = new JLabel("Files:");
 		lblFiles.setFont(new Font("Dialog", Font.PLAIN, 14));
 		lblFiles.setBounds(842, 535, 113, 23);
-		panel_1.add(lblFiles);
+		inGenPanel.add(lblFiles);
 
 		btnSnapShot = new JButton("Capture");
 		btnSnapShot.setBackground(Color.WHITE);
-		btnSnapShot.setBounds(1112, 790, 80, 25);
-		panel_1.add(btnSnapShot);
+		btnSnapShot.setBounds(1112, 744, 80, 25);
+		inGenPanel.add(btnSnapShot);
 
 		JLabel lblNavigation = new JLabel("Navigation");
 		lblNavigation.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblNavigation.setBounds(842, 10, 186, 23);
-		panel_1.add(lblNavigation);
+		inGenPanel.add(lblNavigation);
 
 		JLabel label_7 = new JLabel("Floor:");
 		label_7.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label_7.setBounds(842, 43, 113, 23);
-		panel_1.add(label_7);
+		inGenPanel.add(label_7);
 
 		navCombobox = new JComboBox<Floor>();
 		navCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		navCombobox.setBackground(Color.WHITE);
-		navCombobox.setBounds(967, 45, 215, 23);
-		panel_1.add(navCombobox);
+		navCombobox.setBounds(967, 45, 225, 23);
+		inGenPanel.add(navCombobox);
 
 		btnDeleteNav = new JButton("Clear");
 		btnDeleteNav.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnDeleteNav.setBackground(Color.WHITE);
-		btnDeleteNav.setBounds(1109, 80, 73, 23);
-		panel_1.add(btnDeleteNav);
+		btnDeleteNav.setBounds(1119, 80, 73, 23);
+		inGenPanel.add(btnDeleteNav);
+
+		JLabel lblVisualization = new JLabel("Visualization");
+		lblVisualization.setFont(new Font("Dialog", Font.PLAIN, 18));
+		lblVisualization.setBounds(842, 780, 237, 23);
+		inGenPanel.add(lblVisualization);
+
+		JButton btnDisplayVisualization = new JButton("Display Visualization");
+		btnDisplayVisualization.setBackground(Color.WHITE);
+		btnDisplayVisualization.setBounds(842, 812, 127, 25);
+		inGenPanel.add(btnDisplayVisualization);
 
 		generateButtonGroup = new ButtonGroup();
 
@@ -640,149 +615,39 @@ public class Home extends JApplet {
 
 		possibleConnectedPartsList = new ArrayList<>();
 
-		JPanel panel_2 = new JPanel();
-		inTabPane.addTab("Visualizer", null, panel_2, null);
-		panel_2.setLayout(null);
-
-		mapVisualPanel = new JPanel();
-		mapVisualPanel.setBorder(null);
-		mapVisualPanel.setBackground(Color.WHITE);
-		mapVisualPanel.setBounds(12, 10, 800, 805);
-		panel_2.add(mapVisualPanel);
-
-		JLabel lblBuildingDetails = new JLabel("Building Details");
-		lblBuildingDetails.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblBuildingDetails.setBounds(840, 10, 186, 23);
-		panel_2.add(lblBuildingDetails);
-
-		floorCombobox = new JComboBox<Floor>();
-		floorCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
-		floorCombobox.setBackground(Color.WHITE);
-		floorCombobox.setBounds(965, 45, 239, 23);
-		panel_2.add(floorCombobox);
-
-		JLabel lblFloor = new JLabel("Floor:");
-		lblFloor.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblFloor.setBounds(840, 43, 113, 23);
-		panel_2.add(lblFloor);
-
-		JLabel lblDetails = new JLabel("Details:");
-		lblDetails.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblDetails.setBounds(840, 175, 113, 23);
-		panel_2.add(lblDetails);
-
-		scrollPanePart = new JScrollPane();
-		scrollPanePart.setBounds(965, 177, 239, 88);
-		panel_2.add(scrollPanePart);
-		connectedPartsList = new JList<Partition>(connectedPartsModel);
-		connectedPartsList.setBackground(Color.WHITE);
-		connectedPartsList.setFont(new Font("Dialog", Font.PLAIN, 14));
-		connectedPartsList.setVisibleRowCount(6);
-		connectedPartsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		connectedPartsList.setSelectedIndex(0);
-		connectedPartsList.setLayoutOrientation(JList.VERTICAL);
-		connectedPartsList.setBounds(20, 20, 300, 70);
-		scrollPanePart.setViewportView(connectedPartsList);
-
-		JLabel lblRoom = new JLabel("Room:");
-		lblRoom.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblRoom.setBounds(840, 111, 95, 23);
-		panel_2.add(lblRoom);
-
-		txtselectedNameField = new JTextField();
-		txtselectedNameField.setFont(new Font("Dialog", Font.PLAIN, 11));
-		txtselectedNameField.setEditable(false);
-		txtselectedNameField.setColumns(10);
-		txtselectedNameField.setBounds(965, 111, 239, 21);
-		panel_2.add(txtselectedNameField);
-
-		JLabel lblMovementPatterns = new JLabel("Movement Patterns");
-		lblMovementPatterns.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblMovementPatterns.setBounds(838, 287, 186, 23);
-		panel_2.add(lblMovementPatterns);
-
-		JLabel lblStartDate = new JLabel("Start Date:");
-		lblStartDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblStartDate.setBounds(838, 321, 95, 23);
-		panel_2.add(lblStartDate);
-
-		txtStartTime = new JTextField();
-		txtStartTime.setFont(new Font("Dialog", Font.PLAIN, 11));
-		txtStartTime.setColumns(10);
-		txtStartTime.setBounds(963, 321, 239, 21);
-		panel_2.add(txtStartTime);
-
-		JLabel lblEndDate = new JLabel("End Date:");
-		lblEndDate.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblEndDate.setBounds(838, 354, 95, 23);
-		panel_2.add(lblEndDate);
-
-		txtEndTime = new JTextField();
-		txtEndTime.setFont(new Font("Dialog", Font.PLAIN, 11));
-		txtEndTime.setColumns(10);
-		txtEndTime.setBounds(963, 354, 239, 21);
-		panel_2.add(txtEndTime);
-
-		btnShow = new JButton("Load");
-		btnShow.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnShow.setBackground(Color.WHITE);
-		btnShow.setBounds(1105, 386, 97, 23);
-		panel_2.add(btnShow);
-
-		btnDeleteFloor = new JButton("Clear");
-		btnDeleteFloor.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnDeleteFloor.setBackground(Color.WHITE);
-		btnDeleteFloor.setBounds(1131, 78, 73, 23);
-		panel_2.add(btnDeleteFloor);
-
-		btnDeleteEntity = new JButton("Clear");
-		btnDeleteEntity.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnDeleteEntity.setBackground(Color.WHITE);
-		btnDeleteEntity.setBounds(1131, 142, 73, 23);
-		panel_2.add(btnDeleteEntity);
-
-		JLabel lblPositioning = new JLabel("Trajectories List");
-		lblPositioning.setFont(new Font("Dialog", Font.PLAIN, 18));
-		lblPositioning.setBounds(838, 427, 186, 23);
-		panel_2.add(lblPositioning);
-
-		JPanel tabbedPane_1 = new JPanel();
-		tabbedPane_1.setBounds(838, 461, 366, 320);
-		panel_2.add(tabbedPane_1);
-		
 		JPanel outPanel = new JPanel();
 		tabbedPane.addTab("Outdoor Environment", null, outPanel, null);
 		outPanel.setLayout(null);
-		
+
 		roadPanel = new JPanel();
 		roadPanel.setLayout(null);
 		roadPanel.setBounds(0, 0, 1234, 45);
 		outPanel.add(roadPanel);
-		
+
 		btnLoadMapOffline = new JButton("Load Map Offline");
 		btnLoadMapOffline.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnLoadMapOffline.setBackground(Color.WHITE);
 		btnLoadMapOffline.setBounds(290, 13, 115, 23);
 		roadPanel.add(btnLoadMapOffline);
-		
+
 		btnLoadMapOnline = new JButton("Load Map Online");
 		btnLoadMapOnline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			       JXMapViewer mapViewer = new JXMapViewer();
+				JXMapViewer mapViewer = new JXMapViewer();
 
-			        // Create a TileFactoryInfo for OpenStreetMap
-			        TileFactoryInfo info = new OSMTileFactoryInfo();
-			        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-			        mapViewer.setTileFactory(tileFactory);
+				// Create a TileFactoryInfo for OpenStreetMap
+				TileFactoryInfo info = new OSMTileFactoryInfo();
+				DefaultTileFactory tileFactory = new DefaultTileFactory(info);
+				mapViewer.setTileFactory(tileFactory);
 
-			        // Use 8 threads in parallel to load the tiles
-			        tileFactory.setThreadPoolSize(8);
+				// Use 8 threads in parallel to load the tiles
+				tileFactory.setThreadPoolSize(8);
 
-			        // Set the focus
-			        GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
+				// Set the focus
+				GeoPosition frankfurt = new GeoPosition(50.11, 8.68);
 
-			        mapViewer.setZoom(7);
-			        mapViewer.setAddressLocation(frankfurt);
+				mapViewer.setZoom(7);
+				mapViewer.setAddressLocation(frankfurt);
 				roadMapPanel.add(mapViewer);
 			}
 		});
@@ -790,155 +655,155 @@ public class Home extends JApplet {
 		btnLoadMapOnline.setBackground(Color.WHITE);
 		btnLoadMapOnline.setBounds(417, 13, 125, 23);
 		roadPanel.add(btnLoadMapOnline);
-		
+
 		JLabel lblOsmMap = new JLabel("OSM Map");
 		lblOsmMap.setBounds(15, 13, 69, 20);
 		roadPanel.add(lblOsmMap);
-		
+
 		textField = new JTextField();
 		textField.setBounds(99, 10, 176, 26);
 		roadPanel.add(textField);
 		textField.setColumns(10);
-		
+
 		JTabbedPane outTabPane = new JTabbedPane(JTabbedPane.TOP);
 		outTabPane.setFont(new Font("Dialog", Font.PLAIN, 11));
 		outTabPane.setBounds(0, 49, 1234, 853);
 		outPanel.add(outTabPane);
-		
+
 		JPanel panel = new JPanel();
 		outTabPane.addTab("Generator", null, panel, null);
 		panel.setLayout(null);
-		
+
 		roadMapPanel = new JPanel();
 		roadMapPanel.setBorder(null);
 		roadMapPanel.setBackground(Color.WHITE);
 		roadMapPanel.setBounds(15, 16, 800, 805);
 		panel.add(roadMapPanel);
 		roadMapPanel.setLayout(new GridLayout(1, 0, 0, 0));
-		
+
 		lblPointOfInterest = new JLabel("Point Of Interest");
 		lblPointOfInterest.setFont(new Font("Dialog", Font.PLAIN, 18));
 		lblPointOfInterest.setBounds(830, 16, 186, 23);
 		panel.add(lblPointOfInterest);
-		
+
 		JLabel label_1 = new JLabel("Moving Object Configuration");
 		label_1.setFont(new Font("Dialog", Font.PLAIN, 18));
 		label_1.setBounds(830, 285, 237, 23);
 		panel.add(label_1);
-		
+
 		JLabel label_2 = new JLabel("Scenario");
 		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label_2.setBounds(830, 316, 113, 23);
 		panel.add(label_2);
-		
+
 		JLabel label_3 = new JLabel("Files:");
 		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label_3.setBounds(830, 337, 113, 23);
 		panel.add(label_3);
-		
+
 		JComboBox<UploadObject> comboBox = new JComboBox<UploadObject>();
 		comboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		comboBox.setBackground(Color.WHITE);
 		comboBox.setBounds(945, 318, 225, 23);
 		panel.add(comboBox);
-		
+
 		JButton button = new JButton("Upload");
 		button.setFont(new Font("Dialog", Font.PLAIN, 11));
 		button.setBackground(Color.WHITE);
 		button.setBounds(970, 351, 97, 23);
 		panel.add(button);
-		
+
 		JButton button_1 = new JButton("Clear");
 		button_1.setFont(new Font("Dialog", Font.PLAIN, 11));
 		button_1.setBackground(Color.WHITE);
 		button_1.setBounds(1073, 351, 97, 23);
 		panel.add(button_1);
-		
+
 		JPanel panel_6 = new JPanel();
 		panel_6.setBackground(Color.LIGHT_GRAY);
 		panel_6.setBounds(830, 385, 340, 119);
 		panel.add(panel_6);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(Color.LIGHT_GRAY);
 		panel_6.add(scrollPane);
-		
+
 		JButton button_2 = new JButton("Init");
 		button_2.setBackground(Color.WHITE);
 		button_2.setBounds(830, 528, 80, 25);
 		panel.add(button_2);
-		
+
 		JButton button_3 = new JButton("Start");
 		button_3.setBackground(Color.WHITE);
 		button_3.setBounds(920, 528, 80, 25);
 		panel.add(button_3);
-		
+
 		JButton button_4 = new JButton("Stop");
 		button_4.setBackground(Color.WHITE);
 		button_4.setBounds(1010, 528, 80, 25);
 		panel.add(button_4);
-		
+
 		JButton button_5 = new JButton("Capture");
 		button_5.setBackground(Color.WHITE);
 		button_5.setBounds(1100, 528, 87, 25);
 		panel.add(button_5);
-		
+
 		JPanel panel_4 = new JPanel();
 		outTabPane.addTab("Visualizer", null, panel_4, null);
 		panel_4.setLayout(null);
-		
+
 		roadVisualMapPanel = new JPanel();
 		roadVisualMapPanel.setBorder(null);
 		roadVisualMapPanel.setBackground(Color.WHITE);
 		roadVisualMapPanel.setBounds(15, 16, 800, 805);
 		panel_4.add(roadVisualMapPanel);
 		roadVisualMapPanel.setLayout(new GridLayout(1, 0, 0, 0));
-		
+
 		JLabel label_4 = new JLabel("Movement Patterns");
 		label_4.setFont(new Font("Dialog", Font.PLAIN, 18));
 		label_4.setBounds(830, 16, 186, 23);
 		panel_4.add(label_4);
-		
+
 		JLabel label_5 = new JLabel("Start Date:");
 		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label_5.setBounds(830, 50, 95, 23);
 		panel_4.add(label_5);
-		
+
 		textField_7 = new JTextField();
 		textField_7.setFont(new Font("Dialog", Font.PLAIN, 11));
 		textField_7.setColumns(10);
 		textField_7.setBounds(955, 50, 239, 21);
 		panel_4.add(textField_7);
-		
+
 		JLabel label_6 = new JLabel("End Date:");
 		label_6.setFont(new Font("Dialog", Font.PLAIN, 14));
 		label_6.setBounds(830, 83, 95, 23);
 		panel_4.add(label_6);
-		
+
 		textField_12 = new JTextField();
 		textField_12.setFont(new Font("Dialog", Font.PLAIN, 11));
 		textField_12.setColumns(10);
 		textField_12.setBounds(955, 83, 239, 21);
 		panel_4.add(textField_12);
-		
+
 		JButton button_6 = new JButton("Load");
 		button_6.setFont(new Font("Dialog", Font.PLAIN, 11));
 		button_6.setBackground(Color.WHITE);
 		button_6.setBounds(1097, 115, 97, 23);
 		panel_4.add(button_6);
-		
+
 		JLabel label_8 = new JLabel("Trajectories List");
 		label_8.setFont(new Font("Dialog", Font.PLAIN, 18));
 		label_8.setBounds(830, 156, 186, 23);
 		panel_4.add(label_8);
-		
+
 		JPanel panel_8 = new JPanel();
 		panel_8.setBounds(830, 190, 366, 320);
 		panel_4.add(panel_8);
-		
-		WebScrollPane webScrollPane = new WebScrollPane((Component) null);
-		panel_8.add(webScrollPane);
-		
+
+//		WebScrollPane webScrollPane = new WebScrollPane((Component) null);
+//		panel_8.add(webScrollPane);
+
 		JButton button_7 = new JButton("Show");
 		button_7.setFont(new Font("Dialog", Font.PLAIN, 11));
 		button_7.setBackground(Color.WHITE);
@@ -950,10 +815,10 @@ public class Home extends JApplet {
 		connectedPartsModel = new DefaultListModel<Partition>();
 
 		possibleConnectedPartsList = new ArrayList<>();
-		
+
 		// Model For Path Table
 		idTrajectoryModel = new DefaultTableModel() {
-			
+
 			@Override
 			public Class<?> getColumnClass(int columnIndex) {
 				// TODO Auto-generated method stub
@@ -969,26 +834,17 @@ public class Home extends JApplet {
 				}
 			}
 		};
-		
+
 		idTrajectoryModel.addColumn("User Id");
 		idTrajectoryModel.addColumn("Color");
-		idTrajectoryModel.addColumn("Action");		
-		
+		idTrajectoryModel.addColumn("Action");
+
 		idTable = new JTable();
 		idTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
 		idTable.setRowSelectionAllowed(false);
 		idTable.setColumnSelectionAllowed(true);
 		idTable.setPreferredScrollableViewportSize(new Dimension(345, 290));
 		idTable.setModel(idTrajectoryModel);
-
-		WebScrollPane panel_3 = new WebScrollPane(idTable);
-		tabbedPane_1.add(panel_3);
-		
-		btnShowTrajectory = new JButton("Show");
-		btnShowTrajectory.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnShowTrajectory.setBackground(Color.WHITE);
-		btnShowTrajectory.setBounds(1107, 792, 97, 23);
-		panel_2.add(btnShowTrajectory);
 
 		addActionListeners();
 		addFocusListeners();
@@ -1016,99 +872,9 @@ public class Home extends JApplet {
 
 	private void addFocusListeners() {
 
-		txtStartTime.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Frame dialogFrame = new Frame();
-				Dialog dialog = new Dialog(dialogFrame);
-				dialog.setLayout(null);
-				JTimeChooser jtc = new JTimeChooser(dialog);
-				startCalendar = jtc.showTimeDialog();
-				System.out.println(startCalendar.getTime().toString());
-				txtStartTime.setText(IdrObjsUtility.sdf.format(startCalendar.getTime()));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-
-			}
-
-		});
-
-		txtEndTime.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				btnObjectStart.setEnabled(false);
-
-				Frame dialogFrame = new Frame();
-				Dialog dialog = new Dialog(dialogFrame);
-				dialog.setLayout(null);
-				JTimeChooser jtc = new JTimeChooser(dialog);
-				endCalendar = jtc.showTimeDialog();
-				System.out.println(endCalendar.getTime().toString());
-
-				try {
-					Date selectedStartTime = IdrObjsUtility.sdf.parse(txtStartTime.getText());
-					if (endCalendar.getTime().before(selectedStartTime)) {
-						JOptionPane.showMessageDialog(frmTrajectoryGenerator,
-								"The end time should be later than start time!", "Error", JOptionPane.ERROR_MESSAGE);
-						txtEndTime.setText("");
-					} else {
-						txtEndTime.setText(IdrObjsUtility.sdf.format(endCalendar.getTime()));
-						toggleBtnObjectStart();
-					}
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-
-			}
-
-		});
-
 	}
 
 	private void toggleGeneratationBtns(boolean state) {
-		btnDeleteFloor.setEnabled(state);
-		btnDeleteEntity.setEnabled(state);
 		btnStationGenerate.setEnabled(state);
 		btnObjectInit.setEnabled(state);
 		toggleMovingObjectGenerationBtns(false);
@@ -1413,8 +1179,6 @@ public class Home extends JApplet {
 
 			mapPainter = new MapPainter(fileChosen.getUploadId());
 			mapPanel.add(mapPainter);
-			mapVisualPainter = new MapVisualPainter(fileChosen.getUploadId());
-			mapVisualPanel.add(mapVisualPainter);
 
 			switchStateForButtons(InteractionState.AFTER_VIEW_FILE_NO_CHANGE);
 //			printPartAPInfo();
@@ -2004,8 +1768,6 @@ public class Home extends JApplet {
 				// Highlight color
 				if (r == selectedPart) {
 					g2.setColor(new Color(74, 144, 226));
-				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
-					g2.setColor(new Color(103, 109, 116));
 				} else {
 					g2.setColor(new Color(249, 248, 246));
 				}
@@ -2013,9 +1775,6 @@ public class Home extends JApplet {
 
 				// Background image
 				if (r == selectedPart) {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
 					g2.setColor(new Color(173, 173, 173));
 					g2.setStroke(Pen1);
 				} else {
@@ -2176,29 +1935,29 @@ public class Home extends JApplet {
 			}
 		}
 
-		private void updateSelectPartsList() {
-			connectedPartsModel.clear();
-			if (selectedPart != null) {
-				txtselectedNameField.setText(selectedPart.getName() + " AND ID: " + selectedPart.getItemID());
-				for (Partition partition : selectedPart.getConParts()) {
-					connectedPartsModel.addElement(partition);
-				}
-			} else if (selectedAP != null) {
-				txtselectedNameField.setText(selectedAP.getName() + " AND ID: " + selectedAP.getItemID());
-				for (Partition p : selectedAP.getPartitions()) {
-					connectedPartsModel.addElement(p);
-				}
-			} else if (selectedCon != null) {
-				txtselectedNameField.setText(selectedCon.getName() + " AND ID: " + selectedCon.getItemID());
-				for (Partition p : selectedCon.getPartitions()) {
-
-					connectedPartsModel.addElement(p);
-				}
-
-			} else {
-
-			}
-		}
+//		private void updateSelectPartsList() {
+//			connectedPartsModel.clear();
+//			if (selectedPart != null) {
+//				txtselectedNameField.setText(selectedPart.getName() + " AND ID: " + selectedPart.getItemID());
+//				for (Partition partition : selectedPart.getConParts()) {
+//					connectedPartsModel.addElement(partition);
+//				}
+//			} else if (selectedAP != null) {
+//				txtselectedNameField.setText(selectedAP.getName() + " AND ID: " + selectedAP.getItemID());
+//				for (Partition p : selectedAP.getPartitions()) {
+//					connectedPartsModel.addElement(p);
+//				}
+//			} else if (selectedCon != null) {
+//				txtselectedNameField.setText(selectedCon.getName() + " AND ID: " + selectedCon.getItemID());
+//				for (Partition p : selectedCon.getPartitions()) {
+//
+//					connectedPartsModel.addElement(p);
+//				}
+//
+//			} else {
+//
+//			}
+//		}
 
 		private AffineTransform getCurrentTransform() {
 
@@ -2360,9 +2119,8 @@ public class Home extends JApplet {
 				file.createNewFile();
 				outStr = new FileOutputStream(file);
 				buff = new BufferedOutputStream(outStr);
-				String header = "ITEMID" + "," + "GLOBALID" + "," + "NAME" + ","
-						+ "FIRSTPARTITIONGLOBALID" + "," + "SECONDPARTITIONGLOBALID" + "," + "ACCESSRULE"
-						+ "," + "X" + "," + "Y" + "\n";
+				String header = "ITEMID" + "," + "GLOBALID" + "," + "NAME" + "," + "FIRSTPARTITIONGLOBALID" + ","
+						+ "SECONDPARTITIONGLOBALID" + "," + "ACCESSRULE" + "," + "X" + "," + "Y" + "\n";
 				buff.write(header.getBytes());
 				for (Connectivity connectivity : DB_WrapperLoad.connectivityT) {
 					buff.write((connectivity.writeConnectivity()).getBytes());
@@ -2810,30 +2568,28 @@ public class Home extends JApplet {
 //				String movObjMaxLifeSpan = props.getProperty("movingObjMaxLifeSpan");
 //				txtMaximumLifeSpan.setText(movObjMaxLifeSpan);
 
-			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
-			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
+//			txtStartTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis()));
+//			txtEndTime.setText(IdrObjsUtility.sdf.format(System.currentTimeMillis() + 10 * 60 * 1000));
 		}
 
 		private class MovingAdapter extends MouseAdapter {
 			private Point startDrag;
 
-			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
 				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					incrementZoom(1.0 * e.getWheelRotation());
+					incrementZoom(1.0 * (double) e.getWheelRotation());
 				}
 			}
 
-			@Override
 			public void mousePressed(MouseEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
 
 				startDrag = new Point(e.getX(), e.getY()); // First point
 				if (!empty) {
-					txtselectedNameField.setText("");
+					// txtselectedNameField.setText("");
 					selectedPart = null;
 					selectedAP = null;
 
@@ -2865,7 +2621,7 @@ public class Home extends JApplet {
 					}
 
 					connectedPartsModel.clear();
-					updateSelectPartsList();
+					// updateSelectPartsList();
 
 					// possibleConnectedPartsList.clear();
 					// updatePossibleConnectedPartsList();
@@ -2873,7 +2629,6 @@ public class Home extends JApplet {
 				repaint();
 			}
 
-			@Override
 			public void mouseDragged(MouseEvent e) {
 
 				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
@@ -2891,831 +2646,35 @@ public class Home extends JApplet {
 				repaint();
 			}
 
-			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
 		}
 	}
 
-	// Visual Map Class
-	private class MapVisualPainter extends JPanel {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private VisualMovingAdapter ma = new VisualMovingAdapter();
-		private int fileIDX;
-
-		MapVisualPainter(int fileID) {
-			fileIDX = fileID;
-			setSize(800, 800);
-			setPreferredSize(new Dimension(800, 800));
-
-			loadFloorChooser();
-
-			clearMapPainterActionListener();
-			addMapPainterActionListener();
-
-			addMouseMotionListener(ma);
-			addMouseWheelListener(ma);
-			addMouseListener(ma);
-
-			setDoubleBuffered(true);
-			setBorder(BorderFactory.createLineBorder(Color.black));
-			setOpaque(true);
-			setBackground(Color.white);
-
-			D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
-					DB_WrapperLoad.accessPointConnectorT);
-			// BuildingD2DGrpah buildingD2D = new BuildingD2DGrpah();
-			// BuildingD2DGrpah.partitions =
-			// DB_WrapperLoad.partitionDecomposedT;
-			// BuildingD2DGrpah.accessPoints =
-			// DB_WrapperLoad.accessPointConnectorT;
-			// BuildingD2DGrpah.connectors = DB_WrapperLoad.connectorT;
-			buildingD2D.generateD2DDistance();
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
-				floor.setD2dGraph(buildingD2D);
-			}
-
-		}
-
-		private void addMapPainterActionListener() {
-			floorCombobox.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					visualChosenFloor = (Floor) floorCombobox.getSelectedItem();
-					visualSelectedPart = null;
-					visualSelectedAP = null;
-					visualSelectedCon = null;
-
-					repaint();
-				}
-
-			});
-
-			btnDecompAll.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
-							"Are you sure you want to decompose the selected file?", "Confirmation",
-							JOptionPane.YES_NO_OPTION);
-					if (n == JOptionPane.YES_OPTION) {
-						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-						clearIllegal();
-
-						System.out.println(
-								"\nBefore decomposed partitions " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
-						try {
-							DB_Import.decompose(con);
-							DB_WrapperLoad.loadALL(con, fileIDX);
-							con.close();
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-
-						D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
-								DB_WrapperLoad.accessPointConnectorT);
-						// BuildingD2DGrpah.partitions =
-						// DB_WrapperLoad.partitionDecomposedT;
-						// BuildingD2DGrpah.accessPoints =
-						// DB_WrapperLoad.accessPointConnectorT;
-						// BuildingD2DGrpah buildingD2D = new
-						// BuildingD2DGrpah();
-						buildingD2D.generateD2DDistance();
-
-						for (Floor floor : DB_WrapperLoad.floorT) {
-							floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
-							floor.setD2dGraph(buildingD2D);
-							System.out.println(
-									floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
-
-						}
-
-						System.out.println("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
-						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Decomposing File is done!",
-								"Information", JOptionPane.INFORMATION_MESSAGE);
-						switchStateForButtons(InteractionState.AFTER_DECOMPOSE);
-						visualSelectedAP = null;
-						visualSelectedPart = null;
-						loadFloorChooser();
-						updateSelectPartsList();
-						repaint();
-					} else if (n == JOptionPane.NO_OPTION) {
-						// Nothing
-					} else {
-						// Nothing
-					}
-
-				}
-			});
-
-			btnDeleteEntity.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int n = JOptionPane.showConfirmDialog(frmTrajectoryGenerator,
-							"Are you sure you want to delete the selected entity?", "Confirmation",
-							JOptionPane.YES_NO_OPTION);
-					if (n == JOptionPane.YES_OPTION) {
-						Connection con = DB_Connection.connectToDatabase("conf/moovework.properties");
-						try {
-							if (visualSelectedPart != null) {
-								DB_WrapperDelete.deletePartition(con, visualSelectedPart);
-							} else if (visualSelectedAP != null) {
-								DB_WrapperDelete.deleteAccessPoint(con, visualSelectedAP);
-							}
-							DB_WrapperLoad.loadALL(con, fileIDX);
-							con.close();
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-						JOptionPane.showMessageDialog(frmTrajectoryGenerator, "Deleting Entity is done!", "Information",
-								JOptionPane.INFORMATION_MESSAGE);
-						loadFloorChooser();
-						repaint();
-					} else if (n == JOptionPane.NO_OPTION) {
-						// Nothing
-					} else {
-						// Nothing
-					}
-
-				}
-
-			});
-
-			connectedPartsList.addListSelectionListener(new ListSelectionListener() {
-
-				@Override
-				public void valueChanged(ListSelectionEvent e) {
-					repaint();
-				}
-			});
-
-			btnShow.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						loadTrajectoryData();
-
-						// Handle Id Table
-						if (trajectories != null) {
-							for (int i = 0; i < trajectories.size(); i++) {
-								idTrajectories.put(i, 
-										new VisualTrajectory(trajectories.get(i).get(0).getUserId(), 
-												RandomColor(), trajectories.get(i)));
-							}
-						}
-
-						// Add Rows to ID Table
-						IdTableRenderer tableRender = new IdTableRenderer();
-						idTrajectories.forEach((k, v) -> {
-							idTrajectoryModel.addRow(new Object[] { 
-									v.getUserId(), "", false });
-							tableRender.setColorForCell(k, 1, v.getColor());
-						});
-						
-						idTable.setDefaultRenderer(Object.class, tableRender);
-
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			});
-			
-			btnShowTrajectory.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					isDisplay = true;
-					idTrajectory.clear();
-
-					for (int i = 0; i < idTable.getRowCount(); i++) {
-					     Boolean isChecked = Boolean.valueOf(idTable.getValueAt(i, 2).toString());
-
-					     if (isChecked) {
-					        //get the values of the columns you need.
-					    	 idTrajectory.add(idTrajectories.get(i));
-					    } else {
-					    	
-					    }
-					}
-					
-					repaint();
-				}
-			});
-		}
-
-		/**
-		 * illegal element --> self-intersection partitions, isolated access points
-		 * warning element --> isolated partitions print all the isolation partitions
-		 * and access points get all the self-intersection partition, and delete them
-		 * all, because they can caught an exception when decompose delete all the
-		 * isolation access points, try to fix isolate partitions remember to reload all
-		 * the space object, because some partitions may have benn deleted
-		 */
-		private void clearIllegal() {
-			PrintIsolatedObject.printAllIsolation(DB_WrapperLoad.partitionDecomposedT,
-					DB_WrapperLoad.accessPointConnectorT);
-
-			List<Partition> intersectionPartitions = ClearIllegal
-					.calIntersectionPartitions(DB_WrapperLoad.partitionDecomposedT);
-			System.out.println(intersectionPartitions);
-			List<AccessPoint> isolatedAccessPoints = ClearIllegal
-					.calIsolatedAccessPoints(DB_WrapperLoad.accessPointConnectorT);
-			System.out.println(isolatedAccessPoints);
-
-			Connection connection = DB_Connection.connectToDatabase("conf/moovework.properties");
-
-			try {
-				for (Partition intersectionPartition : intersectionPartitions) {
-					System.out.println("delete " + intersectionPartition);
-					DB_WrapperDelete.deletePartition(connection, intersectionPartition);
-				}
-
-				for (AccessPoint isolatedAccessPoint : isolatedAccessPoints) {
-					System.out.println("delete " + isolatedAccessPoint);
-					DB_WrapperDelete.deleteAccessPoint(connection, isolatedAccessPoint);
-				}
-
-				DB_WrapperLoad.loadALL(connection, fileChosen.getUploadId());
-				for (Floor floor : DB_WrapperLoad.floorT) {
-					floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
-				}
-
-				List<Partition> isolatedPartitions = ClearIllegal
-						.calIsolatedPartitions(DB_WrapperLoad.partitionDecomposedT);
-				for (Partition isolatedPartition : isolatedPartitions) {
-					ClearIllegal.connectPossiblePartitons(isolatedPartition);
-				}
-
-				DB_WrapperLoad.loadALL(connection, fileChosen.getUploadId());
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		private void clearMapPainterActionListener() {
-			for (ActionListener al : floorCombobox.getActionListeners()) {
-				floorCombobox.removeActionListener(al);
-			}
-
-			for (ActionListener al : btnDecompAll.getActionListeners()) {
-				btnDecompAll.removeActionListener(al);
-			}
-
-			for (ActionListener al : btnDeleteEntity.getActionListeners()) {
-				btnDeleteEntity.removeActionListener(al);
-			}
-
-			for (ListSelectionListener al : connectedPartsList.getListSelectionListeners()) {
-				connectedPartsList.removeListSelectionListener(al);
-			}
-
-			for (ActionListener al : btnShow.getActionListeners()) {
-				btnShow.removeActionListener(al);
-			}
-		}
-
-		@Override
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			visualChosenFloor = (Floor) floorCombobox.getSelectedItem();
-
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			AffineTransform tx = getCurrentTransform();
-
-			Stroke Pen1, Pen2, PenDash;
-			Pen1 = new BasicStroke(1.5F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-			Pen2 = new BasicStroke(3.0F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-			float dash1[] = { 5.0f };
-			PenDash = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
-
-			paintIFCObjects(visualChosenFloor, g2, tx, Pen1, Pen2, PenDash);
-
-			IdrObjsUtility.paintMovingObjs(visualChosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
-			IdrObjsUtility.paintMovingObjs(visualChosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
-			IdrObjsUtility.paintStations(visualChosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
-			if (idTrajectory != null && isDisplay) {
-				if(isRegion) {
-					IdrObjsUtility.paintRegionTrajectories(visualChosenFloor, g2, tx, Pen1, regionTrajectory);
-				} else {
-					IdrObjsUtility.paintSingleTrajectories(visualChosenFloor, g2, tx, Pen1, idTrajectory);					
-				}
-
-			}
-
-			// Point2D.Double point1 = new Point2D.Double(343, 250);
-			// DstMovingObj dstMovingObj = new
-			// DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
-			// dstMovingObj.setCurrentPartition(IdrObjsUtility.findPartitionForPoint(DB_WrapperLoad.floorT.get(1),
-			// point1));
-			// Point2D.Double point2 = new Point2D.Double(405, 180);
-			// dstMovingObj.setCurDestPoint(point2);
-			// dstMovingObj.setCurDestFloor(DB_WrapperLoad.floorT.get(2));
-			// // paintTrajectory(g2, tx, Pen2, dstMovingObj, visualChosenFloor);
-		}
-
-		private void paintIFCObjects(Floor visualChosenFloor, Graphics2D g2, AffineTransform tx, Stroke Pen1,
-				Stroke Pen2, Stroke PenDash) {
-			empty = false;
-
-			if (visualChosenFloor == null) {
-				empty = true;
-
-			} else if (visualChosenFloor.getPartitions().isEmpty()) {
-				empty = true;
-			}
-
-			if (!empty) {
-				paintPartitions(g2, tx, Pen1, Pen2);
-				paintAccessPoints(g2, tx, PenDash, Pen1);
-				paintConnectors(g2, tx, Pen1, PenDash);
-			} else {
-				g2.drawString("No partitions on this floor!", 100, 300);
-			}
-		}
-
-		private void paintPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
-			partitionsMap.clear();
-			for (Partition r : visualChosenFloor.getPartsAfterDecomposed()) {
-				Polygon2D.Double po = r.getPolygon2D();
-
-				Path2D poNew = (Path2D) tx.createTransformedShape(po);
-				partitionsMap.put(poNew, r);
-
-				// Highlight color
-				if (r == visualSelectedPart) {
-					g2.setColor(new Color(74, 144, 226));
-				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
-					g2.setColor(new Color(103, 109, 116));
-				} else {
-					g2.setColor(new Color(249, 248, 246));
-				}
-				g2.fill(poNew);
-
-				// Background color
-				if (r == visualSelectedPart) {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				} else if (connectedPartsList.getSelectedValuesList().contains(r)) {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				} else {
-					g2.setColor(new Color(173, 173, 173));
-					g2.setStroke(Pen1);
-				}
-				g2.draw(poNew);
-
-				paintNameOnPart(r, g2, poNew);
-			}
-			if (visualSelectedPart != null) {
-				paintConnectedPartitions(g2, tx, Pen1, Pen2);
-			}
-		}
-
-		private void paintNameOnPart(Partition r, Graphics2D g2, Path2D poNew) {
-			if (r.getPolygonGIS().numPoints() < 6) {
-
-				String s = r.getName();
-
-				FontRenderContext frc = g2.getFontRenderContext();
-				Font font = g2.getFont().deriveFont(10f);
-				g2.setColor(Color.black);
-				g2.setFont(font);
-				float sw = (float) font.getStringBounds(s, frc).getWidth();
-				LineMetrics lm = font.getLineMetrics(s, frc);
-				float sh = lm.getAscent() + lm.getDescent();
-
-				float sx = (float) (poNew.getBounds2D().getX() + (poNew.getBounds2D().getWidth() - sw) / 2);
-				float sy = (float) (poNew.getBounds2D().getY() + (poNew.getBounds2D().getHeight() + sh) / 2
-						- lm.getDescent());
-				g2.drawString(s, sx, sy);
-			}
-		}
-
-		private void paintConnectedPartitions(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke Pen2) {
-			for (Partition part : visualSelectedPart.getConParts()) {
-				if (part.getFloor() != visualSelectedPart.getFloor()) {
-					continue;
-				}
-				Polygon2D.Double po = part.getPolygon2D();
-				Path2D poNew = (Path2D) tx.createTransformedShape(po);
-
-				g2.setColor(new Color(203, 209, 216));
-				g2.fill(poNew);
-
-				g2.setColor(new Color(173, 173, 173));
-				g2.setStroke(Pen1);
-				g2.draw(poNew);
-
-				paintNameOnPart(part, g2, poNew);
-
-			}
-		}
-
-		private void paintAccessPoints(Graphics2D g2, AffineTransform tx, Stroke PenDash, Stroke Pen1) {
-			accesspointsMap.clear();
-			for (AccessPoint ap : visualChosenFloor.getAccessPoints()) {
-
-				Path2D clickBox = (Path2D) tx.createTransformedShape(ap.getLine2DClickBox());
-
-				Path2D newLine = (Path2D) tx.createTransformedShape(ap.getLine2D());
-
-				accesspointsMap.put(clickBox, ap);
-
-				if (ap == visualSelectedAP) {
-					g2.setColor(new Color(74, 144, 226));
-					g2.setStroke(Pen1);
-				} else if (ap.getApType().equals(2)) {
-					g2.setBackground(new Color(116, 124, 155));
-					g2.setColor(new Color(248, 231, 28));
-					g2.setStroke(PenDash);
-				} else {
-					g2.setColor(new Color(144, 19, 254));
-					g2.setStroke(Pen1);
-				}
-				g2.draw(newLine);
-			}
-		}
-
-		private void paintConnectors(Graphics2D g2, AffineTransform tx, Stroke Pen1, Stroke penDash) {
-			connsMap.clear();
-			g2.setStroke(penDash);
-			for (Connector c : visualChosenFloor.getConnectors()) {
-				Point2D.Double point1 = c.getLocation2D();
-				Point2D.Double point2 = c.getUpperLocation2D();
-				double x, y, w, h;
-				if (point2 == null) {
-					x = point1.getX();
-					y = point1.getY();
-					w = 3;
-					h = 3;
-				} else {
-					x = Math.min(point1.getX(), point2.getX());
-					y = Math.min(point1.getY(), point2.getY());
-					w = Math.abs(point1.getX() - point2.getX());
-					h = Math.abs(point1.getY() - point2.getY());
-				}
-				Rectangle2D.Double rectangle = new Rectangle2D.Double(x, y, w + 3, h + 3);
-				Path2D newRect = (Path2D) tx.createTransformedShape(rectangle);
-				connsMap.put(newRect, c);
-				if (visualSelectedCon == c) {
-					g2.setColor(new Color(74, 144, 226));
-
-					for (Partition part : visualSelectedCon.getPartitions()) {
-						if (part.getFloor() != visualSelectedCon.getFloor()) {
-							continue;
-						}
-						Polygon2D.Double po = part.getPolygon2D();
-						Path2D poNew = (Path2D) tx.createTransformedShape(po);
-
-						g2.setColor(new Color(203, 209, 216));
-						g2.fill(poNew);
-
-						g2.setColor(new Color(173, 173, 173));
-						g2.setStroke(Pen1);
-						g2.draw(poNew);
-
-						paintNameOnPart(part, g2, poNew);
-
-					}
-					g2.setColor(new Color(144, 19, 254));
-
-				} else {
-					g2.setColor(new Color(49, 76, 206));
-				}
-				g2.setStroke(penDash);
-				g2.draw(newRect);
-			}
-
-			for (Connector c : DB_WrapperLoad.connectorT) {
-				if (c.getUpperFloor() == visualChosenFloor) {
-					Point2D.Double point1 = c.getLocation2D();
-					Point2D.Double point2 = c.getUpperLocation2D();
-					double x, y, w, h;
-					if (point2 == null) {
-						x = point1.getX();
-						y = point1.getY();
-						w = 3;
-						h = 3;
-					} else {
-						x = Math.min(point1.getX(), point2.getX());
-						y = Math.min(point1.getY(), point2.getY());
-						w = Math.abs(point1.getX() - point2.getX());
-						h = Math.abs(point1.getY() - point2.getY());
-					}
-					Rectangle2D.Double rectangle = new Rectangle2D.Double(x, y, w + 3, h + 3);
-					Path2D newRect = (Path2D) tx.createTransformedShape(rectangle);
-					connsMap.put(newRect, c);
-					if (visualSelectedCon == c) {
-						g2.setColor(new Color(74, 144, 226));
-					} else {
-						g2.setColor(new Color(49, 188, 77));
-
-					}
-					g2.draw(newRect);
-				}
-			}
-		}
-
-		private void loadTrajectoryData() throws ParseException {
-			String outputPath = decideOutputPath();
-			File folder = new File(outputPath);
-			File[] listOfFiles = folder.listFiles();
-			ArrayList<Trajectory> temp;
-
-			// Read all files
-			for (File file : listOfFiles) {
-				temp = new ArrayList<Trajectory>();
-//				System.out.println("---" + file.getName() + "---");
-				try {
-					// Create an object of file reader class
-					// with CSV file as a parameter.
-					FileReader filereader = new FileReader(file);
-
-					// create csvReader object
-					// and skip first Line
-					CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
-					List<String[]> allData = csvReader.readAll();
-
-					// print Data
-					for (String[] row : allData) {
-						Trajectory traject = new Trajectory(Integer.parseInt(row[0]), Integer.parseInt(row[1]),
-								Integer.parseInt(row[2]), Double.parseDouble(row[3]), Double.parseDouble(row[4]),
-								new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(row[5]));
-						if (isWithinRange(traject.getTimestamp())) {
-							temp.add(traject);
-//							regionTrajectory.add(traject);
-						}
-					}
-					trajectories.add(temp);
-				} catch (Exception e) {
-					e.printStackTrace();
-					continue;
-				}
-			}
-		}
-
-		private boolean isWithinRange(Date testDate) throws ParseException {
-			Date startDate = new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(txtStartTime.getText());
-			Date endDate = new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse(txtEndTime.getText());
-
-			return testDate.getTime() >= startDate.getTime() && testDate.getTime() <= endDate.getTime();
-		}
-
-		private void updateSelectPartsList() {
-			connectedPartsModel.clear();
-			if (visualSelectedPart != null) {
-				System.out.println("Partition");
-				txtselectedNameField
-						.setText(visualSelectedPart.getName() + " AND ID: " + visualSelectedPart.getItemID());
-				for (Partition p : visualSelectedPart.getConParts()) {
-					connectedPartsModel.addElement(p);
-				}
-			} else if (visualSelectedAP != null) {
-				System.out.println("AP");
-				txtselectedNameField.setText(visualSelectedAP.getName() + " AND ID: " + visualSelectedAP.getItemID());
-				for (Partition p : visualSelectedAP.getPartitions()) {
-					connectedPartsModel.addElement(p);
-				}
-			} else if (visualSelectedCon != null) {
-				System.out.println("Connector");				
-				txtselectedNameField.setText(visualSelectedCon.getName() + " AND ID: " + visualSelectedCon.getItemID());
-				for (Partition p : visualSelectedCon.getPartitions()) {
-					connectedPartsModel.addElement(p);
-				}
-
-			} else {
-
-			}
-		}
-
-		private void getTrajectoryInRegion() {
-			DefaultTableModel data = (DefaultTableModel) pathTable.getModel();
-			
-			if(data.getRowCount() > 0) {
-				data.getDataVector().removeAllElements();
-				data.fireTableDataChanged();
-			}
-
-
-			// filter trajectory
-			if (visualSelectedPart != null) {
-				// Clear data first
-				regionTrajectory.clear();
-				pathTrajectories.clear();
-				
-				idTrajectories.forEach((k, v) -> {
-					ArrayList<Trajectory> temp = new ArrayList<Trajectory>();
-					for (int i = 0; i < v.getTrajectories().size(); i++) {
-						if (v.getTrajectories().get(i).getRoomId() == visualSelectedPart.getItemID()) {
-							temp.add(v.getTrajectories().get(i));
-						}
-					}
-					
-					pathTrajectories.put(k, temp);
-					regionTrajectory.add(new VisualTrajectory(RandomColor(), temp));
-				});
-			}
-
-			// Add Rows to Path Table
-			pathTrajectories.forEach((k, v) -> {
-				data.addRow(new Object[] { k, v.size() });
-			});
-
-			isDisplay = true;
-			isRegion = true;
-			
-			repaint();
-		}
-		
-		private Color RandomColor() {
-			Random rand = new Random();
-			// Java 'Color' class takes 3 floats, from 0 to 1.
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-
-			Color color = new Color(r, g, b);
-			
-			return color;
-		}
-
-		private AffineTransform getCurrentTransform() {
-
-			AffineTransform tx = new AffineTransform();
-
-			double centerX = (double) getWidth() / 2;
-			double centerY = (double) getHeight() / 2;
-
-			tx.translate(centerX, centerY);
-			tx.scale(zoom, zoom);
-			tx.translate(currentX - centerX, currentY - centerY);
-
-			return tx;
-		}
-
-		private void incrementZoom(double amount) {
-			zoom += amount;
-			zoom = Math.max(0.00001, zoom);
-			repaint();
-		}
-
-		private Point2D getTranslatedPoint(double panelX, double panelY) {
-
-			AffineTransform tx = getCurrentTransform();
-			Point2D point2d = new Point2D.Double(panelX, panelY);
-			try {
-				return tx.inverseTransform(point2d, null);
-			} catch (NoninvertibleTransformException ex) {
-				ex.printStackTrace();
-				return null;
-			}
-		}
-
-		private void loadFloorChooser() {
-			String floor_globalid = null;
-			if (floorCombobox.getSelectedItem() != null) {
-				Floor f = (Floor) floorCombobox.getSelectedItem();
-				floor_globalid = f.getGlobalID();
-			}
-			floorCombobox.removeAllItems();
-			for (int i = 0; i < DB_WrapperLoad.floorT.size(); i++) {
-				Floor f = DB_WrapperLoad.floorT.get(i);
-				floorCombobox.addItem(f);
-			}
-			if (floor_globalid != null) {
-				for (int i = 0; i < floorCombobox.getModel().getSize(); i++) {
-					if (floorCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
-						floorCombobox.setSelectedItem(floorCombobox.getModel().getElementAt(i));
-						break;
-					}
-				}
-			}
-		}
-
-		private class VisualMovingAdapter extends MouseAdapter {
-			private Point startDrag;
-
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				previousX = e.getX();
-				previousY = e.getY();
-				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					incrementZoom(1.0 * e.getWheelRotation());
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				previousX = e.getX();
-				previousY = e.getY();
-
-				startDrag = new Point(e.getX(), e.getY()); // First point
-				if (!empty) {
-					txtselectedNameField.setText("");
-					visualSelectedPart = null;
-					visualSelectedAP = null;
-
-					for (Entry<Path2D, Partition> mapping : partitionsMap.entrySet()) {
-						if (mapping.getKey().contains(startDrag)) {
-							visualSelectedPart = mapping.getValue();
-							visualSelectedAP = null;
-							visualSelectedCon = null;
-							break;
-						}
-					}
-
-					for (Entry<Path2D, AccessPoint> mapping : accesspointsMap.entrySet()) {
-						if (mapping.getKey().contains(startDrag)) {
-							visualSelectedAP = mapping.getValue();
-							visualSelectedPart = null;
-							visualSelectedCon = null;
-							break;
-						}
-					}
-
-					for (Entry<Path2D, Connector> mapping : connsMap.entrySet()) {
-						if (mapping.getKey().contains(startDrag)) {
-							visualSelectedCon = mapping.getValue();
-							visualSelectedPart = null;
-							visualSelectedAP = null;
-							break;
-						}
-					}
-
-					connectedPartsModel.clear();
-					updateSelectPartsList();
-					
-					if(visualSelectedPart != null) {
-						// Testing function for Region Table
-						// getTrajectoryInRegion();
-					}
-
-					// possibleConnectedPartsList.clear();
-					// updatePossibleConnectedPartsList();
-				}
-				repaint();
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-
-				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
-				Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
-
-				double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
-				double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
-
-				previousX = e.getX();
-				previousY = e.getY();
-
-				currentX += newX;
-				currentY += newY;
-
-				repaint();
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-		}
-	}
-	
 	// Id Table Renderer Class
 	private class IdTableRenderer extends DefaultTableCellRenderer {
 		private final Map<String, Color> colorMap = new HashMap<>();
-		
+
 		public IdTableRenderer() {
 			// TODO Auto-generated constructor stub
 			setOpaque(true);
 		}
-		
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            setBackground(null);
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            getColorForCell(row, column).ifPresent(this::setBackground);
-            return this;
-        }
 
-        public void setColorForCell(int row, int col, Color color) {
-            colorMap.put(row + ":" + col, color);
-        }
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			setBackground(null);
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			getColorForCell(row, column).ifPresent(this::setBackground);
+			return this;
+		}
 
-        public Optional<Color> getColorForCell(int row, int col) {
-            return Optional.ofNullable(colorMap.get(row + ":" + col));
-        }
+		public void setColorForCell(int row, int col, Color color) {
+			colorMap.put(row + ":" + col, color);
+		}
+
+		public Optional<Color> getColorForCell(int row, int col) {
+			return Optional.ofNullable(colorMap.get(row + ":" + col));
+		}
 	}
 }
