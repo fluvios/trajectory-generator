@@ -214,7 +214,7 @@ public class Home extends JApplet {
 	private JComboBox<String> movObjDistributerTypeComboBox;
 	private JComboBox<UploadObject> fileComboBox;
 	private JComboBox<UploadObject> objectComboBox;
-	private JComboBox<Floor> navCombobox;
+	private JComboBox<Floor> floorCombobox;
 	private Calendar startCalendar;
 	private Calendar endCalendar;
 
@@ -317,7 +317,7 @@ public class Home extends JApplet {
 	 */
 	@SuppressWarnings("serial")
 	private void initialize() {
-		WebLookAndFeel.install();
+//		WebLookAndFeel.install();
 
 		frmTrajectoryGenerator = new JFrame();
 		frmTrajectoryGenerator.setTitle("BT-Gen");
@@ -587,11 +587,11 @@ public class Home extends JApplet {
 		label_7.setBounds(842, 43, 113, 23);
 		inGenPanel.add(label_7);
 
-		navCombobox = new JComboBox<Floor>();
-		navCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
-		navCombobox.setBackground(Color.WHITE);
-		navCombobox.setBounds(967, 45, 225, 23);
-		inGenPanel.add(navCombobox);
+		floorCombobox = new JComboBox<Floor>();
+		floorCombobox.setFont(new Font("Dialog", Font.PLAIN, 11));
+		floorCombobox.setBackground(Color.WHITE);
+		floorCombobox.setBounds(945, 45, 247, 23);
+		inGenPanel.add(floorCombobox);
 
 		btnDeleteNav = new JButton("Clear");
 		btnDeleteNav.setFont(new Font("Dialog", Font.PLAIN, 11));
@@ -1179,9 +1179,7 @@ public class Home extends JApplet {
 
 			mapPainter = new MapPainter(fileChosen.getUploadId());
 			mapPanel.add(mapPainter);
-
 			switchStateForButtons(InteractionState.AFTER_VIEW_FILE_NO_CHANGE);
-//			printPartAPInfo();
 		} else if (n == JOptionPane.NO_OPTION) {
 			// Nothing
 		} else {
@@ -1267,7 +1265,6 @@ public class Home extends JApplet {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
 		private MovingAdapter ma = new MovingAdapter();
 		private int fileIDX;
 		private boolean stationsGen = false;
@@ -1295,18 +1292,11 @@ public class Home extends JApplet {
 			addMouseListener(ma);
 
 			setDoubleBuffered(true);
-			setBorder(BorderFactory.createLineBorder(Color.black));
 			setOpaque(true);
 			setBackground(Color.white);
 
 			D2DGraph buildingD2D = new D2DGraph(DB_WrapperLoad.partitionDecomposedT,
 					DB_WrapperLoad.accessPointConnectorT);
-			// BuildingD2DGrpah buildingD2D = new BuildingD2DGrpah();
-			// BuildingD2DGrpah.partitions =
-			// DB_WrapperLoad.partitionDecomposedT;
-			// BuildingD2DGrpah.accessPoints =
-			// DB_WrapperLoad.accessPointConnectorT;
-			// BuildingD2DGrpah.connectors = DB_WrapperLoad.connectorT;
 			buildingD2D.generateD2DDistance();
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				floor.setPartitionsRTree(IdrObjsUtility.generatePartRTree(floor));
@@ -1315,16 +1305,14 @@ public class Home extends JApplet {
 		}
 
 		private void addMapPainterActionListener() {
-			navCombobox.addActionListener(new ActionListener() {
+			floorCombobox.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					chosenFloor = (Floor) navCombobox.getSelectedItem();
+					chosenFloor = (Floor) floorCombobox.getSelectedItem();
 					selectedPart = null;
 					selectedAP = null;
 					selectedCon = null;
-
-					repaint();
 				}
 
 			});
@@ -1402,11 +1390,6 @@ public class Home extends JApplet {
 				public void actionPerformed(ActionEvent e) {
 					if (btnObjectStart.getText().equals("Start")) {
 						if (chckbxTrajectory.isSelected() || chckbxTracking.isSelected()) {
-
-							// for Trajectory LSTM Case
-//							if (chkbxLSTM.isSelected()) {
-//								test();
-//							}
 
 							String outputPath = decideOutputPath();
 							if (outputPath != null) {
@@ -1578,8 +1561,8 @@ public class Home extends JApplet {
 		}
 
 		private void clearMapPainterActionListener() {
-			for (ActionListener al : navCombobox.getActionListeners()) {
-				navCombobox.removeActionListener(al);
+			for (ActionListener al : floorCombobox.getActionListeners()) {
+				floorCombobox.removeActionListener(al);
 			}
 			for (ActionListener al : btnStationGenerate.getActionListeners()) {
 				btnStationGenerate.removeActionListener(al);
@@ -1707,7 +1690,7 @@ public class Home extends JApplet {
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			chosenFloor = (Floor) navCombobox.getSelectedItem();
+			chosenFloor = (Floor) floorCombobox.getSelectedItem();
 
 			Graphics2D g2 = (Graphics2D) g.create();
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1993,19 +1976,19 @@ public class Home extends JApplet {
 
 		private void loadFloorChooser() {
 			String floor_globalid = null;
-			if (navCombobox.getSelectedItem() != null) {
-				Floor f = (Floor) navCombobox.getSelectedItem();
+			if (floorCombobox.getSelectedItem() != null) {
+				Floor f = (Floor) floorCombobox.getSelectedItem();
 				floor_globalid = f.getGlobalID();
 			}
-			navCombobox.removeAllItems();
+			floorCombobox.removeAllItems();
 			for (int i = 0; i < DB_WrapperLoad.floorT.size(); i++) {
 				Floor f = DB_WrapperLoad.floorT.get(i);
-				navCombobox.addItem(f);
+				floorCombobox.addItem(f);
 			}
 			if (floor_globalid != null) {
-				for (int i = 0; i < navCombobox.getModel().getSize(); i++) {
-					if (navCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
-						navCombobox.setSelectedItem(navCombobox.getModel().getElementAt(i));
+				for (int i = 0; i < floorCombobox.getModel().getSize(); i++) {
+					if (floorCombobox.getModel().getElementAt(i).getGlobalID().equals(floor_globalid)) {
+						floorCombobox.setSelectedItem(floorCombobox.getModel().getElementAt(i));
 						break;
 					}
 				}
@@ -2589,7 +2572,6 @@ public class Home extends JApplet {
 
 				startDrag = new Point(e.getX(), e.getY()); // First point
 				if (!empty) {
-					// txtselectedNameField.setText("");
 					selectedPart = null;
 					selectedAP = null;
 
@@ -2621,10 +2603,6 @@ public class Home extends JApplet {
 					}
 
 					connectedPartsModel.clear();
-					// updateSelectPartsList();
-
-					// possibleConnectedPartsList.clear();
-					// updatePossibleConnectedPartsList();
 				}
 				repaint();
 			}

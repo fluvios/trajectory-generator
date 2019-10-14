@@ -35,7 +35,7 @@
 		<datavec.version>1.0.0-beta3</datavec.version>
 		<scala.binary.version>2.11</scala.binary.version>
 		<datavec.spark.version>1.0.0-beta3_spark_1</datavec.spark.version>
-		<jackson.version>2.5.1</jackson.version>
+		<jackson.version>2.5.1</jackson.version>		
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/de.sciss/weblaf -->
@@ -45,7 +45,13 @@
 		    <version>2.1.5</version>
 		    <type>pom</type>
 		</dependency>
-	
+		
+		<!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast-all -->
+		<dependency>
+		    <groupId>com.hazelcast</groupId>
+		    <artifactId>hazelcast-all</artifactId>
+		    <version>3.12.3</version>
+		</dependency>	
 	
 		<dependency>
 		    <groupId>org.openjfx</groupId>
