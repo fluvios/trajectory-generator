@@ -1709,6 +1709,7 @@ public class Home extends JApplet {
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 
+			repaint(); // fix the animation issues
 			// Point2D.Double point1 = new Point2D.Double(343, 250);
 			// DstMovingObj dstMovingObj = new
 			// DstMovingObj(DB_WrapperLoad.floorT.get(3), point1);
