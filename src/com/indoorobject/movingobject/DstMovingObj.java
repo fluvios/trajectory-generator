@@ -14,6 +14,7 @@ import com.database.spatialobject.Partition;
 import com.indoorobject.utility.IdrObjsUtility;
 import com.spatialgraph.D2DGraph;
 import com.spatialgraph.NoSuchDoorException;
+import com.utils.ThreadUtils;
 
 public class DstMovingObj extends MovingObj {
 
@@ -135,7 +136,6 @@ public class DstMovingObj extends MovingObj {
         }
 
         System.out.println(id + " has end");
-
     }
 
     /* generateMIWD return minimum indoor walking distance(through partitions and doors)

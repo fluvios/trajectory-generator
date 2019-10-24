@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import com.indoorobject.movingobject.RegularMultiDestCustomer;
 import com.indoorobject.station.Station;
 import com.trajectory.Trajectory;
 import com.trajectory.VisualTrajectory;
+import com.utils.ThreadUtils;
 
 public class IdrObjsUtility {
 
@@ -50,6 +52,7 @@ public class IdrObjsUtility {
 	public static Hashtable<Integer, Station> allStations = new Hashtable<Integer, Station>();
 
 	public static int rp_id_count = 0;
+	public static int visitTreshold;
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 	public static SimpleDateFormat dir_sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -95,14 +98,10 @@ public class IdrObjsUtility {
 		});
 	}
 
-//    public static void movingObjsTest(ArrayList<MovingObj> movingObjs) {
-//        for (MovingObj movingObj : movingObjs) {
-//            Thread thread = new Thread(movingObj);
-//            thread.start();
-//        }
-//    }
-
+	// Add executor service here
+	// Maintain the number of visitor
 	public synchronized static void movingObjsTest(ArrayList<MovingObj> movingObjs) {
+		visitTreshold = movingObjs.size();
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof RegularMultiDestCustomer) {
 				RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
