@@ -1549,7 +1549,7 @@ public class Home extends JApplet {
 			paintIFCObjects(chosenFloor, g2, tx, Pen1, Pen2, PenDash);
 
 			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, movingObjs, new Color(116, 124, 155));
-			IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
+			// IdrObjsUtility.paintMovingObjs(chosenFloor, g2, tx, Pen1, destMovingObjs, new Color(116, 124, 155));
 			IdrObjsUtility.paintStations(chosenFloor, g2, tx, Pen1, new Color(245, 166, 35, 120));
 
 			repaint(); // fix the animation issues
@@ -2313,12 +2313,15 @@ public class Home extends JApplet {
 
 		private void startIndoorObj() {
 			// IdrObjsUtility.createOutputDir();
-			IdrObjsUtility.movingObjsTest(movingObjs);
 
-			destMovingObjs.clear();
-			Floor floor1 = DB_WrapperLoad.floorT.get(2);
-			Floor floor2 = DB_WrapperLoad.floorT.get(2);
-			IdrObjsUtility.DestMovingObjTest2(floor1, floor2, destMovingObjs);
+			// Maintain the number of visitor
+			IdrObjsUtility.genMovingObj(movingObjs);
+
+			// This function need to be updated
+			// destMovingObjs.clear();
+			// Floor floor1 = DB_WrapperLoad.floorT.get(2);
+			// Floor floor2 = DB_WrapperLoad.floorT.get(2);
+			// IdrObjsUtility.MovingToDestination(floor1, floor2, destMovingObjs);
 		}
 
 		private void stopIndoorObj() {

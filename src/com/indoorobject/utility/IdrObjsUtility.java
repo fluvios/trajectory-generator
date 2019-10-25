@@ -52,7 +52,6 @@ public class IdrObjsUtility {
 	public static Hashtable<Integer, Station> allStations = new Hashtable<Integer, Station>();
 
 	public static int rp_id_count = 0;
-	public static int visitTreshold;
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 	public static SimpleDateFormat dir_sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -66,6 +65,7 @@ public class IdrObjsUtility {
 		g2.setColor(color);
 		g2.setStroke(pen1);
 		List<MovingObj> toDeleteMovingObjs = new ArrayList<>();
+
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof RegularMultiDestCustomer) {
 				if (((RegularMultiDestCustomer) movingObj).isFinished()) {
@@ -94,14 +94,18 @@ public class IdrObjsUtility {
 
 		toDeleteMovingObjs.forEach((o) -> {
 			movingObjs.remove(o);
-			System.out.println("remove one");
+			System.out.println("remove "+ o.getId());
+			System.out.println("number of visitor: "+movingObjs.size());
 		});
 	}
 
 	// Add executor service here
-	// Maintain the number of visitor
-	public synchronized static void movingObjsTest(ArrayList<MovingObj> movingObjs) {
-		visitTreshold = movingObjs.size();
+	public synchronized static void genMovingObj(ArrayList<MovingObj> movingObjs) {
+		// check if moving object is zero
+		if(movingObjs.size() <= 0) {
+			System.out.println("no visitor in building!");
+		}
+		
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof RegularMultiDestCustomer) {
 				RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
@@ -350,7 +354,7 @@ public class IdrObjsUtility {
 		}
 	}
 
-	public static void DestMovingObjTest2(Floor floor1, Floor floor2, ArrayList<MovingObj> movingObjs) {
+	public static void MovingToDestination(Floor floor1, Floor floor2, ArrayList<MovingObj> movingObjs) {
 		System.out.println(floor1);
 		System.out.println(floor2);
 		Point2D.Double point1 = new Point2D.Double(353, 200);

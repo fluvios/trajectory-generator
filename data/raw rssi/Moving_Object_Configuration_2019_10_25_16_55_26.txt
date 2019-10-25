@@ -1,0 +1,7 @@
+Moving Object Type=Destination
+Initial Distribution=Uniform
+Maximum Object Number in a Partition=100
+Maximum Life Span(s)=3600
+Maximum Step Length(m)=0.03
+Move Rate(ms)=100
+Generation Period=19/07/18 17:00:00-19/07/18 17:10:00

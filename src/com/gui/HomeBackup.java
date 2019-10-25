@@ -2470,12 +2470,12 @@ public class HomeBackup extends JApplet {
 
 		private void startIndoorObj() {
 			// IdrObjsUtility.createOutputDir();
-			IdrObjsUtility.movingObjsTest(movingObjs);
+			IdrObjsUtility.genMovingObj(movingObjs);
 
 			destMovingObjs.clear();
 			Floor floor1 = DB_WrapperLoad.floorT.get(2);
 			Floor floor2 = DB_WrapperLoad.floorT.get(2);
-			IdrObjsUtility.DestMovingObjTest2(floor1, floor2, destMovingObjs);
+			IdrObjsUtility.MovingToDestination(floor1, floor2, destMovingObjs);
 		}
 
 		private void stopIndoorObj() {
