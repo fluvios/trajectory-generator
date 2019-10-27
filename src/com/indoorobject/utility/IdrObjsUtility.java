@@ -13,9 +13,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -30,9 +32,11 @@ import javax.imageio.ImageIO;
 
 import org.khelekore.prtree.PRTree;
 
+import com.database.DB_WrapperLoad;
 import com.database.spatialobject.AccessPoint;
 import com.database.spatialobject.Floor;
 import com.database.spatialobject.Partition;
+import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.MovingObj;
 import com.indoorobject.movingobject.RegularMultiDestCustomer;
 import com.indoorobject.station.Station;
@@ -58,10 +62,20 @@ public class IdrObjsUtility {
 
 	public static Date objectGenerateStartTime = null;
 	public static Date objectGenerateEndTime = null;
-	public static Date startClickedTime = null;;
+	public static Date startClickedTime = null;
+	
+	public static IndoorObjsFactory initlizer;
 
-	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, AffineTransform tx, Stroke pen1,
-			ArrayList<MovingObj> movingObjs, Color color) {
+	public static ArrayList<MovingObj> tempObjs;
+	public static ArrayList<Floor> floors;
+	
+	public static String startCalendar;
+	public static String endCalendar;
+	
+	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
+			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 
+			Color color) {
+		
 		g2.setColor(color);
 		g2.setStroke(pen1);
 		List<MovingObj> toDeleteMovingObjs = new ArrayList<>();
@@ -97,10 +111,93 @@ public class IdrObjsUtility {
 			System.out.println("remove "+ o.getId());
 			System.out.println("number of visitor: "+movingObjs.size());
 		});
+		
+		if(!toDeleteMovingObjs.isEmpty()) {
+		// if(movingObjs.size() < 1) {
+			// Generate new movingObj
+			genNewMovingObj(floors, toDeleteMovingObjs.size());
+			
+			// Combine arraylist first
+			movingObjs.addAll(tempObjs);			
+			
+			// rerun new movingObj
+			for (MovingObj movingObj : movingObjs) {
+				// Check if already active
+				if(!movingObj.isActive()) {
+					if (movingObj instanceof RegularMultiDestCustomer) {
+						RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
+						Timer timer = new Timer();
+						timer.schedule(new TimerTask() {
+							@Override
+							public void run() {
+								multiDestCustomer.genMultiDestinations();
+								System.out.println("new " + multiDestCustomer.getId() + " is generated");
+								multiDestCustomer.setActive(true);
+								Thread thread = new Thread(multiDestCustomer);
+								thread.start();
+							}
+						}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+					} else {
+						Timer timer = new Timer();
+						timer.schedule(new TimerTask() {
+							@Override
+							public void run() {
+								System.out.println("new " +movingObj.getId() + " is generated");
+								movingObj.setActive(true);
+								Thread thread = new Thread(movingObj);
+								thread.start();
+							}
+						}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+					}
+				}
+			}
+		}
+	}
+	
+	// Generate new moving object if previous already killed
+	public synchronized static void genNewMovingObj(ArrayList<Floor> floors, int cap) {
+		tempObjs = new ArrayList<MovingObj>(cap);
+		tempObjs.clear(); // Empty first
+		for (Floor floor : DB_WrapperLoad.floorT) {
+			initlizer.generateMovingObjsOnFloor(floor, tempObjs);
+		}
+		tempObjs.forEach(tempObj -> {
+			tempObj.setInitMovingTime(calGaussianTime());
+		});
+		System.out.println("Created new "+ tempObjs.size()+" moving objects!");
+	}
+	
+	public static long calGaussianTime() {
+		Random random = new Random();
+		try {
+			IdrObjsUtility.objectGenerateStartTime = IdrObjsUtility.sdf.parse(startCalendar);
+			IdrObjsUtility.objectGenerateEndTime = IdrObjsUtility.sdf.parse(endCalendar);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		long startTime = IdrObjsUtility.objectGenerateStartTime.getTime();
+		long endTime = IdrObjsUtility.objectGenerateEndTime.getTime();
+		long middle = (long) ((endTime - startTime) / 2.0 + startTime);
+		long error = (long) ((endTime - startTime) * 0.5);
+		long gaussianTime = (long) (middle + random.nextGaussian() * error);
+		if (gaussianTime < startTime) {
+			return startTime;
+		} else if (gaussianTime > endTime) {
+			return endTime;
+		} else {
+			return gaussianTime;
+		}
 	}
 
 	// Add executor service here
-	public synchronized static void genMovingObj(ArrayList<MovingObj> movingObjs) {
+	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
+			ArrayList<MovingObj> movingObjs, String startCal, String endCal) {
+		// Create instance of factory
+		initlizer = init;
+		floors = flrs;
+		startCalendar = startCal;
+		endCalendar = endCal;
+		
 		// check if moving object is zero
 		if(movingObjs.size() <= 0) {
 			System.out.println("no visitor in building!");

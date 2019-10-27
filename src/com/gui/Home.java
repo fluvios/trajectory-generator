@@ -233,7 +233,7 @@ public class Home extends JApplet {
 	private ArrayList<MovingObj> destMovingObjs = new ArrayList<MovingObj>();
 	private DefaultTableModel idTrajectoryModel = new DefaultTableModel();
 
-	private MovingObjResponse movingObj;
+	private MovingObjResponse mvObjRes;
 	private MovingObj[] persons;
 
 	private boolean empty = false;
@@ -281,6 +281,8 @@ public class Home extends JApplet {
 	private JTextField textField_7;
 	private JTextField textField_12;
 	private JTextField textField_13;
+	
+	private IndoorObjsFactory initlizer;
 
 	/**
 	 * Launch the application.
@@ -956,12 +958,12 @@ public class Home extends JApplet {
 				Gson gson = gsonBuilder.setPrettyPrinting().serializeNulls().create();
 				JsonReader reader = new JsonReader(new FileReader(file));
 				reader.setLenient(true);
-				movingObj = gson.fromJson(reader, MovingObjResponse.class);
+				mvObjRes = gson.fromJson(reader, MovingObjResponse.class);
 
 				// Show the file in panel
 				objectComboBox.removeAllItems();
 				objectComboBox.addItem(object);
-				persons = movingObj.getMovingObject();
+				persons = mvObjRes.getMovingObject();
 				for (MovingObj person : persons) {
 					PersonView view = new PersonView(person, person.getObjectId());
 					movingObjectPanel.add(view);
@@ -1366,14 +1368,14 @@ public class Home extends JApplet {
 
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(movingObj.getStartTime())
+						? IdrObjsUtility.sdf.parse(mvObjRes.getStartTime())
 						: startCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
 			try {
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(movingObj.getEndTime())
+						? IdrObjsUtility.sdf.parse(mvObjRes.getEndTime())
 						: endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
@@ -1843,7 +1845,8 @@ public class Home extends JApplet {
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				floor.getStations().clear();
 			}
-			IndoorObjsFactory initlizer = new IndoorObjsFactory();
+			initlizer = new IndoorObjsFactory();
+			initlizer.stationID = 1; // Reset if reinit
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				ArrayList<Station> stations = new ArrayList<Station>();
 				initlizer.generateStationsOnFloor(floor, stations);
@@ -1980,7 +1983,7 @@ public class Home extends JApplet {
 				configure = configure + "Maximum Life Span(s)=" + persons[0].getLifeSpan() + "\n";
 				configure = configure + "Maximum Step Length(m)=" + persons[0].getMaxStepLength() + "\n";
 				configure = configure + "Move Rate(ms)=" + persons[0].getMoveRate() + "\n";
-				configure = configure + "Generation Period=" + movingObj.getStartTime() + "-" + movingObj.getEndTime()
+				configure = configure + "Generation Period=" + mvObjRes.getStartTime() + "-" + mvObjRes.getEndTime()
 						+ "\n";
 				buff.write(configure.getBytes());
 				buff.close();
@@ -2166,7 +2169,8 @@ public class Home extends JApplet {
 
 		private void generateMovingObjs() {
 			movingObjs.clear();
-			IndoorObjsFactory initlizer = new IndoorObjsFactory();
+			initlizer = new IndoorObjsFactory();
+			initlizer.movingObjID = 1; // Reset if reinit
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				initlizer.generateMovingObjsOnFloor(floor, movingObjs);
 			}
@@ -2180,6 +2184,7 @@ public class Home extends JApplet {
 			// .flatMap(Collection::stream)
 			// .collect(Collectors.toList());
 			setMovingObjsInitTime();
+			// System.out.println("Current moving obj id: "+initlizer.movingObjID);
 		}
 
 		private void setMovingObjsInitTime() {
@@ -2192,10 +2197,10 @@ public class Home extends JApplet {
 			Random random = new Random();
 			try {
 				IdrObjsUtility.objectGenerateStartTime = startCalendar == null
-						? IdrObjsUtility.sdf.parse(movingObj.getStartTime())
+						? IdrObjsUtility.sdf.parse(mvObjRes.getStartTime())
 						: startCalendar.getTime();
 				IdrObjsUtility.objectGenerateEndTime = endCalendar == null
-						? IdrObjsUtility.sdf.parse(movingObj.getEndTime())
+						? IdrObjsUtility.sdf.parse(mvObjRes.getEndTime())
 						: endCalendar.getTime();
 			} catch (ParseException e1) {
 				e1.printStackTrace();
@@ -2315,7 +2320,8 @@ public class Home extends JApplet {
 			// IdrObjsUtility.createOutputDir();
 
 			// Maintain the number of visitor
-			IdrObjsUtility.genMovingObj(movingObjs);
+			IdrObjsUtility.genMovingObj(initlizer, DB_WrapperLoad.floorT,
+					movingObjs, mvObjRes.getStartTime(), mvObjRes.getEndTime());
 
 			// This function need to be updated
 			// destMovingObjs.clear();

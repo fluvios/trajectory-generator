@@ -10,7 +10,7 @@
 			"movementType"	: "normal",
 			"movingObjectType"	: "Destination",
 			"initialDistribution"	: "Uniform",
-			"objectNumber"	: 100,
+			"objectNumber"	: 10,
 			"lifeSpan"	: 3600,
 			"stepLength"	: 0.03,
 			"moveRate"	: 100,
