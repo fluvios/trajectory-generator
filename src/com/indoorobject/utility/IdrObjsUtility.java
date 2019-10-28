@@ -113,9 +113,10 @@ public class IdrObjsUtility {
 		});
 		
 		if(!toDeleteMovingObjs.isEmpty()) {
-		// if(movingObjs.size() < 1) {
+		// if(movingObjs.size() == 0) {
 			// Generate new movingObj
-			genNewMovingObj(floors, toDeleteMovingObjs.size());
+			// genNewMovingObj(floors, toDeleteMovingObjs.size());
+			genNewMovingObj(floors, 1);
 			
 			// Combine arraylist first
 			movingObjs.addAll(tempObjs);			
