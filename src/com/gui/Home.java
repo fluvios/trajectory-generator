@@ -122,6 +122,7 @@ import com.indoorobject.utility.IdrObjsUtility;
 import com.json.TimeDeserializer;
 import com.json.TimeSerializer;
 import com.spatialgraph.D2DGraph;
+import com.utils.ThreadUtils;
 
 import diva.util.java2d.Polygon2D;
 import java.awt.GridLayout;
@@ -2322,6 +2323,8 @@ public class Home extends JApplet {
 			// Maintain the number of visitor
 			IdrObjsUtility.genMovingObj(initlizer, DB_WrapperLoad.floorT,
 					movingObjs, mvObjRes.getStartTime(), mvObjRes.getEndTime());
+			
+			IdrObjsUtility.isStart = true;
 
 			// This function need to be updated
 			// destMovingObjs.clear();
@@ -2341,6 +2344,7 @@ public class Home extends JApplet {
 				DstMovingObj destMovingObj = (DstMovingObj) destMoving;
 				destMovingObj.setArrived(true);
 			}
+			
 			movingObjs.clear();
 			destMovingObjs.clear();
 
@@ -2348,6 +2352,10 @@ public class Home extends JApplet {
 				floor.getStations().clear();
 			}
 
+			System.out.println("Number of thread: "+ThreadUtils.getAllThreads().length);
+			
+			IdrObjsUtility.isStart = false;
+			
 			JOptionPane.showMessageDialog(this, "Generating Moving Object Data is done!", "Information",
 					JOptionPane.INFORMATION_MESSAGE);
 

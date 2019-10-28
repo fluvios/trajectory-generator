@@ -210,7 +210,7 @@ public class DstMovingObj extends MovingObj {
                 if (moveStepNum > 400 && Math.random() * 10 > 8) {
                     moveStepNum = 0;
                     genRandomDest();
-                    System.out.println(id + " Chage Dest.........");
+                    System.out.println(id + " Chage Destination");
                     if (curDestPartition == currentPartition) {
                         System.out.println("Straight");
                     } else if (generatePath2Dest() == false) {

@@ -63,19 +63,21 @@ public class IdrObjsUtility {
 	public static Date objectGenerateStartTime = null;
 	public static Date objectGenerateEndTime = null;
 	public static Date startClickedTime = null;
-	
+
 	public static IndoorObjsFactory initlizer;
 
 	public static ArrayList<MovingObj> tempObjs;
 	public static ArrayList<Floor> floors;
-	
+
 	public static String startCalendar;
 	public static String endCalendar;
-	
+
+	public static boolean isStart = false;
+
 	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
 			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 
 			Color color) {
-		
+
 		g2.setColor(color);
 		g2.setStroke(pen1);
 		List<MovingObj> toDeleteMovingObjs = new ArrayList<>();
@@ -111,50 +113,52 @@ public class IdrObjsUtility {
 			System.out.println("remove "+ o.getId());
 			System.out.println("number of visitor: "+movingObjs.size());
 		});
-		
-		if(!toDeleteMovingObjs.isEmpty()) {
-		// if(movingObjs.size() == 0) {
-			// Generate new movingObj
-			// genNewMovingObj(floors, toDeleteMovingObjs.size());
-			genNewMovingObj(floors, 1);
-			
-			// Combine arraylist first
-			movingObjs.addAll(tempObjs);			
-			
-			// rerun new movingObj
-			for (MovingObj movingObj : movingObjs) {
-				// Check if already active
-				if(!movingObj.isActive()) {
-					if (movingObj instanceof RegularMultiDestCustomer) {
-						RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
-						Timer timer = new Timer();
-						timer.schedule(new TimerTask() {
-							@Override
-							public void run() {
-								multiDestCustomer.genMultiDestinations();
-								System.out.println("new " + multiDestCustomer.getId() + " is generated");
-								multiDestCustomer.setActive(true);
-								Thread thread = new Thread(multiDestCustomer);
-								thread.start();
-							}
-						}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
-					} else {
-						Timer timer = new Timer();
-						timer.schedule(new TimerTask() {
-							@Override
-							public void run() {
-								System.out.println("new " +movingObj.getId() + " is generated");
-								movingObj.setActive(true);
-								Thread thread = new Thread(movingObj);
-								thread.start();
-							}
-						}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+
+		// if(!toDeleteMovingObjs.isEmpty()) {
+		if(isStart) {
+			if(movingObjs.size() < 10) {
+				// Generate new movingObj
+				// genNewMovingObj(floors, toDeleteMovingObjs.size());
+				genNewMovingObj(floors, 1);
+
+				// Combine array list first
+				movingObjs.addAll(tempObjs);			
+
+				// rerun new movingObj
+				for (MovingObj movingObj : movingObjs) {
+					// Check if already active
+					if(!movingObj.isActive()) {
+						if (movingObj instanceof RegularMultiDestCustomer) {
+							RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
+							Timer timer = new Timer();
+							timer.schedule(new TimerTask() {
+								@Override
+								public void run() {
+									multiDestCustomer.genMultiDestinations();
+									System.out.println("new " + multiDestCustomer.getId() + " is generated");
+									multiDestCustomer.setActive(true);
+									Thread thread = new Thread(multiDestCustomer);
+									thread.start();
+								}
+							}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+						} else {
+							Timer timer = new Timer();
+							timer.schedule(new TimerTask() {
+								@Override
+								public void run() {
+									System.out.println("new " +movingObj.getId() + " is generated");
+									movingObj.setActive(true);
+									Thread thread = new Thread(movingObj);
+									thread.start();
+								}
+							}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	// Generate new moving object if previous already killed
 	public synchronized static void genNewMovingObj(ArrayList<Floor> floors, int cap) {
 		tempObjs = new ArrayList<MovingObj>(cap);
@@ -167,7 +171,7 @@ public class IdrObjsUtility {
 		});
 		System.out.println("Created new "+ tempObjs.size()+" moving objects!");
 	}
-	
+
 	public static long calGaussianTime() {
 		Random random = new Random();
 		try {
@@ -198,12 +202,12 @@ public class IdrObjsUtility {
 		floors = flrs;
 		startCalendar = startCal;
 		endCalendar = endCal;
-		
+
 		// check if moving object is zero
 		if(movingObjs.size() <= 0) {
 			System.out.println("no visitor in building!");
 		}
-		
+
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof RegularMultiDestCustomer) {
 				RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
@@ -261,24 +265,24 @@ public class IdrObjsUtility {
 			for (Trajectory t : vt.getTrajectories()) {
 				if (t.getFloorId() == floor.getItemID()) {
 					if (i == 0 || i == vt.getTrajectories().size() - 1) {
-	        			BufferedImage image = null;
-	        			
-	                    try {
-	                        image = ImageIO.read(IdrObjsUtility.class.getResource("/com/gui/marker.png"));
-	                    } catch (IOException ioe) {
-	                        ioe.printStackTrace();
-	                    }
-	                    
-	                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
-//						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
-//						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
-//
-//						Color background = new Color(255, 255, 255);
-//						g2.setColor(background);
-//						g2.fill(ellipseNew);
-//
-//						g2.setColor(vt.getColor());
-//						g2.draw(ellipseNew);
+						BufferedImage image = null;
+
+						try {
+							image = ImageIO.read(IdrObjsUtility.class.getResource("/com/gui/marker.png"));
+						} catch (IOException ioe) {
+							ioe.printStackTrace();
+						}
+
+						g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+						//						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
+						//						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+						//
+						//						Color background = new Color(255, 255, 255);
+						//						g2.setColor(background);
+						//						g2.fill(ellipseNew);
+						//
+						//						g2.setColor(vt.getColor());
+						//						g2.draw(ellipseNew);
 					} else {
 						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
 						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
@@ -313,15 +317,15 @@ public class IdrObjsUtility {
 			for (Trajectory t : v) {
 				if (t.getFloorId() == floor.getItemID()) {
 					if (i == 0 || i == trajectories.size() - 1) {
-//	        			BufferedImage image = null;
-//	        			
-//	                    try {
-//	                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
-//	                    } catch (IOException ioe) {
-//	                        ioe.printStackTrace();
-//	                    }
-//	                    
-//	                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+						//	        			BufferedImage image = null;
+						//	        			
+						//	                    try {
+						//	                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+						//	                    } catch (IOException ioe) {
+						//	                        ioe.printStackTrace();
+						//	                    }
+						//	                    
+						//	                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
 						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
 						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
@@ -343,13 +347,13 @@ public class IdrObjsUtility {
 						g2.setColor(color);
 						g2.draw(ellipseNew);
 					}
-					
+
 					i++;
 				}
 			}
 		});
 	}
-	
+
 	public static void paintRegionTrajectories(Floor floor, Graphics2D g2, AffineTransform tx, Stroke pen1,
 			ArrayList<VisualTrajectory> trajectories) {
 
@@ -415,8 +419,8 @@ public class IdrObjsUtility {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-//                Color borderColor = new Color(200, 29, 37);
-//                g2.setColor(borderColor);
+				//                Color borderColor = new Color(200, 29, 37);
+				//                g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -430,8 +434,8 @@ public class IdrObjsUtility {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-//                Color borderColor = new Color(200, 29, 37);
-//                g2.setColor(borderColor);
+				//                Color borderColor = new Color(200, 29, 37);
+				//                g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -445,8 +449,8 @@ public class IdrObjsUtility {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-//                Color borderColor = new Color(200, 29, 37);
-//                g2.setColor(borderColor);
+				//                Color borderColor = new Color(200, 29, 37);
+				//                g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -456,7 +460,7 @@ public class IdrObjsUtility {
 		System.out.println(floor1);
 		System.out.println(floor2);
 		Point2D.Double point1 = new Point2D.Double(353, 200);
-//        Point2D.Double point1 = new Point2D.Double(343, 250);
+		//        Point2D.Double point1 = new Point2D.Double(343, 250);
 		Partition part1 = findPartitionForPoint(floor1, point1);
 		RegularMultiDestCustomer obj1 = new RegularMultiDestCustomer(floor1, point1);
 		obj1.setCurrentPartition(part1);
@@ -477,7 +481,7 @@ public class IdrObjsUtility {
 			System.out.println("Outdoor");
 		} else {
 			obj1.genMultiDestinations();
-//            obj1.runSingleThread();
+			//            obj1.runSingleThread();
 			Thread thread = new Thread(obj1);
 			thread.run();
 		}
