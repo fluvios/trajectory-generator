@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.database.spatialobject.AccessPoint;
 import com.database.spatialobject.Floor;
-import com.gui.Main;
+// import com.gui.Main;
 import com.ifc.dataextraction.ExtractBuildings;
 import com.ifc.dataextraction.ExtractDoors;
 import com.ifc.dataextraction.ExtractElevators;
@@ -279,22 +279,22 @@ public class DB_Import {
 
 	// before use, call DB_WrapperLoad.loadAll() firstly
 	public static void decompose(Connection con) throws SQLException {
-		Main.txtConsoleArea
-				.append("\nBefore decomposed partitions size is: " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
-
-		for (com.database.spatialobject.Partition p : DB_WrapperLoad.partitionT) {
-			if (p.getPolygonGIS() != null && p.getPolygonGIS().numPoints() > 0) {
-				Decomposition.decomposePart(con, p);
-			}
-		}
-		Main.txtConsoleArea.append("After Decomposition, there are: \n");
-		for (Floor floor : DB_WrapperLoad.floorT) {
-			Main.txtConsoleArea
-					.append(floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
-
-		}
-		Main.txtConsoleArea
-				.append("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
+//		Main.txtConsoleArea
+//				.append("\nBefore decomposed partitions size is: " + DB_WrapperLoad.partitionDecomposedT.size() + "\n");
+//
+//		for (com.database.spatialobject.Partition p : DB_WrapperLoad.partitionT) {
+//			if (p.getPolygonGIS() != null && p.getPolygonGIS().numPoints() > 0) {
+//				Decomposition.decomposePart(con, p);
+//			}
+//		}
+//		Main.txtConsoleArea.append("After Decomposition, there are: \n");
+//		for (Floor floor : DB_WrapperLoad.floorT) {
+//			Main.txtConsoleArea
+//					.append(floor.getName() + " " + floor.getPartsAfterDecomposed().size() + " partitions\n");
+//
+//		}
+//		Main.txtConsoleArea
+//				.append("In total: " + DB_WrapperLoad.partitionDecomposedT.size() + " partitions\n");
 
 	}
 

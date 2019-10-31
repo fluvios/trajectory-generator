@@ -216,7 +216,7 @@ public class IdrObjsUtility {
 					@Override
 					public void run() {
 						multiDestCustomer.genMultiDestinations();
-						System.out.println(multiDestCustomer.getId() + " is activated");
+						System.out.println("Destination moving object "+ multiDestCustomer.getId() + " is activated");
 						multiDestCustomer.setActive(true);
 						Thread thread = new Thread(multiDestCustomer);
 						thread.start();
@@ -227,7 +227,7 @@ public class IdrObjsUtility {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						System.out.println(movingObj.getId() + " is activated");
+						System.out.println("Random moving object " + movingObj.getId() + " is activated");
 						movingObj.setActive(true);
 						Thread thread = new Thread(movingObj);
 						thread.start();
