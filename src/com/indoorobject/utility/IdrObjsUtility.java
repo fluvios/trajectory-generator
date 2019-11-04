@@ -227,7 +227,7 @@ public class IdrObjsUtility {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						System.out.println("Random moving object " + movingObj.getId() + " is activated");
+						System.out.println( movingObj.getMovingObjectType() + " moving object " + movingObj.getId() + " is activated");
 						movingObj.setActive(true);
 						Thread thread = new Thread(movingObj);
 						thread.start();

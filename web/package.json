@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/html-webpack-plugin": "^2.30.1",
-    "@types/node": "^8.5.2",
+    "@types/node": "^8.10.58",
     "@types/webpack": "^3.8.1",
     "babel-minify-webpack-plugin": "^0.2.0",
     "css-loader": "^0.28.7",

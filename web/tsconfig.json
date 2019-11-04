@@ -7,7 +7,7 @@
     "jsx": "react",
     "jsxFactory": "Snabbdom.createElement",
     "noImplicitReturns": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "allowJs": true,
     "noStrictGenericChecks": true
   },

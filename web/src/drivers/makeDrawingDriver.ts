@@ -197,8 +197,7 @@ export default function makeDrawingDriver() {
         }
       })
 
-    xs
-      .merge(mapCentralizeInfo$, traceCentralizeInfo$)
+    xs.merge(mapCentralizeInfo$, traceCentralizeInfo$)
       .compose(sampleCombine(svg$))
       .addListener({
         next([{ useTransition, contentBox }, svg]) {

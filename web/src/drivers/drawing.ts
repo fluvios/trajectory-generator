@@ -74,11 +74,13 @@ export function drawFloor(floor: Floor, env: Env) {
   textJoin.exit().remove()
 
   function getAllLabelConfig() {
-    return floor.nodes.filter(node => node.labelConfig && node.labelConfig.show).map(node => ({
-      nodeId: node.id,
-      text: node.name,
-      config: node.labelConfig,
-    }))
+    return floor.nodes
+      .filter(node => node.labelConfig && node.labelConfig.show)
+      .map(node => ({
+        nodeId: node.id,
+        text: node.name,
+        config: node.labelConfig,
+      }))
   }
 }
 

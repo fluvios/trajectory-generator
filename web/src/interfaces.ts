@@ -95,6 +95,15 @@ export interface DataSource {
   semanticTraces: SemanticTrace[]
 }
 
+export interface Trajectory {
+  OBJECTID: string
+  FLOORID: string
+  ROOMID: string
+  X: number
+  Y: number
+  TIMESTAMP: string
+}
+
 export interface Thunk {
   (): void
 }

@@ -17,6 +17,7 @@ import {
   getTrace,
   Mutation,
   preprocessData,
+  csvParser,
 } from './utils'
 
 export type DrawingSource = Stream<{
@@ -56,8 +57,12 @@ const svgMarkup = (
         <g data-layer="door" />
         <g data-layer="text" />
         <g data-layer="point" />
-        {plainTraceNameList.map(name => <g data-layer={getPlainTraceLayerName(name)} />)}
-        {plainTraceNameList.map(name => <g data-layer={getPlainPointsLayerName(name)} />)}
+        {plainTraceNameList.map(name => (
+          <g data-layer={getPlainTraceLayerName(name)} />
+        ))}
+        {plainTraceNameList.map(name => (
+          <g data-layer={getPlainPointsLayerName(name)} />
+        ))}
         <g data-layer="semantic-path" />
         <g data-layer="semantic-points" />
       </g>
@@ -80,6 +85,7 @@ function calcualteFloorStats(dataSource: DataSource): FloorStats {
 
 export default function App(sources: Sources): Sinks {
   const domSource = sources.DOM
+  csvParser()
   const initDataSource: DataSource = preprocessData(require('../res/track.json'))
   const dataSource$ = sources.file.map(f => f.data).startWith(initDataSource)
   const floorStats$ = dataSource$.map(calcualteFloorStats)
