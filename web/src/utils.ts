@@ -1,7 +1,6 @@
 import * as d3 from 'd3'
 import xs from 'xstream'
 import { DataSource, RawTrace, RawTracePoint, SemanticTrace, TracePoint } from './interfaces'
-import { parse } from 'papaparse'
 
 export function foldFn<S>(state: S, f: Mutation<S>): S {
   return f(state)
@@ -22,7 +21,6 @@ export function getTransformStream<A extends Element, B>(zoom: d3.ZoomBehavior<A
   })
 }
 
-/** 获取 key 对应的颜色 */
 export function getColor(key: string) {
   if (key === 'ground-truth' || key === 'groundTruth') {
     return '#444444'
@@ -107,10 +105,6 @@ export function preprocessData(dataSource: DataSource) {
   })
 
   return dataSource
-}
-
-export function csvParser() {
-  parse(require("../res/Dest_traj_2.csv"), {complete: (result) => console.dir(result)})
 }
 
 /** Remove unneccessary points to draw a path */

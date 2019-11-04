@@ -66,7 +66,7 @@ export default function TimelinePanel(sources: Sources): Sinks {
 
   const vdom$ = xs.combine(points$, sIndex$).map(([points, sIndex]) => (
     <div className="timeline-panel">
-      <h1 className="title">Movement Timeline</h1>
+      <h1 className="title">Mobility Semantics Timeline</h1>
       <div className="timeline-legend">
         <span
           className="cell"

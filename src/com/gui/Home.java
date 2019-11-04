@@ -208,7 +208,6 @@ public class Home extends JApplet {
 	private JScrollPane movingObjectScroll;
 	
 	private JTabbedPane tabbedVITAPane;
-	private JComboBox<String> stationTypeComboBox;
 	private JComboBox<String> stationDistriTypeComboBox;
 	private JComboBox<String> movingObjectTypeComboBox;
 	private JComboBox<String> movObjDistributerTypeComboBox;
@@ -432,98 +431,82 @@ public class Home extends JApplet {
 		chckbxPositioningDevice.setBounds(233, 14, 121, 23);
 		panel_1.add(chckbxPositioningDevice);
 		
-		JLabel label_1 = new JLabel("Device");
-		label_1.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_1.setBounds(10, 44, 95, 23);
-		panel_1.add(label_1);
-		
-		JLabel label_2 = new JLabel("Type:");
-		label_2.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_2.setBounds(10, 65, 95, 23);
-		panel_1.add(label_2);
-		
-		stationTypeComboBox = new JComboBox();
-		stationTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
-		stationTypeComboBox.setBackground(Color.WHITE);
-		stationTypeComboBox.setBounds(113, 58, 222, 21);
-		panel_1.add(stationTypeComboBox);
-		
 		JLabel label_3 = new JLabel("Deployment");
 		label_3.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_3.setBounds(10, 98, 95, 23);
+		label_3.setBounds(10, 45, 95, 23);
 		panel_1.add(label_3);
 		
 		JLabel label_4 = new JLabel("Model:");
 		label_4.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_4.setBounds(10, 119, 95, 23);
+		label_4.setBounds(10, 66, 95, 23);
 		panel_1.add(label_4);
 		
 		stationDistriTypeComboBox = new JComboBox();
 		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationDistriTypeComboBox.setBackground(Color.WHITE);
-		stationDistriTypeComboBox.setBounds(113, 112, 222, 21);
+		stationDistriTypeComboBox.setBounds(113, 59, 222, 21);
 		panel_1.add(stationDistriTypeComboBox);
 		
 		txtStationMaxNumInPart = new JTextField();
 		txtStationMaxNumInPart.setToolTipText("Maximum for each room");
 		txtStationMaxNumInPart.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInPart.setColumns(10);
-		txtStationMaxNumInPart.setBounds(113, 154, 222, 21);
+		txtStationMaxNumInPart.setBounds(113, 101, 222, 21);
 		panel_1.add(txtStationMaxNumInPart);
 		
 		txtStationMaxNumInArea = new JTextField();
 		txtStationMaxNumInArea.setToolTipText("Maximum for each 100 meter square");
 		txtStationMaxNumInArea.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtStationMaxNumInArea.setColumns(10);
-		txtStationMaxNumInArea.setBounds(113, 185, 222, 21);
+		txtStationMaxNumInArea.setBounds(113, 132, 222, 21);
 		panel_1.add(txtStationMaxNumInArea);
 		
 		JLabel label_5 = new JLabel("Device");
 		label_5.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_5.setBounds(10, 162, 95, 23);
+		label_5.setBounds(10, 109, 95, 23);
 		panel_1.add(label_5);
 		
 		JLabel label_6 = new JLabel("Number:");
 		label_6.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_6.setBounds(10, 183, 95, 23);
+		label_6.setBounds(10, 130, 95, 23);
 		panel_1.add(label_6);
 		
 		JLabel label_8 = new JLabel("Detection");
 		label_8.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_8.setBounds(10, 216, 95, 23);
+		label_8.setBounds(10, 163, 95, 23);
 		panel_1.add(label_8);
 		
 		JLabel label_9 = new JLabel("Range:");
 		label_9.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_9.setBounds(10, 237, 95, 23);
+		label_9.setBounds(10, 184, 95, 23);
 		panel_1.add(label_9);
 		
 		txtScanRange = new JTextField();
 		txtScanRange.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRange.setColumns(10);
-		txtScanRange.setBounds(113, 230, 222, 21);
+		txtScanRange.setBounds(113, 177, 222, 21);
 		panel_1.add(txtScanRange);
 		
 		JLabel label_10 = new JLabel("Detection");
 		label_10.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_10.setBounds(10, 270, 95, 23);
+		label_10.setBounds(10, 217, 95, 23);
 		panel_1.add(label_10);
 		
 		JLabel label_11 = new JLabel("Frequency:");
 		label_11.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_11.setBounds(10, 291, 95, 23);
+		label_11.setBounds(10, 238, 95, 23);
 		panel_1.add(label_11);
 		
 		txtScanRate = new JTextField();
 		txtScanRate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		txtScanRate.setColumns(10);
-		txtScanRate.setBounds(113, 284, 222, 21);
+		txtScanRate.setBounds(113, 231, 222, 21);
 		panel_1.add(txtScanRate);
 		
 		btnStationGenerate = new JButton("Generate");
 		btnStationGenerate.setFont(new Font("Dialog", Font.PLAIN, 11));
 		btnStationGenerate.setBackground(Color.WHITE);
-		btnStationGenerate.setBounds(238, 324, 97, 23);
+		btnStationGenerate.setBounds(238, 271, 97, 23);
 		panel_1.add(btnStationGenerate);
 		
 		JPanel panel_2 = new JPanel();
@@ -1430,9 +1413,9 @@ public class Home extends JApplet {
 				btnSnapShot.removeActionListener(al);
 			}
 
-			for (ActionListener al : stationTypeComboBox.getActionListeners()) {
-				stationTypeComboBox.removeActionListener(al);
-			}
+//			for (ActionListener al : stationTypeComboBox.getActionListeners()) {
+//				stationTypeComboBox.removeActionListener(al);
+//			}
 		}
 
 		private void initUCLComboBox() {
@@ -1448,12 +1431,12 @@ public class Home extends JApplet {
 				BufferedReader buff = new BufferedReader(fileReader);
 				String line;
 				stationTypeMap.clear();
-				stationTypeComboBox.removeAllItems();
+//				stationTypeComboBox.removeAllItems();
 				while ((line = buff.readLine()) != null) {
 					String[] splitedString = new String[2];
 					splitedString = line.split("=");
 					stationTypeMap.put(splitedString[0], splitedString[1]);
-					stationTypeComboBox.addItem(splitedString[0]);
+//					stationTypeComboBox.addItem(splitedString[0]);
 				}
 				fileReader.close();
 				buff.close();
@@ -2033,8 +2016,8 @@ public class Home extends JApplet {
 					file.createNewFile();
 					outStr = new FileOutputStream(file);
 					buff = new BufferedOutputStream(outStr);
-					String configure = "Device Type=" + stationTypeComboBox.getSelectedItem().toString() + "\n";
-					configure = configure + "Deployment Model=" + stationDistriTypeComboBox.getSelectedItem().toString()
+//					String configure = "Device Type=" + stationTypeComboBox.getSelectedItem().toString() + "\n";
+					String configure = "Deployment Model=" + stationDistriTypeComboBox.getSelectedItem().toString()
 							+ "\n";
 					configure = configure + "Maximum Device Number in a Partition=" + txtStationMaxNumInPart.getText()
 							+ "\n";
@@ -2264,8 +2247,8 @@ public class Home extends JApplet {
 		private void storePropFromGUI(String propName) {
 			Properties props = new Properties();
 
-			String stationTypeSimple = stationTypeComboBox.getSelectedItem().toString();
-			String stationType = stationTypeMap.get(stationTypeSimple);
+//			String stationTypeSimple = stationTypeComboBox.getSelectedItem().toString();
+			String stationType = stationTypeMap.get("WIFI");
 			props.setProperty("stationType", stationType);
 			String stationDistributerTypeSimple = stationDistriTypeComboBox.getSelectedItem().toString();
 			String stationDistributerType = stationInitMap.get(stationDistributerTypeSimple);

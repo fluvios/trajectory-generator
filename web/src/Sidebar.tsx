@@ -93,7 +93,7 @@ export default function Sidebar(sources: Sources): Sinks {
         {buttonGroup}
         {legend}
         <div className="floor-list-widget">
-          <div className="title">Floor</div>
+          <div className="title">Floor Chooser</div>
           <div className="subtitle">
             <p>Floor Name</p>
             <p>Number of Raw Records</p>
