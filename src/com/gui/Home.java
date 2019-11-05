@@ -585,53 +585,6 @@ public class Home extends JApplet {
 		btnSnapShot.setBackground(Color.WHITE);
 		btnSnapShot.setBounds(264, 242, 71, 25);
 		panel_2.add(btnSnapShot);
-		
-		JPanel panel_5 = new JPanel();
-		tabbedPane_1.addTab("Machine", null, panel_5, null);
-		panel_5.setLayout(null);
-		
-		JLabel lblMachine = new JLabel("Machine");
-		lblMachine.setFont(new Font("Dialog", Font.PLAIN, 14));
-		lblMachine.setBounds(10, 11, 113, 23);
-		panel_5.add(lblMachine);
-		
-		JLabel label_16 = new JLabel("Files:");
-		label_16.setFont(new Font("Dialog", Font.PLAIN, 14));
-		label_16.setBounds(10, 32, 113, 23);
-		panel_5.add(label_16);
-		
-		JComboBox<UploadObject> comboBox_3 = new JComboBox<UploadObject>();
-		comboBox_3.setFont(new Font("Dialog", Font.PLAIN, 11));
-		comboBox_3.setBackground(Color.WHITE);
-		comboBox_3.setBounds(125, 13, 210, 23);
-		panel_5.add(comboBox_3);
-		
-		JButton button_7 = new JButton("Upload");
-		button_7.setFont(new Font("Dialog", Font.PLAIN, 11));
-		button_7.setBackground(Color.WHITE);
-		button_7.setBounds(125, 46, 97, 23);
-		panel_5.add(button_7);
-		
-		JButton button_8 = new JButton("Clear");
-		button_8.setFont(new Font("Dialog", Font.PLAIN, 11));
-		button_8.setBackground(Color.WHITE);
-		button_8.setBounds(238, 46, 97, 23);
-		panel_5.add(button_8);
-		
-		JPanel panel_4 = new JPanel();
-		panel_4.setBackground(Color.LIGHT_GRAY);
-		panel_4.setBounds(10, 80, 325, 119);
-		panel_5.add(panel_4);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBackground(Color.LIGHT_GRAY);
-		panel_4.add(scrollPane_1);
-		
-		JButton btnConnect = new JButton("Connect");
-		btnConnect.setFont(new Font("Dialog", Font.PLAIN, 11));
-		btnConnect.setBackground(Color.WHITE);
-		btnConnect.setBounds(238, 210, 97, 23);
-		panel_5.add(btnConnect);
 
 		generateButtonGroup = new ButtonGroup();
 

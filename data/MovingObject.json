@@ -3,7 +3,7 @@
 		"endTime"	: "19/07/18 12:00:00",
 		"movingObject" : [
 		{
-			"objectId"	: "student_1",
+			"objectId"	: "worker_1",
 			"gender" : "male",
 			"age"	: 22,
 			"job"	: "student",
@@ -52,8 +52,8 @@
 			]
 		},
 		{
-			"objectId"	: "student_2",
-			"gender" : "female",
+			"objectId"	: "guest_2",
+			"gender" : "male",
 			"age"	: 25,
 			"job"	: "student",
 			"movementType"	: "wheelchair",

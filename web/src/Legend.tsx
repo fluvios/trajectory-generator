@@ -106,6 +106,12 @@ export default function Legend(sources: Sources): Sinks {
       <div className="title">Legend</div>
       <div className="list">
         <LegendItem
+          displayName="Trajectory Data"
+          color={getColor('ground-truth')}
+          checked={state.groundTruth}
+          toggleKey="groundTruth"
+        />
+        {/* <LegendItem
           displayName="Ground Truth"
           color={getColor('ground-truth')}
           checked={state.groundTruth}
@@ -122,9 +128,9 @@ export default function Legend(sources: Sources): Sinks {
           color={getColor('cleaned-raw')}
           checked={state.cleanedRaw}
           toggleKey="cleanedRaw"
-        />
+        /> */}
         <LegendItem
-          displayName="Mobility Semantics"
+          displayName="Semantics Information"
           color={getColor('semantic')}
           checked={state.semantic}
           shape="rect"
