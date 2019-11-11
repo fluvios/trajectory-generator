@@ -56,6 +56,7 @@ public class IdrObjsUtility {
 	public static Hashtable<Integer, Station> allStations = new Hashtable<Integer, Station>();
 
 	public static int rp_id_count = 0;
+	public static int writedTrajectory = 0;	
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 	public static SimpleDateFormat dir_sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -71,7 +72,10 @@ public class IdrObjsUtility {
 
 	public static String startCalendar;
 	public static String endCalendar;
-
+	
+	public static long startTime;
+	public static long endTime;
+	
 	public static boolean isStart = false;
 
 	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
@@ -109,6 +113,12 @@ public class IdrObjsUtility {
 		}
 
 		toDeleteMovingObjs.forEach((o) -> {
+			if(o.isWrited() == true) {
+				writedTrajectory++;
+				endTime = System.currentTimeMillis();
+				System.out.println("Number of writed trajectory:" + writedTrajectory);
+				System.out.println("Current time execution:" + endTime);
+			}
 			movingObjs.remove(o);
 			System.out.println("remove "+ o.getId());
 			System.out.println("number of visitor: "+movingObjs.size());
@@ -197,6 +207,9 @@ public class IdrObjsUtility {
 	// Add executor service here
 	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
 			ArrayList<MovingObj> movingObjs, String startCal, String endCal) {
+		// Start the calculation time
+		startTime = System.currentTimeMillis();
+		
 		// Create instance of factory
 		initlizer = init;
 		floors = flrs;
@@ -227,7 +240,7 @@ public class IdrObjsUtility {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						System.out.println( movingObj.getMovingObjectType() + " moving object " + movingObj.getId() + " is activated");
+						System.out.println( movingObj.getClass().getName() + " moving object " + movingObj.getId() + " is activated");
 						movingObj.setActive(true);
 						Thread thread = new Thread(movingObj);
 						thread.start();

@@ -281,6 +281,7 @@ public class RegularMultiDestCustomer extends DstMovingObj {
 
                 if (finished) {
                     finTrajWrite();
+                    setWrited(true);
                     this.cancel();
                     System.out.println(id + " finished writing trajectory");
                     return;

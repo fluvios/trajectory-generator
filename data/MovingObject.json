@@ -1,6 +1,6 @@
 {
-		"startTime"	: "19/07/18 10:00:00",
-		"endTime"	: "19/07/18 12:00:00",
+		"startTime"	: "19/07/18 10:30:00",
+		"endTime"	: "19/07/18 11:00:00",
 		"movingObject" : [
 		{
 			"objectId"	: "worker_1",
@@ -10,7 +10,7 @@
 			"movementType"	: "normal",
 			"movingObjectType"	: "Destination",
 			"initialDistribution"	: "Uniform",
-			"objectNumber"	: 10,
+			"objectNumber"	: 100,
 			"lifeSpan"	: 3600,
 			"stepLength"	: 0.03,
 			"moveRate"	: 100,

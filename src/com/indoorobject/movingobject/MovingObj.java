@@ -53,6 +53,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
     private int lifeSpan;
     private long initMovingTime;
     private boolean active;
+    private boolean isWrited = false;
 
     public MovingObj() {
 
@@ -264,8 +265,16 @@ public abstract class MovingObj extends IndoorObject implements Runnable {
     public void setLifeSpan(int lifeSpan) {
         this.lifeSpan = lifeSpan;
     }
+    
+    public boolean isWrited() {
+		return isWrited;
+	}
 
-    public synchronized void hangThread() throws InterruptedException {
+	public void setWrited(boolean isWrited) {
+		this.isWrited = isWrited;
+	}
+
+	public synchronized void hangThread() throws InterruptedException {
         wait();
     }
 
