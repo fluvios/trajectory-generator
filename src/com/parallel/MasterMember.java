@@ -1,30 +1,19 @@
 package com.parallel;
 
-import com.hazelcast.core.Member;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.Future;
-
 public class MasterMember {
 
-    public static void main(String[] args) throws Exception {
-        HazelcastInstance hz = Hazelcast.newHazelcastInstance();
-        Map<String, Integer> map = hz.getMap("map");
-        for (int i = 0; i < 5; i++) {
-            map.put(UUID.randomUUID().toString(), 1);
-        }
-        IExecutorService executor = hz.getExecutorService("executor");
-
-        Map<Member, Future<Integer>> result = executor.submitToAllMembers(new GenerateTask());
-        int sum = 0;
-        for (Future<Integer> future : result.values()) {
-            sum += future.get();
-        }
-
-        System.out.println("Result: " + sum);
-    }
+	   public static void main( String[] args ) throws Exception {
+	        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+	        IExecutorService executor = hazelcastInstance.getExecutorService( "exec" );
+	        for ( int k = 1; k <= 1000; k++ ) {
+	            Thread.sleep( 1000 );
+	            System.out.println( "Producing echo task: " + k );
+	            executor.execute( new GenerateTask( String.valueOf( k ) ) );
+	        }
+	        System.out.println( "EchoTaskMain finished!" );
+	    }
 }

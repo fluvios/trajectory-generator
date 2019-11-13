@@ -7,22 +7,20 @@ import com.hazelcast.core.IMap;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
-public class GenerateTask implements Callable<Integer>, Serializable, HazelcastInstanceAware {
+public class GenerateTask implements Runnable, Serializable {
 
-    private transient HazelcastInstance hz;
+    private final String msg;
 
-    public void setHazelcastInstance(HazelcastInstance hz) {
-        this.hz = hz;
+    public GenerateTask( String msg ) {
+        this.msg = msg;
     }
 
-    public Integer call() throws Exception {
-        IMap<String, Integer> map = hz.getMap("map");
-        int result = 0;
-        for (String key : map.localKeySet()) {
-            System.out.println("Calculating for key: " + key);
-            result += map.get(key);
+    @Override
+    public void run() {
+        try {
+            Thread.sleep( 5000 );
+        } catch ( InterruptedException e ) {
         }
-        System.out.println("Local result: " + result);
-        return result;
+        System.out.println( "echo:" + msg );
     }
 }
