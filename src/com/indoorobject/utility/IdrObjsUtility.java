@@ -16,17 +16,17 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
@@ -38,14 +38,13 @@ import com.database.spatialobject.Floor;
 import com.database.spatialobject.Partition;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IExecutorService;
+import com.hazelcast.scheduledexecutor.IScheduledExecutorService;
 import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.MovingObj;
 import com.indoorobject.movingobject.MultiDestinationMovement;
 import com.indoorobject.station.Station;
 import com.trajectory.Trajectory;
 import com.trajectory.VisualTrajectory;
-import com.utils.ThreadUtils;
 
 public class IdrObjsUtility {
 
@@ -80,6 +79,9 @@ public class IdrObjsUtility {
 	public static long endTime;
 	
 	public static boolean isStart = false;
+	
+	public static ScheduledExecutorService scheduler =
+   	     Executors.newScheduledThreadPool(1);
 
 	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
 			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 
@@ -144,27 +146,27 @@ public class IdrObjsUtility {
 						if (movingObj instanceof MultiDestinationMovement) {
 							MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
 							Timer timer = new Timer();
-							timer.schedule(new TimerTask() {
+							scheduler.schedule(new TimerTask() {
 								@Override
 								public void run() {
 									multiDestCustomer.genMultiDestinations();
-									System.out.println("new " + multiDestCustomer.getId() + " is generated");
+									System.out.println("New " + multiDestCustomer.getId() + " is generated");
 									multiDestCustomer.setActive(true);
 									Thread thread = new Thread(multiDestCustomer);
 									thread.start();
 								}
-							}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+							}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 						} else {
 							Timer timer = new Timer();
-							timer.schedule(new TimerTask() {
+							scheduler.schedule(new TimerTask() {
 								@Override
 								public void run() {
-									System.out.println("new " +movingObj.getId() + " is generated");
+									System.out.println("New " +movingObj.getId() + " is generated");
 									movingObj.setActive(true);
 									Thread thread = new Thread(movingObj);
 									thread.start();
 								}
-							}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+							}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 						}
 					}
 				}
@@ -211,8 +213,8 @@ public class IdrObjsUtility {
 	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
 			ArrayList<MovingObj> movingObjs, String startCal, String endCal) throws Exception {
 		// Instantiate Hazelcast instance
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-        IExecutorService executor = hazelcastInstance.getExecutorService( "exec" );
+         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+         IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
         
 		// Start the calculation time
 		startTime = System.currentTimeMillis();
@@ -231,30 +233,26 @@ public class IdrObjsUtility {
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof MultiDestinationMovement) {
 				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
+				executor.schedule(new TimerTask() {
 					@Override
 					public void run() {
 						multiDestCustomer.genMultiDestinations();
 						System.out.println("Multi Destination moving object "+ multiDestCustomer.getId() + " is activated");
 						multiDestCustomer.setActive(true);
-						executor.execute(multiDestCustomer);
-						// Thread thread = new Thread(multiDestCustomer);
-						// thread.start();
+						Thread thread = new Thread(multiDestCustomer);
+						thread.start();
 					}
-				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 			} else {
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
+				executor.schedule(new TimerTask() {
 					@Override
 					public void run() {
 						System.out.println( "Single Destination moving object " + movingObj.getId() + " is activated");
 						movingObj.setActive(true);
-						executor.execute(movingObj);
-						// Thread thread = new Thread(movingObj);
-						// thread.start();
+						Thread thread = new Thread(movingObj);
+						thread.start();
 					}
-				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 			}
 		}
 	}

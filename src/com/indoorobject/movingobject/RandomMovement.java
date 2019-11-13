@@ -14,7 +14,11 @@ import com.indoorobject.utility.IdrObjsUtility;
 
 public class RandomMovement extends MovingObj implements Runnable, Serializable {
 
-    private static final double outThreshold = 2;    //if distance to ap is less than it, it may go to another part
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final double outThreshold = 2;    //if distance to ap is less than it, it may go to another part
     protected boolean finished = false;
     private int lifeCycle = 50 + (int) (50 * Math.random());    //lifecycle is between 50 to 100
 

@@ -2,12 +2,9 @@ package com.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -17,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
@@ -38,7 +34,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,18 +42,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -67,34 +58,17 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-
-import org.jxmapviewer.JXMapViewer;
-import org.jxmapviewer.OSMTileFactoryInfo;
-import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.GeoPosition;
-import org.jxmapviewer.viewer.TileFactoryInfo;
 
 import com.alee.laf.WebLookAndFeel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
-import com.algorithm.NeuralNetwork;
 import com.database.DB_Connection;
 import com.database.DB_FileUploader;
 import com.database.DB_Import;
@@ -110,7 +84,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.gui.util.InteractionState;
-import com.gui.util.calendar.JTimeChooser;
 import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.DestinationMovement;
 import com.indoorobject.movingobject.MovingObj;
@@ -122,13 +95,15 @@ import com.indoorobject.utility.IdrObjsUtility;
 import com.json.TimeDeserializer;
 import com.json.TimeSerializer;
 import com.spatialgraph.D2DGraph;
-import com.utils.ThreadUtils;
 
 import diva.util.java2d.Polygon2D;
-import java.awt.GridLayout;
 
 public class Home extends JApplet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static String lastSelectedFileName = null;
 	private JFrame frmTrajectoryGenerator;
 	private JTextField txtStationMaxNumInPart;
@@ -147,70 +122,18 @@ public class Home extends JApplet {
 	private JButton btnObjectStop;
 	private JButton btnSnapShot;
 	private JButton btnMovingObjUpload;
+	private JButton btnStationClear;
 
-	private JPanel filePanel;
 	private JPanel mapPanel;
-	private JPanel controlPanel;
-	private JPanel dbiPanel;
-	private JPanel uclPanel;
 	private JPanel movingObjectPanel;
-	private JPanel playPanel;
-	private JPanel positionAlgPanel;
-
-	private JLabel lblConnectedPartitions1;
-	private JLabel lblselectedEntityLabel2;
-	private JLabel lblConnectedPartitions2;
-	private JLabel lblStationDistributerType2;
-	private JLabel lblMovingObjectType2;
-	private JLabel lblMaximumLifeSpan2;
-	private JLabel lblMaximumVelocity2;
-	private JLabel lblPositionAlgorithm2;
-	private JLabel lblmaximumNumberIn;
-	private JLabel lblCommentsMaxMovObjNumInPart;
-	private JLabel lblmaxStepLength;
-	private JLabel lblmoveRate;
-	private JLabel lblstartTime;
-	private JLabel lblendTime;
-	private JLabel lblStationDistributerType1;
-	private JLabel lblMaxNumberIn;
-	private JLabel lblScanRate1;
-	private JLabel lblScanRate2;
-	private JLabel lblMovingObjectType1;
-	private JLabel lblPositioningParamenters;
-	private JLabel lblPositionAlgorithm1;
-	private JLabel lblPropertiesFile;
-	private JLabel lblGenerationPeriod1;
-	private JLabel lblMaximumVelocity1;
-	private JLabel lblMaximumLifeSpan1;
-	private JLabel lblMaxMovObjNumInPart;
-	private JLabel lblMovingObjectParamenters;
-	private JLabel lblScanRange2;
-	private JLabel lblScanRange1;
-	private JLabel lblCommentStationMaxNumInPart;
-	private JLabel lblStationType;
-	private JLabel lblStationParameters;
-	private JLabel lblUserConfigurationLoader;
-	private JLabel lblselectedEntityLabel1;
-	private JLabel lblselectedFloorLabel;
-	private JLabel lblDBIEntities;
-	private JLabel lblInputRssiPath;
-
-	private JCheckBox chckbxPositiongData;
 	private JCheckBox chckbxTrajectory;
 	private JCheckBox chckbxTracking;
 	private JCheckBox chckbxPositioningDevice;
 	private JCheckBox chckbxEnvironment;
 	
-	private ButtonGroup visualButtonGroup;
-	private ButtonGroup generateButtonGroup;
-
-	private JScrollPane scrollPaneConsole;
 	private JScrollPane movingObjectScroll;
 	
-	private JTabbedPane tabbedVITAPane;
 	private JComboBox<String> stationDistriTypeComboBox;
-	private JComboBox<String> movingObjectTypeComboBox;
-	private JComboBox<String> movObjDistributerTypeComboBox;
 	private JComboBox<UploadObject> fileComboBox;
 	private JComboBox<UploadObject> objectComboBox;
 	private JComboBox<Floor> floorCombobox;
@@ -251,37 +174,7 @@ public class Home extends JApplet {
 	private HashMap<String, String> movingObjTypeMap = new HashMap<String, String>();
 	private HashMap<String, String> movObjInitMap = new HashMap<String, String>();
 	private HashMap<String, String> stationInitMap = new HashMap<String, String>();
-	private HashMap<String, String> positionAlgorithmMap = new HashMap<String, String>();
-
-	private List<Partition> possibleConnectedPartsList;
-	private JLabel lblConsole;
-	private JLabel lblGenerationPeriod2;
-	private JLabel lblMovObjDistributerType2;
-	private JLabel lblMovObjDistributerType1;
-	private JComboBox textField_1;
-	private JComboBox textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_8;
-	private JTextField textField_9;
-	private JTextField textField_10;
-	private JTextField textField_11;
-	private JPanel panel_3;
-
-	private Vector columnId;
-	private Vector dataId;
-	private Vector columnPath;
-	private Vector dataPath;
-
 	private JTable idTable;
-	private JTable pathTable;
-	private JTextField textField;
-	private JTextField textField_7;
-	private JTextField textField_12;
-	private JTextField textField_13;
-	
 	private IndoorObjsFactory initlizer;
 
 	/**
@@ -321,7 +214,7 @@ public class Home extends JApplet {
 		frmTrajectoryGenerator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTrajectoryGenerator.getContentPane().setLayout(null);
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		tabbedPane.setBounds(0, 0, 1081, 646);
 		frmTrajectoryGenerator.getContentPane().add(tabbedPane);
 
@@ -408,7 +301,7 @@ public class Home extends JApplet {
 		lblConfiguration.setBounds(704, 118, 186, 23);
 		inGenPanel.add(lblConfiguration);
 		
-		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane_1 = new JTabbedPane(SwingConstants.TOP);
 		tabbedPane_1.setBounds(704, 152, 350, 386);
 		inGenPanel.add(tabbedPane_1);
 		
@@ -441,7 +334,7 @@ public class Home extends JApplet {
 		label_4.setBounds(10, 66, 95, 23);
 		panel_1.add(label_4);
 		
-		stationDistriTypeComboBox = new JComboBox();
+		stationDistriTypeComboBox = new JComboBox<String>();
 		stationDistriTypeComboBox.setFont(new Font("Dialog", Font.PLAIN, 11));
 		stationDistriTypeComboBox.setBackground(Color.WHITE);
 		stationDistriTypeComboBox.setBounds(113, 59, 222, 21);
@@ -508,6 +401,12 @@ public class Home extends JApplet {
 		btnStationGenerate.setBackground(Color.WHITE);
 		btnStationGenerate.setBounds(238, 271, 97, 23);
 		panel_1.add(btnStationGenerate);
+		
+		btnStationClear = new JButton("Clear");
+		btnStationClear.setFont(new Font("Dialog", Font.PLAIN, 11));
+		btnStationClear.setBackground(Color.WHITE);
+		btnStationClear.setBounds(131, 272, 97, 23);
+		panel_1.add(btnStationClear);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane_1.addTab("Moving Object", null, panel_2, null);
@@ -586,17 +485,17 @@ public class Home extends JApplet {
 		btnSnapShot.setBounds(264, 242, 71, 25);
 		panel_2.add(btnSnapShot);
 
-		generateButtonGroup = new ButtonGroup();
+		new ButtonGroup();
 
 		connectedPartsModel = new DefaultListModel<Partition>();
 
-		possibleConnectedPartsList = new ArrayList<>();
+		new ArrayList<>();
 
-		generateButtonGroup = new ButtonGroup();
+		new ButtonGroup();
 
 		connectedPartsModel = new DefaultListModel<Partition>();
 
-		possibleConnectedPartsList = new ArrayList<>();
+		new ArrayList<>();
 
 		// Model For Path Table
 		idTrajectoryModel = new DefaultTableModel() {
@@ -622,7 +521,7 @@ public class Home extends JApplet {
 		idTrajectoryModel.addColumn("Action");
 
 		idTable = new JTable();
-		idTable.setAutoResizeMode(WebTable.AUTO_RESIZE_OFF);
+		idTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		idTable.setRowSelectionAllowed(false);
 		idTable.setColumnSelectionAllowed(true);
 		idTable.setPreferredScrollableViewportSize(new Dimension(345, 290));
@@ -1047,13 +946,15 @@ public class Home extends JApplet {
 		/**
 		 * 
 		 */
+		private static final long serialVersionUID = 1L;
+		/**
+		 * 
+		 */
 		private MovingAdapter ma = new MovingAdapter();
-		private int fileIDX;
 		private boolean stationsGen = false;
 		private boolean movingObjsGen = false;
 
 		MapPainter(int fileID) {
-			fileIDX = fileID;
 			setSize(800, 800);
 			setPreferredSize(new Dimension(800, 800));
 
@@ -1127,6 +1028,16 @@ public class Home extends JApplet {
 					}
 				}
 
+			});
+			
+			btnStationClear.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for (Floor floor : DB_WrapperLoad.floorT) {
+						floor.getStations().clear();
+					}
+				}
 			});
 
 			chckbxTrajectory.addActionListener(new ActionListener() {
@@ -1227,28 +1138,6 @@ public class Home extends JApplet {
 			});
 		}
 
-		private void test() {
-			String default_path = System.getProperty("user.dir"); // + "//export
-			// files";
-			JFileChooser chooser = new JFileChooser();
-			chooser.setCurrentDirectory(new File(default_path));
-
-			FileFilter filter = new FileFilter() {
-				@Override
-				public boolean accept(File f) {
-					return f.getName().toLowerCase().endsWith(".zip") || f.isDirectory();
-				}
-
-				@Override
-				public String getDescription() {
-					return "zip Files";
-				}
-			};
-			chooser.setFileFilter(filter);
-
-			int result = chooser.showOpenDialog(this);
-		}
-
 		/**
 		 * illegal element --> self-intersection partitions, isolated access points
 		 * warning element --> isolated partitions print all the isolation partitions
@@ -1346,8 +1235,13 @@ public class Home extends JApplet {
 			for (ActionListener al : floorCombobox.getActionListeners()) {
 				floorCombobox.removeActionListener(al);
 			}
+			
 			for (ActionListener al : btnStationGenerate.getActionListeners()) {
 				btnStationGenerate.removeActionListener(al);
+			}
+			
+			for (ActionListener al : btnStationClear.getActionListeners()) {
+				btnStationClear.removeActionListener(al);
 			}
 
 			for (ActionListener al : btnObjectInit.getActionListeners()) {
@@ -1784,7 +1678,7 @@ public class Home extends JApplet {
 				floor.getStations().clear();
 			}
 			initlizer = new IndoorObjsFactory();
-			initlizer.stationID = 1; // Reset if reinit
+			IndoorObjsFactory.stationID = 1; // Reset if reinit
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				ArrayList<Station> stations = new ArrayList<Station>();
 				initlizer.generateStationsOnFloor(floor, stations);
@@ -2108,7 +2002,7 @@ public class Home extends JApplet {
 		private void generateMovingObjs() {
 			movingObjs.clear();
 			initlizer = new IndoorObjsFactory();
-			initlizer.movingObjID = 1; // Reset if reinit
+			IndoorObjsFactory.movingObjID = 1; // Reset if reinit
 			for (Floor floor : DB_WrapperLoad.floorT) {
 				initlizer.generateMovingObjsOnFloor(floor, movingObjs);
 			}
@@ -2290,11 +2184,9 @@ public class Home extends JApplet {
 			movingObjs.clear();
 			destMovingObjs.clear();
 
-			for (Floor floor : DB_WrapperLoad.floorT) {
-				floor.getStations().clear();
-			}
-
-			System.out.println("Number of thread: "+ThreadUtils.getAllThreads().length);
+			// for (Floor floor : DB_WrapperLoad.floorT) {
+			// 	floor.getStations().clear();
+			// }
 			
 			IdrObjsUtility.isStart = false;
 			
@@ -2361,14 +2253,16 @@ public class Home extends JApplet {
 		private class MovingAdapter extends MouseAdapter {
 			private Point startDrag;
 
+			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
 				if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					incrementZoom(1.0 * (double) e.getWheelRotation());
+					incrementZoom(1.0 * e.getWheelRotation());
 				}
 			}
 
+			@Override
 			public void mousePressed(MouseEvent e) {
 				previousX = e.getX();
 				previousY = e.getY();
@@ -2410,6 +2304,7 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseDragged(MouseEvent e) {
 
 				Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
@@ -2427,35 +2322,9 @@ public class Home extends JApplet {
 				repaint();
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
-		}
-	}
-
-	// Id Table Renderer Class
-	private class IdTableRenderer extends DefaultTableCellRenderer {
-		private final Map<String, Color> colorMap = new HashMap<>();
-
-		public IdTableRenderer() {
-			// TODO Auto-generated constructor stub
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			setBackground(null);
-			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			getColorForCell(row, column).ifPresent(this::setBackground);
-			return this;
-		}
-
-		public void setColorForCell(int row, int col, Color color) {
-			colorMap.put(row + ":" + col, color);
-		}
-
-		public Optional<Color> getColorForCell(int row, int col) {
-			return Optional.ofNullable(colorMap.get(row + ":" + col));
 		}
 	}
 }

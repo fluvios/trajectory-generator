@@ -15,21 +15,22 @@ import com.database.spatialobject.Partition;
 import com.indoorobject.utility.IdrObjsUtility;
 import com.spatialgraph.D2DGraph;
 import com.spatialgraph.NoSuchDoorException;
-import com.utils.ThreadUtils;
 
 public class DestinationMovement extends MovingObj implements Runnable, Serializable {
 
-    Point2D.Double curDestPoint;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Point2D.Double curDestPoint;
     Floor curDestFloor;
     Partition curDestPartition;
     ArrayList<AccessPoint> curPath = new ArrayList<AccessPoint>();
     ArrayList<Point2D.Double> curPathPoints = new ArrayList<Point2D.Double>();
     int moveStepNum = 1;
-    //	private boolean arrived = false;
-//	private boolean pause = false;
+    // private boolean arrived = false;
+    // private boolean pause = false;
     int stayCount = 0;
-    //	private boolean arrived = false;
-//	private boolean pause = false;
 
     public DestinationMovement() {
 

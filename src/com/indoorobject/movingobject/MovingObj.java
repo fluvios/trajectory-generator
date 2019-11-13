@@ -19,6 +19,11 @@ import com.indoorobject.utility.IdrObjsUtility;
 
 public abstract class MovingObj extends IndoorObject implements Runnable, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	// Basic Information
 	private String objectId;
 	private String gender;

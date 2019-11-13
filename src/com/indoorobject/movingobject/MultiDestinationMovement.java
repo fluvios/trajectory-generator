@@ -15,7 +15,11 @@ import com.database.spatialobject.Partition;
 
 public class MultiDestinationMovement extends DestinationMovement implements Runnable, Serializable {
 
-    protected boolean finished = false;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected boolean finished = false;
     private List<Destination> destinations;
     private Destination curDestination;
     private int maxInDestinationCount;
