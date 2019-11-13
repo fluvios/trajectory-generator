@@ -2,6 +2,7 @@ package com.indoorobject.movingobject;
 
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,7 @@ import com.database.DB_WrapperLoad;
 import com.database.spatialobject.Floor;
 import com.database.spatialobject.Partition;
 
-public class RegularMultiDestCustomer extends DstMovingObj {
+public class MultiDestinationMovement extends DestinationMovement implements Runnable, Serializable {
 
     protected boolean finished = false;
     private List<Destination> destinations;
@@ -20,18 +21,18 @@ public class RegularMultiDestCustomer extends DstMovingObj {
     private int maxInDestinationCount;
     private int minInDestinationCount;
 
-    public RegularMultiDestCustomer() {
+    public MultiDestinationMovement() {
     }
 
-    public RegularMultiDestCustomer(Floor floor, Point2D.Double location) {
+    public MultiDestinationMovement(Floor floor, Point2D.Double location) {
         super(floor, location);
     }
 
-    public RegularMultiDestCustomer(Floor floor, Partition partition, Point2D.Double location) {
+    public MultiDestinationMovement(Floor floor, Partition partition, Point2D.Double location) {
         super(floor, partition, location);
     }
 
-    public RegularMultiDestCustomer(Floor floor, Partition partition, ArrayList<Destination> destinations) {
+    public MultiDestinationMovement(Floor floor, Partition partition, ArrayList<Destination> destinations) {
         this.currentFloor = floor;
         this.currentPartition = partition;
         this.destinations = destinations;

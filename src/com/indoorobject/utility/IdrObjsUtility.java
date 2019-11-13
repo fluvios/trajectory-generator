@@ -36,9 +36,12 @@ import com.database.DB_WrapperLoad;
 import com.database.spatialobject.AccessPoint;
 import com.database.spatialobject.Floor;
 import com.database.spatialobject.Partition;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IExecutorService;
 import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.MovingObj;
-import com.indoorobject.movingobject.RegularMultiDestCustomer;
+import com.indoorobject.movingobject.MultiDestinationMovement;
 import com.indoorobject.station.Station;
 import com.trajectory.Trajectory;
 import com.trajectory.VisualTrajectory;
@@ -87,8 +90,8 @@ public class IdrObjsUtility {
 		List<MovingObj> toDeleteMovingObjs = new ArrayList<>();
 
 		for (MovingObj movingObj : movingObjs) {
-			if (movingObj instanceof RegularMultiDestCustomer) {
-				if (((RegularMultiDestCustomer) movingObj).isFinished()) {
+			if (movingObj instanceof MultiDestinationMovement) {
+				if (((MultiDestinationMovement) movingObj).isFinished()) {
 					toDeleteMovingObjs.add(movingObj);
 					System.out.println(movingObj.getId() + " is passed");
 					continue;
@@ -138,8 +141,8 @@ public class IdrObjsUtility {
 				for (MovingObj movingObj : movingObjs) {
 					// Check if already active
 					if(!movingObj.isActive()) {
-						if (movingObj instanceof RegularMultiDestCustomer) {
-							RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
+						if (movingObj instanceof MultiDestinationMovement) {
+							MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
 							Timer timer = new Timer();
 							timer.schedule(new TimerTask() {
 								@Override
@@ -206,7 +209,11 @@ public class IdrObjsUtility {
 
 	// Add executor service here
 	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
-			ArrayList<MovingObj> movingObjs, String startCal, String endCal) {
+			ArrayList<MovingObj> movingObjs, String startCal, String endCal) throws Exception {
+		// Instantiate Hazelcast instance
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+        IExecutorService executor = hazelcastInstance.getExecutorService( "exec" );
+        
 		// Start the calculation time
 		startTime = System.currentTimeMillis();
 		
@@ -222,17 +229,18 @@ public class IdrObjsUtility {
 		}
 
 		for (MovingObj movingObj : movingObjs) {
-			if (movingObj instanceof RegularMultiDestCustomer) {
-				RegularMultiDestCustomer multiDestCustomer = (RegularMultiDestCustomer) movingObj;
+			if (movingObj instanceof MultiDestinationMovement) {
+				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
 				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
 						multiDestCustomer.genMultiDestinations();
-						System.out.println("Destination moving object "+ multiDestCustomer.getId() + " is activated");
+						System.out.println("Multi Destination moving object "+ multiDestCustomer.getId() + " is activated");
 						multiDestCustomer.setActive(true);
-						Thread thread = new Thread(multiDestCustomer);
-						thread.start();
+						executor.execute(multiDestCustomer);
+						// Thread thread = new Thread(multiDestCustomer);
+						// thread.start();
 					}
 				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
 			} else {
@@ -240,10 +248,11 @@ public class IdrObjsUtility {
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						System.out.println( movingObj.getClass().getName() + " moving object " + movingObj.getId() + " is activated");
+						System.out.println( "Single Destination moving object " + movingObj.getId() + " is activated");
 						movingObj.setActive(true);
-						Thread thread = new Thread(movingObj);
-						thread.start();
+						executor.execute(movingObj);
+						// Thread thread = new Thread(movingObj);
+						// thread.start();
 					}
 				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
 			}
@@ -475,11 +484,11 @@ public class IdrObjsUtility {
 		Point2D.Double point1 = new Point2D.Double(353, 200);
 		//        Point2D.Double point1 = new Point2D.Double(343, 250);
 		Partition part1 = findPartitionForPoint(floor1, point1);
-		RegularMultiDestCustomer obj1 = new RegularMultiDestCustomer(floor1, point1);
+		MultiDestinationMovement obj1 = new MultiDestinationMovement(floor1, point1);
 		obj1.setCurrentPartition(part1);
 		Point2D.Double point2 = new Point2D.Double(405, 180);
 		Partition part2 = findPartitionForPoint(floor2, point2);
-		RegularMultiDestCustomer obj2 = new RegularMultiDestCustomer(floor2, point2);
+		MultiDestinationMovement obj2 = new MultiDestinationMovement(floor2, point2);
 		obj2.setCurrentPartition(part2);
 
 		obj1.setCurDestPoint(point2);

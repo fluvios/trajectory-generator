@@ -112,10 +112,10 @@ import com.google.gson.stream.JsonReader;
 import com.gui.util.InteractionState;
 import com.gui.util.calendar.JTimeChooser;
 import com.indoorobject.IndoorObjsFactory;
-import com.indoorobject.movingobject.DstMovingObj;
+import com.indoorobject.movingobject.DestinationMovement;
 import com.indoorobject.movingobject.MovingObj;
 import com.indoorobject.movingobject.MovingObjResponse;
-import com.indoorobject.movingobject.RegularMultiDestCustomer;
+import com.indoorobject.movingobject.MultiDestinationMovement;
 import com.indoorobject.station.Pack;
 import com.indoorobject.station.Station;
 import com.indoorobject.utility.IdrObjsUtility;
@@ -2258,8 +2258,13 @@ public class Home extends JApplet {
 			// IdrObjsUtility.createOutputDir();
 
 			// Maintain the number of visitor
-			IdrObjsUtility.genMovingObj(initlizer, DB_WrapperLoad.floorT,
-					movingObjs, mvObjRes.getStartTime(), mvObjRes.getEndTime());
+			try {
+				IdrObjsUtility.genMovingObj(initlizer, DB_WrapperLoad.floorT,
+						movingObjs, mvObjRes.getStartTime(), mvObjRes.getEndTime());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			IdrObjsUtility.isStart = true;
 
@@ -2273,12 +2278,12 @@ public class Home extends JApplet {
 		private void stopIndoorObj() {
 			for (MovingObj movingObj : movingObjs) {
 				movingObj.setArrived(true);
-				if (movingObj instanceof RegularMultiDestCustomer) {
-					((RegularMultiDestCustomer) movingObj).setFinished(true);
+				if (movingObj instanceof MultiDestinationMovement) {
+					((MultiDestinationMovement) movingObj).setFinished(true);
 				}
 			}
 			for (MovingObj destMoving : destMovingObjs) {
-				DstMovingObj destMovingObj = (DstMovingObj) destMoving;
+				DestinationMovement destMovingObj = (DestinationMovement) destMoving;
 				destMovingObj.setArrived(true);
 			}
 			
@@ -2310,7 +2315,7 @@ public class Home extends JApplet {
 			}
 
 			for (MovingObj movingObj : destMovingObjs) {
-				DstMovingObj destMovingObj = (DstMovingObj) movingObj;
+				DestinationMovement destMovingObj = (DestinationMovement) movingObj;
 				destMovingObj.changeFlag();
 				if (destMovingObj.getPauseFlag() == false) {
 					destMovingObj.resumeThread();

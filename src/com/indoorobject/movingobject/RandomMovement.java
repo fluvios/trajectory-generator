@@ -1,6 +1,7 @@
 package com.indoorobject.movingobject;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,22 +12,22 @@ import com.database.spatialobject.Floor;
 import com.database.spatialobject.Partition;
 import com.indoorobject.utility.IdrObjsUtility;
 
-public class RandomMovingObj extends MovingObj {
+public class RandomMovement extends MovingObj implements Runnable, Serializable {
 
     private static final double outThreshold = 2;    //if distance to ap is less than it, it may go to another part
     protected boolean finished = false;
     private int lifeCycle = 50 + (int) (50 * Math.random());    //lifecycle is between 50 to 100
 
-    public RandomMovingObj() {
+    public RandomMovement() {
 
     }
 
-    public RandomMovingObj(Floor floor, Point2D.Double point) {
+    public RandomMovement(Floor floor, Point2D.Double point) {
         this.currentFloor = floor;
         this.currentLocation = point;
     }
 
-    public RandomMovingObj(Floor floor, Point2D.Double point, Partition partition, double maxSpeed) {
+    public RandomMovement(Floor floor, Point2D.Double point, Partition partition, double maxSpeed) {
         this.currentLocation = point;
         this.currentPartition = partition;
         this.currentFloor = floor;

@@ -2,6 +2,7 @@ package com.indoorobject.movingobject;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -16,7 +17,7 @@ import com.spatialgraph.D2DGraph;
 import com.spatialgraph.NoSuchDoorException;
 import com.utils.ThreadUtils;
 
-public class DstMovingObj extends MovingObj {
+public class DestinationMovement extends MovingObj implements Runnable, Serializable {
 
     Point2D.Double curDestPoint;
     Floor curDestFloor;
@@ -30,22 +31,22 @@ public class DstMovingObj extends MovingObj {
     //	private boolean arrived = false;
 //	private boolean pause = false;
 
-    public DstMovingObj() {
+    public DestinationMovement() {
 
     }
 
-    public DstMovingObj(Floor floor, Point2D.Double location) {
+    public DestinationMovement(Floor floor, Point2D.Double location) {
         this.currentFloor = floor;
         this.currentLocation = location;
     }
 
-    public DstMovingObj(Floor floor, Partition partition, Point2D.Double location) {
+    public DestinationMovement(Floor floor, Partition partition, Point2D.Double location) {
         this.currentFloor = floor;
         this.currentPartition = partition;
         this.currentLocation = location;
     }
 
-    public DstMovingObj(Floor floor, Partition partition, Point2D.Double location,
+    public DestinationMovement(Floor floor, Partition partition, Point2D.Double location,
                         Floor curDestFloor, Partition destPart, Point2D.Double curDestPoint) {
         this.currentFloor = floor;
         this.currentPartition = partition;

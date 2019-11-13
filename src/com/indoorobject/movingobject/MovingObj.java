@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ import com.indoorobject.station.Pack;
 import com.indoorobject.station.Station;
 import com.indoorobject.utility.IdrObjsUtility;
 
-public abstract class MovingObj extends IndoorObject implements Runnable {
+public abstract class MovingObj extends IndoorObject implements Runnable, Serializable {
 
 	// Basic Information
 	private String objectId;
