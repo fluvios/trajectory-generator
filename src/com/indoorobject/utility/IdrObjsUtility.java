@@ -80,8 +80,9 @@ public class IdrObjsUtility {
 	
 	public static boolean isStart = false;
 	
-	public static ScheduledExecutorService scheduler =
-   	     Executors.newScheduledThreadPool(1);
+	// Instantiate Hazelcast instance
+	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
 
 	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
 			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 
@@ -131,9 +132,8 @@ public class IdrObjsUtility {
 
 		// if(!toDeleteMovingObjs.isEmpty()) {
 		if(isStart) {
-			if(movingObjs.size() < 10) {
+			if(movingObjs.size() < 50) {
 				// Generate new movingObj
-				// genNewMovingObj(floors, toDeleteMovingObjs.size());
 				genNewMovingObj(floors, 1);
 
 				// Combine array list first
@@ -145,8 +145,7 @@ public class IdrObjsUtility {
 					if(!movingObj.isActive()) {
 						if (movingObj instanceof MultiDestinationMovement) {
 							MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-							Timer timer = new Timer();
-							scheduler.schedule(new TimerTask() {
+							executor.schedule(new Runnable() {
 								@Override
 								public void run() {
 									multiDestCustomer.genMultiDestinations();
@@ -157,8 +156,7 @@ public class IdrObjsUtility {
 								}
 							}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 						} else {
-							Timer timer = new Timer();
-							scheduler.schedule(new TimerTask() {
+							executor.schedule(new Runnable() {
 								@Override
 								public void run() {
 									System.out.println("New " +movingObj.getId() + " is generated");
@@ -212,9 +210,6 @@ public class IdrObjsUtility {
 	// Add executor service here
 	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
 			ArrayList<MovingObj> movingObjs, String startCal, String endCal) throws Exception {
-		// Instantiate Hazelcast instance
-         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-         IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
         
 		// Start the calculation time
 		startTime = System.currentTimeMillis();
@@ -233,7 +228,7 @@ public class IdrObjsUtility {
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof MultiDestinationMovement) {
 				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-				executor.schedule(new TimerTask() {
+				executor.schedule(new Runnable() {
 					@Override
 					public void run() {
 						multiDestCustomer.genMultiDestinations();
@@ -244,7 +239,7 @@ public class IdrObjsUtility {
 					}
 				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
 			} else {
-				executor.schedule(new TimerTask() {
+				executor.schedule(new Runnable() {
 					@Override
 					public void run() {
 						System.out.println( "Single Destination moving object " + movingObj.getId() + " is activated");
