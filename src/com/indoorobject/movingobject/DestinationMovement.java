@@ -398,7 +398,6 @@ public class DestinationMovement extends MovingObj implements Runnable, Serializ
 
                 if (arrived) {
                     finTrajWrite();
-                    setWrited(true);
                     return;
                 } else {
                     writeTrajectory(id);

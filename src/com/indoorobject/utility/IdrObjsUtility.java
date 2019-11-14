@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 
 import org.khelekore.prtree.PRTree;
 
@@ -80,6 +81,8 @@ public class IdrObjsUtility {
 	
 	public static boolean isStart = false;
 	
+	private static JButton btnObjectStop;
+	
 	// Instantiate Hazelcast instance
 	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
@@ -95,11 +98,13 @@ public class IdrObjsUtility {
 		for (MovingObj movingObj : movingObjs) {
 			if (movingObj instanceof MultiDestinationMovement) {
 				if (((MultiDestinationMovement) movingObj).isFinished()) {
+					movingObj.setWrited(true);
 					toDeleteMovingObjs.add(movingObj);
 					System.out.println(movingObj.getId() + " is passed");
 					continue;
 				}
 			} else if (movingObj.isArrived()) {
+				movingObj.setWrited(true);
 				toDeleteMovingObjs.add(movingObj);
 				System.out.println(movingObj.getId() + " is passed");
 				continue;
@@ -132,42 +137,47 @@ public class IdrObjsUtility {
 
 		// if(!toDeleteMovingObjs.isEmpty()) {
 		if(isStart) {
-			if(movingObjs.size() < 50) {
-				// Generate new movingObj
-				genNewMovingObj(floors, 1);
+			if(writedTrajectory >= 1000) {
+				btnObjectStop.doClick();
+				System.out.println("Finished time execution: " + ((endTime - startTime) / 1000) + " seconds");
+			} else {
+				if(movingObjs.size() < 50) {
+					// Generate new movingObj
+					genNewMovingObj(floors, 1);
 
-				// Combine array list first
-				movingObjs.addAll(tempObjs);			
+					// Combine arrays
+					movingObjs.addAll(tempObjs);			
 
-				// rerun new movingObj
-				for (MovingObj movingObj : movingObjs) {
-					// Check if already active
-					if(!movingObj.isActive()) {
-						if (movingObj instanceof MultiDestinationMovement) {
-							MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-							executor.schedule(new Runnable() {
-								@Override
-								public void run() {
-									multiDestCustomer.genMultiDestinations();
-									System.out.println("New " + multiDestCustomer.getId() + " is generated");
-									multiDestCustomer.setActive(true);
-									Thread thread = new Thread(multiDestCustomer);
-									thread.start();
-								}
-							}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
-						} else {
-							executor.schedule(new Runnable() {
-								@Override
-								public void run() {
-									System.out.println("New " +movingObj.getId() + " is generated");
-									movingObj.setActive(true);
-									Thread thread = new Thread(movingObj);
-									thread.start();
-								}
-							}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+					// rerun new movingObj
+					for (MovingObj movingObj : movingObjs) {
+						// Check if already active
+						if(!movingObj.isActive()) {
+							if (movingObj instanceof MultiDestinationMovement) {
+								MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
+								executor.schedule(new Runnable() {
+									@Override
+									public void run() {
+										multiDestCustomer.genMultiDestinations();
+										System.out.println("New " + multiDestCustomer.getId() + " is generated");
+										multiDestCustomer.setActive(true);
+										Thread thread = new Thread(multiDestCustomer);
+										thread.start();
+									}
+								}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+							} else {
+								executor.schedule(new Runnable() {
+									@Override
+									public void run() {
+										System.out.println("New " +movingObj.getId() + " is generated");
+										movingObj.setActive(true);
+										Thread thread = new Thread(movingObj);
+										thread.start();
+									}
+								}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+							}
 						}
 					}
-				}
+				}				
 			}
 		}
 	}
@@ -208,14 +218,16 @@ public class IdrObjsUtility {
 	}
 
 	// Add executor service here
-	public synchronized static void genMovingObj(IndoorObjsFactory init, ArrayList<Floor> flrs,
+	public synchronized static void genMovingObj(IndoorObjsFactory init, JButton btnStop, ArrayList<Floor> flrs,
 			ArrayList<MovingObj> movingObjs, String startCal, String endCal) throws Exception {
         
 		// Start the calculation time
 		startTime = System.currentTimeMillis();
+		System.out.println("Start time execution:" + startTime);
 		
 		// Create instance of factory
 		initlizer = init;
+		btnObjectStop = btnStop;
 		floors = flrs;
 		startCalendar = startCal;
 		endCalendar = endCal;

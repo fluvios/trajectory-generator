@@ -286,7 +286,6 @@ public class MultiDestinationMovement extends DestinationMovement implements Run
 
                 if (finished) {
                     finTrajWrite();
-                    setWrited(true);
                     this.cancel();
                     System.out.println(id + " finished writing trajectory");
                     return;

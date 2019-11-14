@@ -1073,7 +1073,12 @@ public class Home extends JApplet {
 					generateMovingObjs();
 					movingObjsGen = true;
 					if (stationsGen == true) {
-						btnObjectStart.setEnabled(true);
+						if (initlizer.movingObjID >= 1000) {
+							System.out.println("Number of moving objects "+ initlizer.movingObjID);
+							btnObjectStart.setEnabled(true);							
+						} else {
+							System.out.println("Insufficient number of moving objects! (Created: "+ initlizer.movingObjID +")");
+						}
 					}
 				}
 			});
@@ -1221,14 +1226,14 @@ public class Home extends JApplet {
 				}
 			}, startPoint);
 
-			Timer endTimer = new Timer();
-
-			endTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					btnObjectStop.doClick();
-				}
-			}, endPoint);
+//			Timer endTimer = new Timer();
+//
+//			endTimer.schedule(new TimerTask() {
+//				@Override
+//				public void run() {
+//					btnObjectStop.doClick();
+//				}
+//			}, endPoint);
 		}
 
 		private void clearMapPainterActionListener() {
@@ -2016,7 +2021,7 @@ public class Home extends JApplet {
 			// .flatMap(Collection::stream)
 			// .collect(Collectors.toList());
 			setMovingObjsInitTime();
-			// System.out.println("Current moving obj id: "+initlizer.movingObjID);
+			// System.out.println("Current moving object id: "+initlizer.movingObjID);
 		}
 
 		private void setMovingObjsInitTime() {
@@ -2153,7 +2158,7 @@ public class Home extends JApplet {
 
 			// Maintain the number of visitor
 			try {
-				IdrObjsUtility.genMovingObj(initlizer, DB_WrapperLoad.floorT,
+				IdrObjsUtility.genMovingObj(initlizer, btnObjectStop, DB_WrapperLoad.floorT,
 						movingObjs, mvObjRes.getStartTime(), mvObjRes.getEndTime());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
