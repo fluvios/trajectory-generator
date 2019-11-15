@@ -291,7 +291,6 @@ public class MultiDestinationMovement extends DestinationMovement implements Run
                     return;
                 } else {
                     writeTrajectory(id);
-//                	writeTrainTrajectory();                	
                 }
             }
 

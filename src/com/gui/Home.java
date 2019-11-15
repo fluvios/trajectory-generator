@@ -319,9 +319,9 @@ public class Home extends JApplet {
 		chckbxEnvironment.setBounds(113, 14, 105, 23);
 		panel_1.add(chckbxEnvironment);
 		
-		chckbxPositioningDevice = new JCheckBox("Device Position");
+		chckbxPositioningDevice = new JCheckBox("Device Positioning");
 		chckbxPositioningDevice.setFont(new Font("Dialog", Font.PLAIN, 11));
-		chckbxPositioningDevice.setBounds(233, 14, 121, 23);
+		chckbxPositioningDevice.setBounds(214, 14, 121, 23);
 		panel_1.add(chckbxPositioningDevice);
 		
 		JLabel label_3 = new JLabel("Deployment");

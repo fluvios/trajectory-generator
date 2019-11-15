@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,8 +48,12 @@ import com.indoorobject.station.Station;
 import com.trajectory.Trajectory;
 import com.trajectory.VisualTrajectory;
 
-public class IdrObjsUtility {
+public class IdrObjsUtility implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static PRTree<Partition> partTree;
 	public static PRTree<Station> stationTree;
 	public static String outputDir;
@@ -86,6 +91,10 @@ public class IdrObjsUtility {
 	// Instantiate Hazelcast instance
 	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
 	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
+	
+	public IdrObjsUtility() {
+		
+	}
 
 	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
 			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 

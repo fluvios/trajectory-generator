@@ -401,7 +401,6 @@ public class DestinationMovement extends MovingObj implements Runnable, Serializ
                     return;
                 } else {
                     writeTrajectory(id);
-//                	writeTrainTrajectory();
                 }
             }
 
