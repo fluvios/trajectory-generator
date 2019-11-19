@@ -1,3 +1,3 @@
 # Trajectory Generator
 
-Under Development
+This application provides both RSSI and trajectory data in indoor space.
