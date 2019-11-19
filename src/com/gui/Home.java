@@ -84,6 +84,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.gui.util.InteractionState;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.scheduledexecutor.IScheduledExecutorService;
 import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.DestinationMovement;
 import com.indoorobject.movingobject.MovingObj;
@@ -177,6 +180,10 @@ public class Home extends JApplet {
 	private JTable idTable;
 	private IndoorObjsFactory initlizer;
 
+	// Instantiate Hazelcast instance
+	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
+	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
+	
 	/**
 	 * Launch the application.
 	 */

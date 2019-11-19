@@ -64,7 +64,7 @@ public class IdrObjsUtility implements Serializable {
 	public static Hashtable<Integer, Station> allStations = new Hashtable<Integer, Station>();
 
 	public static int rp_id_count = 0;
-	public static int writedTrajectory = 0;	
+	public static int writedTrajectory = 0;
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 	public static SimpleDateFormat dir_sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -80,25 +80,20 @@ public class IdrObjsUtility implements Serializable {
 
 	public static String startCalendar;
 	public static String endCalendar;
-	
+
 	public static long startTime;
 	public static long endTime;
-	
+
 	public static boolean isStart = false;
-	
+
 	private static JButton btnObjectStop;
-	
-	// Instantiate Hazelcast instance
-	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
-	
+
 	public IdrObjsUtility() {
-		
+
 	}
 
-	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, 
-			AffineTransform tx, Stroke pen1, ArrayList<MovingObj> movingObjs, 
-			Color color) {
+	public synchronized static void paintMovingObjs(Floor chosenFloor, Graphics2D g2, AffineTransform tx, Stroke pen1,
+			ArrayList<MovingObj> movingObjs, Color color) {
 
 		g2.setColor(color);
 		g2.setStroke(pen1);
@@ -133,60 +128,62 @@ public class IdrObjsUtility implements Serializable {
 		}
 
 		toDeleteMovingObjs.forEach((o) -> {
-			if(o.isWrited() == true) {
+			if (o.isWrited() == true) {
 				writedTrajectory++;
 				endTime = System.currentTimeMillis();
 				System.out.println("Number of writed trajectory:" + writedTrajectory);
 				System.out.println("Current time execution:" + endTime);
 			}
 			movingObjs.remove(o);
-			System.out.println("remove "+ o.getId());
-			System.out.println("number of visitor: "+movingObjs.size());
+			System.out.println("remove " + o.getId());
+			System.out.println("number of visitor: " + movingObjs.size());
 		});
 
 		// if(!toDeleteMovingObjs.isEmpty()) {
-		if(isStart) {
-			if(writedTrajectory >= 1000) {
+		if (isStart) {
+			if (writedTrajectory >= 1000) {
 				btnObjectStop.doClick();
 				System.out.println("Finished time execution: " + ((endTime - startTime) / 1000) + " seconds");
 			} else {
-				if(movingObjs.size() < 50) {
+				if (movingObjs.size() < 50) {
 					// Generate new movingObj
 					genNewMovingObj(floors, 1);
 
 					// Combine arrays
-					movingObjs.addAll(tempObjs);			
+					movingObjs.addAll(tempObjs);
 
 					// rerun new movingObj
 					for (MovingObj movingObj : movingObjs) {
 						// Check if already active
-						if(!movingObj.isActive()) {
+						if (!movingObj.isActive()) {
 							if (movingObj instanceof MultiDestinationMovement) {
 								MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-								executor.schedule(new Runnable() {
+								Timer timer = new Timer();
+								timer.schedule(new TimerTask() {
 									@Override
 									public void run() {
 										multiDestCustomer.genMultiDestinations();
-										System.out.println("New " + multiDestCustomer.getId() + " is generated");
+										System.out.println("new " + multiDestCustomer.getId() + " is generated");
 										multiDestCustomer.setActive(true);
 										Thread thread = new Thread(multiDestCustomer);
 										thread.start();
 									}
-								}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+								}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
 							} else {
-								executor.schedule(new Runnable() {
+								Timer timer = new Timer();
+								timer.schedule(new TimerTask() {
 									@Override
 									public void run() {
-										System.out.println("New " +movingObj.getId() + " is generated");
+										System.out.println("new " + movingObj.getId() + " is generated");
 										movingObj.setActive(true);
 										Thread thread = new Thread(movingObj);
 										thread.start();
 									}
-								}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+								}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
 							}
 						}
 					}
-				}				
+				}
 			}
 		}
 	}
@@ -201,7 +198,7 @@ public class IdrObjsUtility implements Serializable {
 		tempObjs.forEach(tempObj -> {
 			tempObj.setInitMovingTime(calGaussianTime());
 		});
-		System.out.println("Created new "+ tempObjs.size()+" moving objects!");
+		System.out.println("Created new " + tempObjs.size() + " moving objects!");
 	}
 
 	public static long calGaussianTime() {
@@ -229,11 +226,11 @@ public class IdrObjsUtility implements Serializable {
 	// Add executor service here
 	public synchronized static void genMovingObj(IndoorObjsFactory init, JButton btnStop, ArrayList<Floor> flrs,
 			ArrayList<MovingObj> movingObjs, String startCal, String endCal) throws Exception {
-        
+
 		// Start the calculation time
 		startTime = System.currentTimeMillis();
 		System.out.println("Start time execution:" + startTime);
-		
+
 		// Create instance of factory
 		initlizer = init;
 		btnObjectStop = btnStop;
@@ -242,33 +239,38 @@ public class IdrObjsUtility implements Serializable {
 		endCalendar = endCal;
 
 		// check if moving object is zero
-		if(movingObjs.size() <= 0) {
+		if (movingObjs.size() <= 0) {
 			System.out.println("no visitor in building!");
 		}
 
 		for (MovingObj movingObj : movingObjs) {
-			if (movingObj instanceof MultiDestinationMovement) {
-				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-				executor.schedule(new Runnable() {
-					@Override
-					public void run() {
-						multiDestCustomer.genMultiDestinations();
-						System.out.println("Multi Destination moving object "+ multiDestCustomer.getId() + " is activated");
-						multiDestCustomer.setActive(true);
-						Thread thread = new Thread(multiDestCustomer);
-						thread.start();
-					}
-				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
-			} else {
-				executor.schedule(new Runnable() {
-					@Override
-					public void run() {
-						System.out.println( "Single Destination moving object " + movingObj.getId() + " is activated");
-						movingObj.setActive(true);
-						Thread thread = new Thread(movingObj);
-						thread.start();
-					}
-				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+			// Check if already active
+			if (!movingObj.isActive()) {
+				if (movingObj instanceof MultiDestinationMovement) {
+					MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
+					Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							multiDestCustomer.genMultiDestinations();
+							System.out.println("new " + multiDestCustomer.getId() + " is generated");
+							multiDestCustomer.setActive(true);
+							Thread thread = new Thread(multiDestCustomer);
+							thread.start();
+						}
+					}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+				} else {
+					Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							System.out.println("new " + movingObj.getId() + " is generated");
+							movingObj.setActive(true);
+							Thread thread = new Thread(movingObj);
+							thread.start();
+						}
+					}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+				}
 			}
 		}
 	}
@@ -309,16 +311,17 @@ public class IdrObjsUtility implements Serializable {
 							ioe.printStackTrace();
 						}
 
-						g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
-						//						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
-						//						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
+						g2.drawImage(image, (int) t.getAxis(), (int) t.getOordinat(), null);
+						// Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(),
+						// t.getOordinat(), 0.45, 0.45);
+						// Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 						//
-						//						Color background = new Color(255, 255, 255);
-						//						g2.setColor(background);
-						//						g2.fill(ellipseNew);
+						// Color background = new Color(255, 255, 255);
+						// g2.setColor(background);
+						// g2.fill(ellipseNew);
 						//
-						//						g2.setColor(vt.getColor());
-						//						g2.draw(ellipseNew);
+						// g2.setColor(vt.getColor());
+						// g2.draw(ellipseNew);
 					} else {
 						Ellipse2D.Double ellipse = new Ellipse2D.Double(t.getAxis(), t.getOordinat(), 0.15, 0.15);
 						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
@@ -331,7 +334,7 @@ public class IdrObjsUtility implements Serializable {
 						g2.draw(ellipseNew);
 					}
 					i++;
-				}				
+				}
 			}
 		}
 	}
@@ -353,15 +356,16 @@ public class IdrObjsUtility implements Serializable {
 			for (Trajectory t : v) {
 				if (t.getFloorId() == floor.getItemID()) {
 					if (i == 0 || i == trajectories.size() - 1) {
-						//	        			BufferedImage image = null;
-						//	        			
-						//	                    try {
-						//	                        image = ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
-						//	                    } catch (IOException ioe) {
-						//	                        ioe.printStackTrace();
-						//	                    }
-						//	                    
-						//	                    g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
+						// BufferedImage image = null;
+						//
+						// try {
+						// image =
+						// ImageIO.read(IdrObjsUtility.class.getResource("/cn/edu/zju/db/datagen/gui/marker.png"));
+						// } catch (IOException ioe) {
+						// ioe.printStackTrace();
+						// }
+						//
+						// g2.drawImage(image,(int) t.getAxis(),(int) t.getOordinat(), null);
 						Rectangle2D.Double ellipse = new Rectangle2D.Double(t.getAxis(), t.getOordinat(), 0.45, 0.45);
 						Path2D ellipseNew = (Path2D) tx.createTransformedShape(ellipse);
 
@@ -455,8 +459,8 @@ public class IdrObjsUtility implements Serializable {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-				//                Color borderColor = new Color(200, 29, 37);
-				//                g2.setColor(borderColor);
+				// Color borderColor = new Color(200, 29, 37);
+				// g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -470,8 +474,8 @@ public class IdrObjsUtility implements Serializable {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-				//                Color borderColor = new Color(200, 29, 37);
-				//                g2.setColor(borderColor);
+				// Color borderColor = new Color(200, 29, 37);
+				// g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -485,8 +489,8 @@ public class IdrObjsUtility implements Serializable {
 				g2.setColor(color);
 				g2.fill(ellipseNew);
 
-				//                Color borderColor = new Color(200, 29, 37);
-				//                g2.setColor(borderColor);
+				// Color borderColor = new Color(200, 29, 37);
+				// g2.setColor(borderColor);
 				g2.draw(ellipseNew);
 			}
 		}
@@ -496,7 +500,7 @@ public class IdrObjsUtility implements Serializable {
 		System.out.println(floor1);
 		System.out.println(floor2);
 		Point2D.Double point1 = new Point2D.Double(353, 200);
-		//        Point2D.Double point1 = new Point2D.Double(343, 250);
+		// Point2D.Double point1 = new Point2D.Double(343, 250);
 		Partition part1 = findPartitionForPoint(floor1, point1);
 		MultiDestinationMovement obj1 = new MultiDestinationMovement(floor1, point1);
 		obj1.setCurrentPartition(part1);
@@ -517,7 +521,7 @@ public class IdrObjsUtility implements Serializable {
 			System.out.println("Outdoor");
 		} else {
 			obj1.genMultiDestinations();
-			//            obj1.runSingleThread();
+			// obj1.runSingleThread();
 			Thread thread = new Thread(obj1);
 			thread.run();
 		}
