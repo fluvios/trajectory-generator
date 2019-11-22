@@ -1,29 +1,50 @@
 package com.parallel;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.HazelcastInstanceAware;
-import com.hazelcast.core.IMap;
-
-import diva.util.java2d.Polygon2D;
-
-import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.concurrent.Callable;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.indoorobject.movingobject.MovingObj;
+import com.indoorobject.movingobject.MultiDestinationMovement;
 
 public class GenerateTask implements Runnable, Serializable {
 
-    private final Point2D.Double polygon2D;
+    private final MovingObj movingObj;
 
-    public GenerateTask( Point2D.Double polygon2D) {
-        this.polygon2D = polygon2D;
+    public GenerateTask(MovingObj movingObj) {
+        this.movingObj = movingObj;
     }
 
     @Override
     public void run() {
-        try {
-            Thread.sleep( 5000 );
-        } catch ( InterruptedException e ) {
-        }
-        System.out.println( "echo:" + polygon2D.getX());
+    	// for test purpose
+    	System.out.println(movingObj.getId());
+		if (!movingObj.isActive()) {
+			if (movingObj instanceof MultiDestinationMovement) {
+				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						multiDestCustomer.genMultiDestinations();
+						System.out.println("new " + multiDestCustomer.getId() + " is generated");
+						multiDestCustomer.setActive(true);
+						Thread thread = new Thread(multiDestCustomer);
+						thread.start();
+					}
+				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
+			} else {
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						System.out.println("new " + movingObj.getId() + " is generated");
+						movingObj.setActive(true);
+						Thread thread = new Thread(movingObj);
+						thread.start();
+					}
+				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
+			}
+		}
     }
 }

@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,6 +98,7 @@ import com.indoorobject.station.Station;
 import com.indoorobject.utility.IdrObjsUtility;
 import com.json.TimeDeserializer;
 import com.json.TimeSerializer;
+import com.parallel.GenerateTask;
 import com.spatialgraph.D2DGraph;
 
 import diva.util.java2d.Polygon2D;
@@ -1226,15 +1228,18 @@ public class Home extends JApplet {
 			IdrObjsUtility.startClickedTime = startPoint;
 			Date endPoint = new Date(startPoint.getTime() + generatonPeriod);
 
-			startTimer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					startIndoorObj();
-				}
-			}, startPoint);
+			for(MovingObj m:movingObjs) {
+				executor.scheduleOnAllMembers(new GenerateTask(m), System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+			}
+//			startTimer.schedule(new TimerTask() {
+//				@Override
+//				public void run() {
+//					startIndoorObj();
+//				}
+//			}, startPoint);
 
 //			Timer endTimer = new Timer();
-//
+
 //			endTimer.schedule(new TimerTask() {
 //				@Override
 //				public void run() {
