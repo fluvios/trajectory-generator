@@ -9,7 +9,11 @@ import com.indoorobject.movingobject.MultiDestinationMovement;
 
 public class GenerateTask implements Runnable, Serializable {
 
-    private final MovingObj movingObj;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final MovingObj movingObj;
 
     public GenerateTask(MovingObj movingObj) {
         this.movingObj = movingObj;

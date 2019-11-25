@@ -1231,6 +1231,7 @@ public class Home extends JApplet {
 			for(MovingObj m:movingObjs) {
 				executor.scheduleOnAllMembers(new GenerateTask(m), System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 			}
+			
 //			startTimer.schedule(new TimerTask() {
 //				@Override
 //				public void run() {
