@@ -87,6 +87,7 @@ import com.google.gson.stream.JsonReader;
 import com.gui.util.InteractionState;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IExecutorService;
 import com.hazelcast.scheduledexecutor.IScheduledExecutorService;
 import com.indoorobject.IndoorObjsFactory;
 import com.indoorobject.movingobject.DestinationMovement;
@@ -184,7 +185,7 @@ public class Home extends JApplet {
 
 	// Instantiate Hazelcast instance
 	public static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance();
-	public static IScheduledExecutorService executor = hazelcastInstance.getScheduledExecutorService("exec");
+	public static IExecutorService executor = hazelcastInstance.getExecutorService("exec");
 	
 	/**
 	 * Launch the application.
@@ -1082,7 +1083,7 @@ public class Home extends JApplet {
 					generateMovingObjs();
 					movingObjsGen = true;
 					if (stationsGen == true) {
-						if (initlizer.movingObjID >= 1000) {
+						if (initlizer.movingObjID >= 50) {
 							System.out.println("Number of moving objects "+ initlizer.movingObjID);
 							btnObjectStart.setEnabled(true);							
 						} else {
@@ -1228,9 +1229,8 @@ public class Home extends JApplet {
 			IdrObjsUtility.startClickedTime = startPoint;
 			Date endPoint = new Date(startPoint.getTime() + generatonPeriod);
 
-			for(MovingObj m:movingObjs) {
-				executor.scheduleOnAllMembers(new GenerateTask(m), System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-			}
+//			executor.executeOnAllMembers(new GenerateTask(movingObjs));
+			new Thread(new GenerateTask(movingObjs)).start();
 			
 //			startTimer.schedule(new TimerTask() {
 //				@Override

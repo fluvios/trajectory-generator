@@ -1,6 +1,7 @@
 package com.parallel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,42 +14,16 @@ public class GenerateTask implements Runnable, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final MovingObj movingObj;
+	private final ArrayList<MovingObj> movingObjs;
 
-    public GenerateTask(MovingObj movingObj) {
-        this.movingObj = movingObj;
+    public GenerateTask(ArrayList<MovingObj> movingObjs) {
+        this.movingObjs = movingObjs;
     }
 
     @Override
     public void run() {
-    	// for test purpose
-    	System.out.println(movingObj.getId());
-		if (!movingObj.isActive()) {
-			if (movingObj instanceof MultiDestinationMovement) {
-				MultiDestinationMovement multiDestCustomer = (MultiDestinationMovement) movingObj;
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						multiDestCustomer.genMultiDestinations();
-						System.out.println("new " + multiDestCustomer.getId() + " is generated");
-						multiDestCustomer.setActive(true);
-						Thread thread = new Thread(multiDestCustomer);
-						thread.start();
-					}
-				}, Math.max(0, multiDestCustomer.getInitMovingTime() - System.currentTimeMillis()));
-			} else {
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						System.out.println("new " + movingObj.getId() + " is generated");
-						movingObj.setActive(true);
-						Thread thread = new Thread(movingObj);
-						thread.start();
-					}
-				}, Math.max(0, movingObj.getInitMovingTime() - System.currentTimeMillis()));
-			}
+    	for (MovingObj m : movingObjs) {
+			System.out.println(m.getInitialDistribution());
 		}
     }
 }
