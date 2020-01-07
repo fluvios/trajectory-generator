@@ -20,7 +20,7 @@ public class MasterMember {
 	        polygon2D = new Point2D.Double(randX, randY);
 			Thread.sleep(1000);
 			System.out.println("Producing echo task: " + polygon2D.getX());
-			executor.execute(new GenerateTask(polygon2D));
+			// executor.execute(new GenerateTask(polygon2D));
 		}
 		System.out.println("EchoTaskMain finished!");
 	}

@@ -444,7 +444,7 @@ public abstract class MovingObj extends IndoorObject implements Runnable, Serial
                 Date timestamp = new Date(IdrObjsUtility.objectGenerateStartTime.getTime()
                                                   + (System.currentTimeMillis() - IdrObjsUtility.startClickedTime.getTime()));
                 String timestamp_str = IdrObjsUtility.sdf.format(timestamp);
-                String packInfo = "\"" + pack.toString() + "\"" + "," + "\"" + timestamp_str + "\"" + "\n";
+                String packInfo = pack.toString() + "," + timestamp_str + "\n";
                 buff.write(packInfo.getBytes());
                 packIndex++;
             }

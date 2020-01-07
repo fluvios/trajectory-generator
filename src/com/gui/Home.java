@@ -1230,23 +1230,23 @@ public class Home extends JApplet {
 			Date endPoint = new Date(startPoint.getTime() + generatonPeriod);
 
 //			executor.executeOnAllMembers(new GenerateTask(movingObjs));
-			new Thread(new GenerateTask(movingObjs)).start();
+//			new Thread(new GenerateTask(movingObjs)).start();
 			
-//			startTimer.schedule(new TimerTask() {
-//				@Override
-//				public void run() {
-//					startIndoorObj();
-//				}
-//			}, startPoint);
+			startTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					startIndoorObj();
+				}
+			}, startPoint);
 
-//			Timer endTimer = new Timer();
+			Timer endTimer = new Timer();
 
-//			endTimer.schedule(new TimerTask() {
-//				@Override
-//				public void run() {
-//					btnObjectStop.doClick();
-//				}
-//			}, endPoint);
+			endTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					btnObjectStop.doClick();
+				}
+			}, endPoint);
 		}
 
 		private void clearMapPainterActionListener() {
