@@ -35,7 +35,7 @@
 		<datavec.version>1.0.0-beta3</datavec.version>
 		<scala.binary.version>2.11</scala.binary.version>
 		<datavec.spark.version>1.0.0-beta3_spark_1</datavec.spark.version>
-		<jackson.version>2.5.1</jackson.version>
+		<jackson.version>2.10.3</jackson.version>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/de.sciss/weblaf -->
